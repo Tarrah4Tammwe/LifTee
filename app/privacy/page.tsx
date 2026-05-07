@@ -5,11 +5,6 @@ export const metadata = generatePageMetadata({
   description: 'Privacy policy for OverstayCheck. We protect your data and explain how we use information.',
   path: '/privacy',
 })
-export const metadata = {
-  title: 'Privacy Policy | OverstayCheck',
-  description: 'Our privacy policy.',
-}
-
 export default function PrivacyPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
