@@ -1,3 +1,10 @@
+import { generatePageMetadata } from '@/lib/generatePageMetadata'
+
+export const metadata = generatePageMetadata({
+  title: 'Contact Us',
+  description: 'Get in touch with OverstayCheck for questions about visa overstay and I-94 lookups',
+  path: '/contact',
+})
 export const metadata = {
   title: 'Contact | OverstayCheck',
   description: 'Contact us.',
