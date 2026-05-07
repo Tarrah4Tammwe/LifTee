@@ -1,3 +1,10 @@
+import { generatePageMetadata } from '@/lib/generatePageMetadata'
+
+export const metadata = generatePageMetadata({
+  title: 'Privacy Policy',
+  description: 'Privacy policy for OverstayCheck. We protect your data and explain how we use information.',
+  path: '/privacy',
+})
 export const metadata = {
   title: 'Privacy Policy | OverstayCheck',
   description: 'Our privacy policy.',
