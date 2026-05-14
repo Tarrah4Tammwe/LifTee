@@ -149,25 +149,8 @@ export const apiClient = {
 
   // Sync pending changes
   async syncPendingChanges() {
-    const pendingWorkouts = await db.workouts.where('syncedAt').isUndefined().toArray();
-    const pendingLogs = await db.dailyLogs.where('syncedAt').isUndefined().toArray();
-
-    for (const workout of pendingWorkouts) {
-      try {
-        await this.logWorkout(workout);
-        await db.workouts.update(workout.id!, { syncedAt: new Date().toISOString() });
-      } catch (error) {
-        console.warn('Failed to sync workout:', error);
-      }
-    }
-
-    for (const log of pendingLogs) {
-      try {
-        await this.logNutrition(log);
-        await db.dailyLogs.update(log.id!, { syncedAt: new Date().toISOString() });
-      } catch (error) {
-        console.warn('Failed to sync log:', error);
-      }
-    }
+    // TODO: Implement proper sync with backend
+    // For now, skip syncing
+    return;
   },
 };

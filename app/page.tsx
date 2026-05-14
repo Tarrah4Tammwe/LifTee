@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import {
-  Home,
+  Home as HomeIcon,
   Dumbbell,
   Apple,
   TrendingUp,
@@ -60,7 +60,7 @@ export default function Home() {
   };
 
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
-    { id: 'today', label: 'Today', icon: <Home size={24} /> },
+    { id: 'today', label: 'Today', icon: <HomeIcon size={24} /> },
     { id: 'programs', label: 'Programs', icon: <Dumbbell size={24} /> },
     { id: 'food', label: 'Food', icon: <Apple size={24} /> },
     { id: 'analytics', label: 'Analytics', icon: <TrendingUp size={24} /> },

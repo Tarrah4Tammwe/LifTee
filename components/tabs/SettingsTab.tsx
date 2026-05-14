@@ -92,7 +92,7 @@ export default function SettingsTab() {
                   <input
                     type="number"
                     value={
-                      preferences[target.key as keyof typeof preferences]
+                      (preferences[target.key as keyof typeof preferences] as number) || 0
                     }
                     onChange={(e) =>
                       setPreferences({
