@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "LifTee - Fitness & Nutrition PWA",
   "private": true,
+  "packageManager": "npm@10.9.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
