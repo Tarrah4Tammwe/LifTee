@@ -3,7 +3,17 @@
 import { useState, useEffect } from 'react';
 import { Search, Loader, Plus } from 'lucide-react';
 import { apiClient } from '@/lib/api';
-import { Food } from '@/lib/db';
+
+interface Food {
+  id: string;
+  name: string;
+  category: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  created_at: string;
+}
 
 export default function FoodTab() {
   const [foods, setFoods] = useState<Food[]>([]);
@@ -25,9 +35,27 @@ export default function FoodTab() {
     setLoading(true);
     try {
       const data = await apiClient.getFoods();
-      setFoods(data);
+      
+      // Ensure we have an array
+      const foodsArray = Array.isArray(data) ? data : [];
+      
+      // Transform data and ensure category field
+      const transformed = foodsArray.map((f: any) => ({
+        id: f.id,
+        name: f.name || 'Unknown Food',
+        category: f.category || 'Other',
+        calories: f.calories || 0,
+        protein: f.protein || 0,
+        carbs: f.carbs || 0,
+        fat: f.fat || 0,
+        created_at: f.created_at || new Date().toISOString(),
+      }));
+      
+      setFoods(transformed);
+      console.log('✅ Loaded foods:', transformed.length);
     } catch (error) {
-      console.error('Failed to load foods:', error);
+      console.error('❌ Failed to load foods:', error);
+      setFoods([]);
     } finally {
       setLoading(false);
     }
@@ -37,7 +65,12 @@ export default function FoodTab() {
     let filtered = foods;
 
     if (searchQuery) {
-      filtered = await apiClient.searchFoods(searchQuery);
+      const lowerQuery = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (f) =>
+          f.name.toLowerCase().includes(lowerQuery) ||
+          f.category.toLowerCase().includes(lowerQuery)
+      );
     }
 
     if (selectedCategory) {
@@ -47,7 +80,10 @@ export default function FoodTab() {
     setFilteredFoods(filtered);
   };
 
-  const categories = Array.from(new Set(foods.map((f) => f.category)));
+  // Get unique categories
+  const categories = Array.from(
+    new Set(foods.map((f) => f.category).filter(Boolean))
+  ).sort();
 
   const toggleFoodSelection = (food: Food) => {
     setSelectedFoods((prev) =>
@@ -80,7 +116,7 @@ export default function FoodTab() {
             placeholder="Search foods..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-dark border border-white border-opacity-10 rounded-lg text-light placeholder:text-light placeholder:opacity-50"
+            className="w-full pl-10 pr-4 py-2 bg-dark border border-white border-opacity-10 rounded-lg text-light placeholder:text-light placeholder:opacity-50 focus:border-primary focus:outline-none transition"
           />
         </div>
 
@@ -88,7 +124,7 @@ export default function FoodTab() {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setSelectedCategory(null)}
-              className={`px-4 py-2 rounded-lg transition ${
+              className={`px-4 py-2 rounded-lg transition text-sm font-medium ${
                 selectedCategory === null
                   ? 'bg-primary text-light'
                   : 'bg-dark border border-white border-opacity-10 text-light hover:border-primary'
@@ -100,7 +136,7 @@ export default function FoodTab() {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-lg transition capitalize ${
+                className={`px-4 py-2 rounded-lg transition text-sm font-medium capitalize ${
                   selectedCategory === cat
                     ? 'bg-primary text-light'
                     : 'bg-dark border border-white border-opacity-10 text-light hover:border-primary'
@@ -143,28 +179,28 @@ export default function FoodTab() {
                       <div className="grid grid-cols-4 gap-2 text-xs">
                         <div>
                           <span className="text-light opacity-70">
-                            {food.calories}
+                            {Math.round(food.calories)}
                           </span>
                           <br />
                           <span className="text-light opacity-50">kcal</span>
                         </div>
                         <div>
                           <span className="text-light opacity-70">
-                            {food.protein}g
+                            {Math.round(food.protein * 10) / 10}g
                           </span>
                           <br />
                           <span className="text-light opacity-50">protein</span>
                         </div>
                         <div>
                           <span className="text-light opacity-70">
-                            {food.carbs}g
+                            {Math.round(food.carbs * 10) / 10}g
                           </span>
                           <br />
                           <span className="text-light opacity-50">carbs</span>
                         </div>
                         <div>
                           <span className="text-light opacity-70">
-                            {food.fat}g
+                            {Math.round(food.fat * 10) / 10}g
                           </span>
                           <br />
                           <span className="text-light opacity-50">fat</span>
@@ -184,7 +220,13 @@ export default function FoodTab() {
             </div>
           ) : (
             <div className="card text-center py-12 text-light opacity-60">
-              No foods found. Try a different search!
+              <p className="mb-2">No foods found.</p>
+              {searchQuery && (
+                <p className="text-sm">Try a different search term.</p>
+              )}
+              {!searchQuery && categories.length === 0 && (
+                <p className="text-sm">No foods available yet.</p>
+              )}
             </div>
           )}
         </div>
@@ -202,10 +244,12 @@ export default function FoodTab() {
                       key={food.id}
                       className="flex items-center justify-between p-2 bg-dark rounded"
                     >
-                      <span className="text-sm text-light">{food.name}</span>
+                      <span className="text-sm text-light line-clamp-1">
+                        {food.name}
+                      </span>
                       <button
                         onClick={() => toggleFoodSelection(food)}
-                        className="text-xs text-light opacity-50 hover:opacity-100"
+                        className="text-xs text-light opacity-50 hover:opacity-100 transition ml-2 flex-shrink-0"
                       >
                         ✕
                       </button>
@@ -216,28 +260,36 @@ export default function FoodTab() {
                 <div className="border-t border-white border-opacity-10 pt-4 space-y-2">
                   <div className="flex justify-between text-sm text-light">
                     <span>Total Calories:</span>
-                    <span className="font-semibold">{totalNutrition.calories}</span>
+                    <span className="font-semibold">
+                      {Math.round(totalNutrition.calories)}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm text-light">
                     <span>Protein:</span>
-                    <span className="font-semibold">{totalNutrition.protein}g</span>
+                    <span className="font-semibold">
+                      {Math.round(totalNutrition.protein * 10) / 10}g
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm text-light">
                     <span>Carbs:</span>
-                    <span className="font-semibold">{totalNutrition.carbs}g</span>
+                    <span className="font-semibold">
+                      {Math.round(totalNutrition.carbs * 10) / 10}g
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm text-light">
                     <span>Fat:</span>
-                    <span className="font-semibold">{totalNutrition.fat}g</span>
+                    <span className="font-semibold">
+                      {Math.round(totalNutrition.fat * 10) / 10}g
+                    </span>
                   </div>
                 </div>
 
-                <button className="w-full mt-4 py-2 bg-gradient-to-r from-primary to-secondary text-light font-semibold rounded-lg hover:opacity-90 transition">
-                  <Plus size={18} className="inline mr-2" /> Log Meal
+                <button className="w-full mt-4 py-2 bg-gradient-to-r from-primary to-secondary text-light font-semibold rounded-lg hover:opacity-90 transition flex items-center justify-center gap-2">
+                  <Plus size={18} /> Log Meal
                 </button>
               </>
             ) : (
-              <p className="text-light opacity-60 text-center py-8">
+              <p className="text-light opacity-60 text-center py-8 text-sm">
                 Select foods to log a meal
               </p>
             )}
