@@ -1,258 +1,155 @@
-import { OverstayCalculator } from "@/components/overstay-calculator"
-import { Scale, Shield, Clock, AlertCircle } from "lucide-react"
-import Script from "next/script"
+'use client';
 
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "What is unlawful presence in the US?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Unlawful presence is time spent in the US after your authorised stay expired — the date on your I-94, not your visa stamp. Once you accumulate more than 180 days of unlawful presence and leave the US, automatic re-entry bans apply.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "How long can I overstay my US visa before getting banned?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Under 180 days: no automatic entry ban, but your visa is voided. 180–364 days: a 3-year re-entry ban triggers when you leave. 365 days or more: a 10-year re-entry ban triggers when you leave.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Where do I find my I-94 expiry date?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Check your I-94 record online at i94.cbp.dhs.gov. Look for the 'Admit Until Date'. This is different from the expiry date on your visa stamp — the I-94 date is what controls your legal stay.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Does the 3-year or 10-year ban apply while I'm still in the US?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "No. The ban only activates when you leave the US and then try to re-enter. If you remain in the US, the ban hasn't triggered yet — but unlawful presence is still accumulating every day.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Can I fix a US visa overstay without leaving?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Sometimes. If you have a qualifying US citizen or permanent resident spouse or parent, you may be able to adjust status without leaving. Filing a timely extension before your I-94 expired also stops the clock. An immigration attorney can advise on your options.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "What happens to my visa if I overstay even one day?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Your visa is automatically voided — even after one day. You cannot use that visa to re-enter the US. You would need to apply for a new visa at a US consulate in your home country.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Does a pending I-539 extension application protect me from unlawful presence?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes, if you filed a timely extension before your I-94 expired, unlawful presence does not accrue while it is pending. If the application is denied, the clock starts from the denial date.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Will an old overstay affect a future green card application?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes. Any overstay stays on your immigration record. An overstay over 180 days can trigger inadmissibility bars that require a waiver — even if it happened years ago.",
-      },
-    },
-  ],
-}
+import { useEffect, useState } from 'react';
+import {
+  Home,
+  Dumbbell,
+  Apple,
+  TrendingUp,
+  Settings,
+  LogOut,
+  Menu,
+  X,
+} from 'lucide-react';
+import TodayTab from '@/components/tabs/TodayTab';
+import ProgramsTab from '@/components/tabs/ProgramsTab';
+import FoodTab from '@/components/tabs/FoodTab';
+import AnalyticsTab from '@/components/tabs/AnalyticsTab';
+import SettingsTab from '@/components/tabs/SettingsTab';
+import { apiClient } from '@/lib/api';
+
+type Tab = 'today' | 'programs' | 'food' | 'analytics' | 'settings';
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<Tab>('today');
+  const [isOnline, setIsOnline] = useState(true);
+  const [user, setUser] = useState<any>(null);
+  const [showMenu, setShowMenu] = useState(false);
+
+  useEffect(() => {
+    // Check online status
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    setIsOnline(navigator.onLine);
+
+    // Restore user from storage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+
+    // Sync pending changes when online
+    if (isOnline) {
+      apiClient.syncPendingChanges().catch(console.error);
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [isOnline]);
+
+  const handleLogout = () => {
+    apiClient.logout();
+    setUser(null);
+    setShowMenu(false);
+    window.location.href = '/login';
+  };
+
+  const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
+    { id: 'today', label: 'Today', icon: <Home size={24} /> },
+    { id: 'programs', label: 'Programs', icon: <Dumbbell size={24} /> },
+    { id: 'food', label: 'Food', icon: <Apple size={24} /> },
+    { id: 'analytics', label: 'Analytics', icon: <TrendingUp size={24} /> },
+    { id: 'settings', label: 'Settings', icon: <Settings size={24} /> },
+  ];
+
   return (
-    <>
-      <Script
-        id="faq-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-
-
-
-      <main className="min-h-screen">
-        <header className="border-b-2 border-secondary bg-card">
-          <div className="max-w-4xl mx-auto px-4 py-4">
-            <div className="flex items-center gap-2">
-              <Scale className="h-6 w-6 text-primary" />
-              <span className="font-bold text-secondary text-lg">OverstayCheck</span>
+    <main className="flex flex-col h-screen bg-dark">
+      {/* Header */}
+      <header className="bg-gradient-to-r from-primary to-secondary p-4 shadow-lg sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-light rounded-lg flex items-center justify-center font-bold text-dark">
+              LT
             </div>
+            <h1 className="text-xl font-bold text-light hidden sm:block">LifTee</h1>
           </div>
-        </header>
 
-        <section className="max-w-4xl mx-auto px-4 pt-8 pb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-secondary text-center text-balance">
-            US Visa Overstay Calculator
-          </h1>
-          <p className="text-center text-muted-foreground mt-4 max-w-xl mx-auto text-pretty">
-            Enter your I-94 expiry date. Find out instantly whether you face a 3-year or 10-year
-            re-entry ban — and how many days you have before the next threshold.
-          </p>
-        </section>
+          <div className="flex items-center gap-4">
+            {!isOnline && (
+              <div className="text-sm bg-yellow-500 bg-opacity-20 px-3 py-1 rounded-lg text-yellow-200">
+                📡 Offline Mode
+              </div>
+            )}
 
-        <section className="max-w-4xl mx-auto px-4 pb-12" aria-label="Overstay Calculator">
-          <OverstayCalculator />
-        </section>
+            {user && (
+              <div className="hidden sm:flex items-center gap-2 text-sm text-light">
+                <span>{user.email}</span>
+              </div>
+            )}
 
-        <section className="bg-card border-t-2 border-b-2 border-secondary py-12" aria-label="How It Works">
-          <div className="max-w-4xl mx-auto px-4">
-            <h2 className="text-2xl font-bold text-secondary text-center mb-8">
-              The Three Overstay Thresholds
-            </h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              <article className="border-2 border-secondary rounded-lg p-5 bg-background">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 rounded-lg bg-[var(--tier-safe)]">
-                    <Shield className="h-5 w-5 text-card" />
-                  </div>
-                  <h3 className="font-bold text-secondary">Under 180 Days</h3>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  No automatic re-entry ban. Your visa is voided and future applications may be
-                  affected — but if you leave now, no time bar applies.
-                </p>
-              </article>
-
-              <article className="border-2 border-secondary rounded-lg p-5 bg-background">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 rounded-lg bg-[var(--tier-warning)]">
-                    <Clock className="h-5 w-5 text-card" />
-                  </div>
-                  <h3 className="font-bold text-secondary">180-364 Days</h3>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  A 3-year re-entry ban triggers the moment you leave the US. The clock starts on
-                  departure, not when you first overstayed.
-                </p>
-              </article>
-
-              <article className="border-2 border-secondary rounded-lg p-5 bg-background">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 rounded-lg bg-[var(--tier-danger)]">
-                    <AlertCircle className="h-5 w-5 text-card" />
-                  </div>
-                  <h3 className="font-bold text-secondary">365+ Days</h3>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  A 10-year re-entry ban triggers when you leave. This is the maximum automatic bar
-                  under US immigration law.
-                </p>
-              </article>
-            </div>
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition"
+            >
+              {showMenu ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
-        </section>
+        </div>
 
-        <section className="max-w-4xl mx-auto px-4 py-12" aria-label="Frequently Asked Questions">
-          <h2 className="text-2xl font-bold text-secondary text-center mb-8">
-            Frequently Asked Questions
-          </h2>
-          <div className="space-y-6 max-w-2xl mx-auto">
-            <article className="border-2 border-secondary rounded-lg p-5 bg-card">
-              <h3 className="font-bold text-secondary mb-2">What is &quot;unlawful presence&quot;?</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Unlawful presence is time spent in the US after your authorised stay expired — the
-                date on your I-94, not your visa stamp. Once you hit 180 days and leave, bans apply.
-              </p>
-            </article>
-
-            <article className="border-2 border-secondary rounded-lg p-5 bg-card">
-              <h3 className="font-bold text-secondary mb-2">Where do I find my I-94 expiry date?</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Check{" "}
-                <a href="https://i94.cbp.dhs.gov" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">
-                  i94.cbp.dhs.gov
-                </a>{" "}
-                and look for the &quot;Admit Until Date&quot;. This is different from the expiry date on your
-                visa stamp — the I-94 date is the one that matters.
-              </p>
-            </article>
-
-            <article className="border-2 border-secondary rounded-lg p-5 bg-card">
-              <h3 className="font-bold text-secondary mb-2">Does the ban apply while I&apos;m still in the US?</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                No. The 3-year or 10-year ban only activates when you leave and try to re-enter. But
-                unlawful presence keeps accumulating every day you stay.
-              </p>
-            </article>
-
-            <article className="border-2 border-secondary rounded-lg p-5 bg-card">
-              <h3 className="font-bold text-secondary mb-2">What happens to my visa when I overstay?</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                It&apos;s automatically voided — even after one day. You cannot use that visa to re-enter
-                the US. You&apos;d need to apply for a new visa from your home country.
-              </p>
-            </article>
-
-            <article className="border-2 border-secondary rounded-lg p-5 bg-card">
-              <h3 className="font-bold text-secondary mb-2">Does a pending extension application protect me?</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Yes — if you filed a timely extension (Form I-539) before your I-94 expired, the
-                unlawful presence clock is paused while it&apos;s pending. If denied, the clock starts
-                from the denial date.
-              </p>
-            </article>
-
-            <article className="border-2 border-secondary rounded-lg p-5 bg-card">
-              <h3 className="font-bold text-secondary mb-2">Can I fix an overstay without leaving?</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Sometimes. If you have a qualifying US citizen or permanent resident spouse or parent,
-                you may be able to adjust status without leaving. An immigration attorney can assess
-                your specific options.
-              </p>
-            </article>
-
-            <article className="border-2 border-secondary rounded-lg p-5 bg-card">
-              <h3 className="font-bold text-secondary mb-2">Will an old overstay affect a green card application?</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Yes. Any overstay stays on your immigration record. An overstay over 180 days can
-                trigger inadmissibility bars that require a waiver — even if it happened years ago.
-              </p>
-            </article>
+        {/* Mobile menu */}
+        {showMenu && (
+          <div className="mt-4 sm:hidden bg-black bg-opacity-50 rounded-lg p-2">
+            {user && (
+              <div className="px-3 py-2 text-sm text-light border-b border-white border-opacity-10 mb-2">
+                {user.email}
+              </div>
+            )}
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2 px-3 py-2 text-light hover:bg-white hover:bg-opacity-10 rounded transition text-left"
+            >
+              <LogOut size={18} /> Logout
+            </button>
           </div>
-        </section>
+        )}
+      </header>
 
-        <section className="bg-muted border-t-2 border-secondary py-8" aria-label="Disclaimer">
-          <div className="max-w-4xl mx-auto px-4">
-            <div className="border-2 border-primary/30 rounded-lg p-5 bg-card">
-              <h2 className="font-bold text-secondary mb-2 flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-primary" />
-                Disclaimer
-              </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                This tool gives you general information based on standard US immigration thresholds.
-                It is not legal advice. Individual circumstances — pending applications, asylum
-                claims, age, TPS status — can change how the rules apply to you. If your situation
-                is complicated, speak to an immigration attorney.
-              </p>
-            </div>
-          </div>
-        </section>
+      {/* Tab Content */}
+      <div className="flex-1 overflow-y-auto pb-24 sm:pb-0">
+        {activeTab === 'today' && <TodayTab />}
+        {activeTab === 'programs' && <ProgramsTab />}
+        {activeTab === 'food' && <FoodTab />}
+        {activeTab === 'analytics' && <AnalyticsTab />}
+        {activeTab === 'settings' && <SettingsTab />}
+      </div>
 
-        <footer className="border-t-2 border-secondary py-8 bg-card">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} OverstayCheck. For informational purposes only.
-            </p>
-            <p className="text-xs text-muted-foreground mt-2">
-              Not affiliated with USCIS or any government agency.
-            </p>
-          </div>
-        </footer>
-      </main>
-    </>
-  )
+      {/* Navigation Bar */}
+      <nav className="fixed sm:static bottom-0 left-0 right-0 bg-gradient-to-t from-black to-dark border-t border-white border-opacity-10 sm:border-t-0">
+        <div className="flex justify-around max-w-6xl mx-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setActiveTab(tab.id);
+                setShowMenu(false);
+              }}
+              className={`flex-1 py-3 px-2 flex flex-col items-center gap-1 transition ${
+                activeTab === tab.id
+                  ? 'text-primary'
+                  : 'text-light hover:text-primary'
+              }`}
+            >
+              {tab.icon}
+              <span className="text-xs hidden sm:block">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
+    </main>
+  );
 }
