@@ -1,5 +1,3 @@
-'use client';
-
 export default function NotFound() {
   return (
     <div style={{
@@ -30,13 +28,6 @@ export default function NotFound() {
           borderRadius: '8px',
           fontSize: '16px',
           fontWeight: '600',
-          transition: 'background-color 0.3s',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = '#9333ea';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#a855f7';
         }}
       >
         Back to Home
