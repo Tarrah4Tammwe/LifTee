@@ -1,0 +1,2536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>LifTee</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root {
+    --bg: #0d0918;
+    --bg-2: #1a1228;
+    --bg-3: #251935;
+    --line: #2f2342;
+    --text: #f5f2ff;
+    --text-dim: #9b8eb5;
+    --text-faint: #5e4f7a;
+    --accent: #a855f7;
+    --accent-dim: #7a3fbf;
+    --accent-glow: rgba(168, 85, 247, 0.25);
+    --accent-soft: rgba(168, 85, 247, 0.12);
+    --danger: #ff5577;
+    --safe: var(--accent);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 16px;
+    overscroll-behavior: none;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  body { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+  button, input, select { font-family: inherit; font-size: inherit; color: inherit; }
+  input[type="number"] { -moz-appearance: textfield; }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  .display { font-family: "Arial Black", "Helvetica Neue", sans-serif; font-weight: 900; letter-spacing: -0.03em; }
+  .mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+
+  /* Header */
+  header {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg);
+    position: sticky; top: 0; z-index: 50;
+  }
+  header h1 {
+    font-family: "Arial Black", sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  header h1 span { color: var(--accent); font-style: italic; }
+  .header-sub { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.15em; margin-top: 2px; }
+
+  /* Bottom Nav */
+  nav.tabs {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--bg-2);
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  nav.tabs button {
+    background: none;
+    border: none;
+    padding: 14px 4px 12px;
+    color: var(--text-faint);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: color 0.15s;
+    border-top: 2px solid transparent;
+  }
+  nav.tabs button.active {
+    color: var(--accent);
+    border-top-color: var(--accent);
+  }
+  nav.tabs button .icon { display: block; font-size: 22px; margin-bottom: 4px; }
+
+  /* Views */
+  .view { padding: 20px; display: none; }
+  .view.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  .card h3 {
+    font-family: "Arial Black", sans-serif;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .card .meta {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+  .card .arrow { color: var(--text-faint); font-size: 22px; }
+
+  /* Buttons */
+  .btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 16px 24px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 14px;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 10px;
+    font-family: "Arial Black", sans-serif;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--line);
+  }
+  .btn-danger { background: var(--danger); color: white; }
+  .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .btn-sm { padding: 10px 16px; font-size: 12px; }
+  .btn-icon {
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    color: var(--text);
+    width: 36px; height: 36px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  /* Inputs */
+  .input, select.input {
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 14px 12px;
+    width: 100%;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  .input:focus { outline: none; border-color: var(--accent); }
+  .field { margin-bottom: 12px; }
+  .field label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  /* Section */
+  .section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    margin: 24px 0 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .section-title:first-child { margin-top: 0; }
+  .section-title button { background: none; border: none; color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; font-weight: bold; }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+  }
+  .empty .big {
+    font-family: "Arial Black", sans-serif;
+    font-size: 60px;
+    color: var(--bg-3);
+    margin-bottom: 12px;
+  }
+  .empty p { margin-bottom: 20px; font-size: 14px; }
+
+  /* Set rows */
+  .set-row {
+    display: grid;
+    grid-template-columns: 36px 1fr 1fr 44px 44px;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .set-row .set-num {
+    font-family: "Arial Black", sans-serif;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+  .set-row input {
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 12px 8px;
+    text-align: center;
+    border-radius: 4px;
+    font-family: "SF Mono", monospace;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+  }
+  .set-row input:focus { outline: none; border-color: var(--accent); }
+  .set-row input.done { background: var(--accent-soft); border-color: var(--accent-dim); color: var(--accent); }
+  .set-row .check, .set-row .del {
+    height: 44px;
+    border: 1px solid var(--line);
+    background: var(--bg-3);
+    color: var(--text-dim);
+    border-radius: 4px;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .set-row .check.done { background: var(--accent); color: white; border-color: var(--accent); }
+  .set-row .del { color: var(--text-faint); }
+
+  .set-header {
+    display: grid;
+    grid-template-columns: 36px 1fr 1fr 44px 44px;
+    gap: 6px;
+    margin-bottom: 8px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    text-align: center;
+  }
+  .set-header div:nth-child(1) { text-align: center; }
+
+  /* Exercise block in workout */
+  .exercise-block {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .exercise-block .ex-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .exercise-block h4 {
+    font-family: "Arial Black", sans-serif;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .exercise-block .last {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 3px;
+  }
+  .exercise-block .last b { color: var(--accent); }
+
+  .form-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px; height: 22px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid var(--accent-dim);
+    border-radius: 50%;
+    text-decoration: none;
+    font-size: 9px;
+    margin-left: 6px;
+    vertical-align: middle;
+    transition: all 0.15s;
+  }
+  .form-link:active { background: var(--accent); color: var(--bg); }
+
+  /* Edit rows in program/workout editor modals */
+  .edit-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  .edit-row-main {
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+  }
+  .edit-row-title {
+    font-family: "Arial Black", sans-serif;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+  .edit-row-meta {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+  .edit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    flex-shrink: 0;
+    justify-content: flex-end;
+    max-width: 120px;
+  }
+  .edit-actions .btn-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  .edit-actions .btn-icon:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+  .btn-icon-danger {
+    color: var(--danger);
+    border-color: rgba(255, 85, 119, 0.3);
+  }
+  .btn-icon-danger:active {
+    background: var(--danger);
+    color: white;
+  }
+
+  /* Day cards on Today screen */
+  .day-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.1s;
+  }
+  .day-card:active { transform: scale(0.99); border-color: var(--accent-dim); }
+  .day-card-num {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-dim);
+    color: var(--accent);
+    font-family: "Arial Black", sans-serif;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .day-card-body { flex: 1; min-width: 0; }
+  .day-card-body h3 {
+    font-family: "Arial Black", sans-serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .day-card-body .meta {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .day-card .arrow { color: var(--text-faint); font-size: 22px; }
+
+  /* Exercise thumbnails (used in preview + active workout) */
+  .ex-thumb {
+    width: 56px; height: 56px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .ex-thumb-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Arial Black", sans-serif;
+    font-size: 22px;
+    color: var(--text-faint);
+  }
+
+  /* Preview rows in workout preview modal */
+  .preview-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .preview-row:last-of-type { border-bottom: none; }
+  .preview-body { flex: 1; min-width: 0; }
+  .preview-name {
+    font-family: "Arial Black", sans-serif;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    margin-bottom: 3px;
+  }
+  .preview-meta {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .add-set {
+    background: transparent;
+    border: 1px dashed var(--line);
+    color: var(--text-dim);
+    padding: 10px;
+    width: 100%;
+    border-radius: 4px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  .add-set:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+  /* Modal */
+  .modal-bg {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-bg.active { display: flex; }
+  .modal {
+    background: var(--bg-2);
+    width: 100%;
+    max-width: 500px;
+    border-radius: 16px 16px 0 0;
+    padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+    max-height: 90vh;
+    overflow-y: auto;
+    border-top: 2px solid var(--accent);
+  }
+  .modal h2 {
+    font-family: "Arial Black", sans-serif;
+    font-size: 20px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: var(--bg-3);
+    border: none;
+    color: var(--text);
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  /* Rest Timer */
+  #restTimer {
+    display: none;
+    position: fixed;
+    bottom: calc(80px + env(safe-area-inset-bottom) + 16px);
+    left: 16px; right: 16px;
+    background: var(--accent);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 12px;
+    z-index: 90;
+    box-shadow: 0 8px 32px var(--accent-glow);
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  #restTimer.active { display: flex; }
+  #restTimer .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; font-weight: bold; opacity: 0.85; }
+  #restTimer .time { font-family: "Arial Black", sans-serif; font-size: 32px; line-height: 1; font-variant-numeric: tabular-nums; }
+  #restTimer button {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  /* Stats / Charts */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .stat {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    padding: 16px 14px;
+    border-radius: 4px;
+  }
+  .stat .num { font-family: "Arial Black", sans-serif; font-size: 32px; line-height: 1; }
+  .stat .num.acc { color: var(--accent); }
+  .stat .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-top: 6px; }
+
+  .chart-card { background: var(--bg-2); border: 1px solid var(--line); padding: 16px; border-radius: 4px; margin-bottom: 12px; }
+  .chart-card h4 { font-family: "Arial Black", sans-serif; font-size: 13px; text-transform: uppercase; margin-bottom: 12px; }
+  .chart-card svg { width: 100%; height: 140px; display: block; }
+
+  /* PR badge */
+  .pr-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: "Arial Black", sans-serif;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* Misc */
+  .row-flex { display: flex; gap: 8px; align-items: center; }
+  .grow { flex: 1; }
+  .ex-list-item {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    padding: 14px 16px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  .ex-list-item:active { background: var(--bg-3); }
+
+  .welcome-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(13, 9, 24, 0.96);
+    backdrop-filter: blur(8px);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-y: auto;
+  }
+  .welcome-overlay.show { display: flex; }
+  .welcome-card {
+    background: var(--bg-2);
+    border: 1px solid var(--accent-dim);
+    border-radius: 16px;
+    padding: 32px 24px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 20px 60px var(--accent-glow);
+    margin: auto;
+  }
+  .welcome-logo {
+    font-family: "Arial Black", sans-serif;
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    text-align: center;
+    line-height: 1;
+  }
+  .welcome-logo span { color: var(--accent); font-style: italic; }
+  .welcome-tag {
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-top: 8px;
+    margin-bottom: 24px;
+  }
+  .welcome-body {
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .welcome-body h3 {
+    font-family: "Arial Black", sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 10px;
+    margin-top: 16px;
+  }
+  .welcome-body h3:first-child { margin-top: 0; }
+  .welcome-body p { margin-bottom: 8px; color: var(--text-dim); }
+  .welcome-body strong { color: var(--text); }
+  .welcome-step {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+  .welcome-step .num {
+    background: var(--accent);
+    color: white;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: "Arial Black", sans-serif;
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .welcome-step .txt { color: var(--text); font-size: 13px; line-height: 1.5; flex: 1; }
+  .welcome-step .txt b { color: var(--accent); }
+  .share-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-dim);
+    border-radius: 4px;
+    color: var(--accent);
+    font-size: 12px;
+    vertical-align: middle;
+    margin: 0 2px;
+  }
+
+  .toast {
+    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+    background: var(--bg-3);
+    border: 1px solid var(--accent);
+    color: var(--text);
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-size: 13px;
+    z-index: 300;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: bold;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(-8px); }
+</style>
+</head>
+<body>
+
+<div class="welcome-overlay" id="welcomeOverlay">
+  <div class="welcome-card">
+    <div class="welcome-logo">Lif<span>Tee</span></div>
+    <div class="welcome-tag">YOUR WORKOUTS. YOUR PROGRESS. YOUR PHONE.</div>
+    <div class="welcome-body" id="welcomeBody"></div>
+    <button class="btn" id="welcomeDismiss">GOT IT — LET'S GO</button>
+  </div>
+</div>
+
+<header>
+  <div>
+    <h1>Lif<span>Tee</span></h1>
+    <div class="header-sub" id="headerSub">READY</div>
+  </div>
+  <button class="btn-icon" id="settingsBtn">⚙</button>
+</header>
+
+<!-- TODAY VIEW -->
+<div class="view active" id="view-today">
+  <div id="activeWorkoutContainer"></div>
+  <div id="todayContent"></div>
+</div>
+
+<!-- PROGRAMS VIEW -->
+<div class="view" id="view-programs">
+  <div class="section-title">PROGRAMS <button onclick="openNewProgram()">+ NEW</button></div>
+  <div id="programsList"></div>
+</div>
+
+<!-- HISTORY VIEW -->
+<div class="view" id="view-history">
+  <div class="section-title">HISTORY</div>
+  <div id="historyList"></div>
+</div>
+
+<!-- STATS VIEW -->
+<div class="view" id="view-stats">
+  <div class="section-title">STATS</div>
+  <div id="statsContent"></div>
+</div>
+
+<!-- FOOD VIEW -->
+<div class="view" id="view-food">
+  <div id="foodContent"></div>
+</div>
+
+<!-- LIBRARY VIEW -->
+<div class="view" id="view-library">
+  <div id="libraryContent"></div>
+</div>
+
+<!-- REST TIMER -->
+<div id="restTimer">
+  <div>
+    <div class="label">REST</div>
+    <div class="time" id="restTime">0:00</div>
+  </div>
+  <div class="row-flex">
+    <button onclick="adjustRest(-15)">−15</button>
+    <button onclick="adjustRest(15)">+15</button>
+    <button onclick="stopRest()">SKIP</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="tabs">
+  <button class="active" data-view="today"><span class="icon">●</span>TODAY</button>
+  <button data-view="programs"><span class="icon">▤</span>PROGRAMS</button>
+  <button data-view="food"><span class="icon">🍽</span>FOOD</button>
+  <button data-view="library"><span class="icon">★</span>LIBRARY</button>
+  <button data-view="history"><span class="icon">≡</span>HISTORY</button>
+</nav>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==========================================================================
+   LIFT - Personal Workout Tracker
+   On-device PWA, IndexedDB storage
+   ========================================================================== */
+
+const DB_NAME = 'lift-db';
+const DB_VERSION = 3;
+let db;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => { db = req.result; resolve(db); };
+    req.onupgradeneeded = (e) => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('programs')) {
+        d.createObjectStore('programs', { keyPath: 'id' });
+      }
+      if (!d.objectStoreNames.contains('workouts')) {
+        const ws = d.createObjectStore('workouts', { keyPath: 'id' });
+        ws.createIndex('date', 'date');
+        ws.createIndex('programId', 'programId');
+      }
+      if (!d.objectStoreNames.contains('settings')) {
+        d.createObjectStore('settings', { keyPath: 'key' });
+      }
+      if (!d.objectStoreNames.contains('exerciseImages')) {
+        d.createObjectStore('exerciseImages', { keyPath: 'key' });
+      }
+      if (!d.objectStoreNames.contains('foods')) {
+        d.createObjectStore('foods', { keyPath: 'id' });
+      }
+      if (!d.objectStoreNames.contains('foodLogs')) {
+        const fl = d.createObjectStore('foodLogs', { keyPath: 'id' });
+        fl.createIndex('date', 'date');
+      }
+    };
+  });
+}
+
+function dbGet(store, key) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readonly');
+    const r = tx.objectStore(store).get(key);
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function dbAll(store) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readonly');
+    const r = tx.objectStore(store).getAll();
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function dbPut(store, val) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readwrite');
+    const r = tx.objectStore(store).put(val);
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function dbDel(store, key) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readwrite');
+    const r = tx.objectStore(store).delete(key);
+    r.onsuccess = () => res();
+    r.onerror = () => rej(r.error);
+  });
+}
+
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+/* ============================ STATE ============================ */
+const API_URL = 'https://lifteet-backend.vercel.app';
+let authToken = localStorage.getItem('liftee_token') || null;
+let currentUser = JSON.parse(localStorage.getItem('liftee_user') || 'null');
+
+let state = {
+  programs: [],        // user's own programs
+  workouts: [],        // logged workout history
+  officialPrograms: [],// programs from server
+  foods: [],           // food database (seeded from server)
+  foodLogs: [],        // today's food logs
+  activeWorkout: null,
+  settings: { unit: 'kg', defaultRest: 90, calorieGoal: 2000, proteinGoal: 150, carbGoal: 200, fatGoal: 65 }
+};
+
+async function loadAll() {
+  state.programs = (await dbAll('programs')) || [];
+  state.workouts = ((await dbAll('workouts')) || []).sort((a, b) => b.date - a.date);
+  state.foods = (await dbAll('foods')) || [];
+  state.foodLogs = (await dbAll('foodLogs')) || [];
+  const unit = await dbGet('settings', 'unit');
+  const rest = await dbGet('settings', 'defaultRest');
+  const active = await dbGet('settings', 'activeWorkout');
+  const calG = await dbGet('settings', 'calorieGoal');
+  const protG = await dbGet('settings', 'proteinGoal');
+  const carbG = await dbGet('settings', 'carbGoal');
+  const fatG = await dbGet('settings', 'fatGoal');
+  if (unit) state.settings.unit = unit.value;
+  if (rest) state.settings.defaultRest = rest.value;
+  if (active) state.activeWorkout = active.value;
+  if (calG) state.settings.calorieGoal = calG.value;
+  if (protG) state.settings.proteinGoal = protG.value;
+  if (carbG) state.settings.carbGoal = carbG.value;
+  if (fatG) state.settings.fatGoal = fatG.value;
+  if (state.foods.length === 0) seedDefaultFoods();
+}
+
+async function saveSetting(key, value) {
+  await dbPut('settings', { key, value });
+}
+
+/* ============================ EXERCISE IMAGES (wger) ============================ */
+let exerciseImages = {}; // { normalisedName: imageUrl }
+
+// Normalise an exercise name for matching: lowercase, strip punctuation/parens, collapse spaces
+function normExName(name) {
+  return String(name || '')
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, ' ')      // remove parens like (SS)
+    .replace(/[^a-z0-9 ]/g, ' ')     // strip punctuation
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Common synonyms / abbreviation expansions to improve matching
+const NAME_SYNONYMS = {
+  'db': 'dumbbell', 'bb': 'barbell', 'kb': 'kettlebell',
+  'rdl': 'romanian deadlift',
+  'ohp': 'overhead press',
+  't bar': 'tbar',
+  'lat': 'latissimus',
+  'tri': 'triceps', 'tricep': 'triceps',
+  'bi': 'biceps', 'bicep': 'biceps',
+  'glute': 'gluteus',
+  'pec': 'pectoral',
+  'ss': '',
+};
+function expandSynonyms(norm) {
+  return norm.split(' ').map(t => NAME_SYNONYMS[t] !== undefined ? NAME_SYNONYMS[t] : t).filter(Boolean).join(' ');
+}
+
+// Score how well two exercise names match: 0 (no match) to 1 (perfect)
+function nameScore(a, b) {
+  if (!a || !b) return 0;
+  if (a === b) return 1;
+  const aTokens = new Set(a.split(' '));
+  const bTokens = new Set(b.split(' '));
+  let common = 0;
+  for (const t of aTokens) if (bTokens.has(t)) common++;
+  const total = Math.max(aTokens.size, bTokens.size);
+  return common / total;
+}
+
+async function loadExerciseImages() {
+  const tx = db.transaction('exerciseImages', 'readonly');
+  const r = tx.objectStore('exerciseImages').getAll();
+  return new Promise((res) => {
+    r.onsuccess = () => {
+      exerciseImages = {};
+      for (const row of (r.result || [])) {
+        exerciseImages[row.key] = row.url;
+      }
+      res();
+    };
+    r.onerror = () => res();
+  });
+}
+
+async function syncExerciseImages(silent = false) {
+  if (!silent) toast('FETCHING IMAGES...');
+  try {
+    // Fetch wger exercises with English translations + image data
+    // Using exerciseinfo endpoint which bundles everything in one call
+    let allExercises = [];
+    let url = 'https://wger.de/api/v2/exerciseinfo/?language=2&limit=200';
+    let pages = 0;
+    while (url && pages < 5) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('API ' + res.status);
+      const data = await res.json();
+      allExercises.push(...(data.results || []));
+      url = data.next;
+      pages++;
+    }
+
+    // Build a lookup: { normalisedWgerName: imageUrl }
+    const wgerLookup = [];
+    for (const ex of allExercises) {
+      // Find English translation
+      const enTrans = (ex.translations || []).find(t => t.language === 2);
+      const name = enTrans?.name || ex.name;
+      if (!name) continue;
+      // Find main image
+      const img = (ex.images || []).find(i => i.is_main) || (ex.images || [])[0];
+      if (!img || !img.image) continue;
+      const norm = expandSynonyms(normExName(name));
+      wgerLookup.push({ norm, name, url: img.image });
+    }
+
+    // Collect all exercise names from user's programs
+    const userExercises = new Set();
+    for (const p of state.programs) {
+      for (const w of p.workouts) {
+        for (const e of w.exercises) {
+          userExercises.add(e.name);
+        }
+      }
+    }
+
+    // Match each user exercise against wger lookup, taking best score above threshold
+    let matched = 0;
+    const tx = db.transaction('exerciseImages', 'readwrite');
+    const store = tx.objectStore('exerciseImages');
+    for (const userName of userExercises) {
+      const userNorm = expandSynonyms(normExName(userName));
+      if (!userNorm) continue;
+      let best = { score: 0, url: null };
+      for (const wger of wgerLookup) {
+        const score = nameScore(userNorm, wger.norm);
+        if (score > best.score) best = { score, url: wger.url };
+      }
+      if (best.score >= 0.5 && best.url) {
+        const key = normExName(userName);
+        store.put({ key, url: best.url });
+        exerciseImages[key] = best.url;
+        matched++;
+      }
+    }
+
+    if (!silent) {
+      toast(`MATCHED ${matched} OF ${userExercises.size}`);
+    }
+    return { matched, total: userExercises.size };
+  } catch (err) {
+    console.error('Image sync failed:', err);
+    if (!silent) toast('IMAGE SYNC FAILED');
+    return { matched: 0, total: 0 };
+  }
+}
+
+/* ============================ NAVIGATION ============================ */
+document.querySelectorAll('nav.tabs button').forEach(btn => {
+  btn.addEventListener('click', () => switchView(btn.dataset.view));
+});
+
+function switchView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  const navBtn = document.querySelector(`nav.tabs button[data-view="${name}"]`);
+  if (navBtn) navBtn.classList.add('active');
+  if (name === 'today') renderToday();
+  if (name === 'programs') renderPrograms();
+  if (name === 'history') renderHistory();
+  if (name === 'stats') renderStats();
+  if (name === 'food') renderFood();
+  if (name === 'library') renderLibrary();
+}
+
+/* ============================ MODAL ============================ */
+function openModal(html) {
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modalBg').classList.add('active');
+}
+function closeModal() {
+  document.getElementById('modalBg').classList.remove('active');
+}
+document.getElementById('modalBg').addEventListener('click', e => {
+  if (e.target.id === 'modalBg') closeModal();
+});
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+/* ============================ TODAY VIEW ============================ */
+function renderToday() {
+  const container = document.getElementById('activeWorkoutContainer');
+  const content = document.getElementById('todayContent');
+
+  if (state.activeWorkout) {
+    container.innerHTML = renderActiveWorkout();
+    content.innerHTML = '';
+    document.getElementById('headerSub').textContent = 'WORKOUT IN PROGRESS';
+  } else {
+    container.innerHTML = '';
+    document.getElementById('headerSub').textContent = formatHeaderDate(Date.now());
+    if (state.programs.length === 0) {
+      content.innerHTML = `
+        <div class="empty">
+          <div class="big">○</div>
+          <p>NO PROGRAMS YET<br>BUILD ONE TO START LIFTING</p>
+          <button class="btn" onclick="switchView('programs');openNewProgram()">CREATE PROGRAM</button>
+        </div>`;
+    } else {
+      let html = '';
+      state.programs.forEach(p => {
+        html += `<div class="section-title">${escapeHtml(p.name).toUpperCase()}</div>`;
+        p.workouts.forEach((w, i) => {
+          const exCount = w.exercises.length;
+          const setCount = w.exercises.reduce((s, e) => s + (e.sets || 3), 0);
+          const estMin = Math.round(setCount * 2.5 + exCount * 1.5);
+          html += `
+            <div class="day-card" onclick="previewWorkout('${p.id}', ${i})">
+              <div class="day-card-num">${i + 1}</div>
+              <div class="day-card-body">
+                <h3>${escapeHtml(w.name)}</h3>
+                <div class="meta">${exCount} EXERCISES · ${setCount} SETS · ~${estMin} MIN</div>
+              </div>
+              <div class="arrow">›</div>
+            </div>
+          `;
+        });
+      });
+      html += '<div class="section-title" style="margin-top:24px">QUICK START</div>';
+      html += '<button class="btn btn-ghost" onclick="startEmptyWorkout()">EMPTY WORKOUT</button>';
+      content.innerHTML = html;
+    }
+  }
+}
+
+function previewWorkout(programId, workoutIdx) {
+  const program = state.programs.find(p => p.id === programId);
+  if (!program) return;
+  const w = program.workouts[workoutIdx];
+  const setCount = w.exercises.reduce((s, e) => s + (e.sets || 3), 0);
+  const estMin = Math.round(setCount * 2.5 + w.exercises.length * 1.5);
+
+  let html = `
+    <h2>${escapeHtml(w.name)}</h2>
+    <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px">
+      ${w.exercises.length} EXERCISES · ${setCount} SETS · ~${estMin} MIN
+    </div>
+  `;
+
+  w.exercises.forEach((e, i) => {
+    const cached = exerciseImages[normExName(e.name)];
+    const imgHtml = cached
+      ? `<img src="${cached}" alt="" class="ex-thumb" loading="lazy" onerror="this.style.display='none'">`
+      : `<div class="ex-thumb ex-thumb-empty">${(e.name[0] || '?').toUpperCase()}</div>`;
+    html += `
+      <div class="preview-row">
+        ${imgHtml}
+        <div class="preview-body">
+          <div class="preview-name">${escapeHtml(e.name)} <a class="form-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(e.name + ' proper form')}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Form check">▶</a></div>
+          <div class="preview-meta">${e.sets || 3} SETS${e.targetReps ? ' × ' + e.targetReps + ' REPS' : ''}${e.targetWeight ? ' @ ' + e.targetWeight + state.settings.unit : ''}</div>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `
+    <button class="btn" style="margin-top:20px" onclick="closeModal();startWorkout('${programId}', ${workoutIdx})">START WORKOUT</button>
+    <button class="btn btn-ghost" style="margin-top:8px" onclick="closeModal()">CLOSE</button>
+  `;
+  openModal(html);
+}
+
+function renderActiveWorkout() {
+  const w = state.activeWorkout;
+  const elapsed = Math.floor((Date.now() - w.startedAt) / 60000);
+  let html = `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <h3 style="font-size:18px">${escapeHtml(w.name)}</h3>
+        <span class="mono" style="color:var(--accent);font-weight:bold">${elapsed}M</span>
+      </div>
+      <div class="meta">${w.exercises.length} EXERCISES · ${countSets(w)} SETS</div>
+    </div>
+  `;
+
+  w.exercises.forEach((ex, exIdx) => {
+    const lastBest = getLastBest(ex.name, w.id);
+    const cached = exerciseImages[normExName(ex.name)];
+    const imgHtml = cached
+      ? `<img src="${cached}" alt="" class="ex-thumb" loading="lazy" onerror="this.style.display='none'">`
+      : `<div class="ex-thumb ex-thumb-empty">${(ex.name[0] || '?').toUpperCase()}</div>`;
+    html += `
+      <div class="exercise-block">
+        <div class="ex-head">
+          ${imgHtml}
+          <div style="flex:1">
+            <h4>${escapeHtml(ex.name)} <a class="form-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(ex.name + ' proper form')}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Form check">▶</a></h4>
+            ${lastBest ? `<div class="last">LAST: <b>${lastBest.weight}${state.settings.unit} × ${lastBest.reps}</b></div>` : '<div class="last">FIRST TIME</div>'}
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0">
+            <button class="btn-icon" onclick="editLiveExercise(${exIdx})" title="Edit">✎</button>
+            <button class="btn-icon btn-icon-danger" onclick="removeExercise(${exIdx})" title="Remove">×</button>
+          </div>
+        </div>
+        <div class="set-header">
+          <div>SET</div><div>${state.settings.unit.toUpperCase()}</div><div>REPS</div><div></div><div></div>
+        </div>
+    `;
+    ex.sets.forEach((s, sIdx) => {
+      html += `
+        <div class="set-row">
+          <div class="set-num">${sIdx + 1}</div>
+          <input type="number" inputmode="decimal" value="${s.weight ?? ''}" placeholder="${s.targetWeight ?? '—'}" class="${s.done ? 'done' : ''}" onchange="updateSet(${exIdx},${sIdx},'weight',this.value)">
+          <input type="number" inputmode="numeric" value="${s.reps ?? ''}" placeholder="${s.targetReps ?? '—'}" class="${s.done ? 'done' : ''}" onchange="updateSet(${exIdx},${sIdx},'reps',this.value)">
+          <button class="check ${s.done ? 'done' : ''}" onclick="toggleSetDone(${exIdx},${sIdx})">${s.done ? '✓' : '○'}</button>
+          <button class="del" onclick="deleteSet(${exIdx},${sIdx})">×</button>
+        </div>
+      `;
+    });
+    html += `<button class="add-set" onclick="addSet(${exIdx})">+ ADD SET</button></div>`;
+  });
+
+  html += `
+    <button class="btn btn-ghost" onclick="openAddExercise()">+ ADD EXERCISE</button>
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn btn-ghost" onclick="cancelWorkout()">CANCEL</button>
+      <button class="btn" onclick="finishWorkout()">FINISH</button>
+    </div>
+  `;
+  return html;
+}
+
+function countSets(w) {
+  return w.exercises.reduce((s, e) => s + e.sets.length, 0);
+}
+
+function getLastBest(exName, currentWorkoutId) {
+  for (const w of state.workouts) {
+    if (w.id === currentWorkoutId) continue;
+    for (const ex of w.exercises) {
+      if (ex.name === exName) {
+        let best = null;
+        for (const s of ex.sets) {
+          if (s.done && s.weight && s.reps) {
+            if (!best || (s.weight * s.reps) > (best.weight * best.reps)) best = s;
+          }
+        }
+        if (best) return best;
+      }
+    }
+  }
+  return null;
+}
+
+/* ============================ WORKOUT LOGIC ============================ */
+async function startWorkout(programId, workoutIdx) {
+  const program = state.programs.find(p => p.id === programId);
+  if (!program) return;
+  const template = program.workouts[workoutIdx];
+  const workout = {
+    id: uid(),
+    programId,
+    name: template.name,
+    date: Date.now(),
+    startedAt: Date.now(),
+    exercises: template.exercises.map(e => ({
+      name: e.name,
+      sets: Array.from({ length: e.sets || 3 }, () => ({
+        weight: null, reps: null, done: false,
+        targetWeight: e.targetWeight || null,
+        targetReps: e.targetReps || null
+      }))
+    }))
+  };
+  state.activeWorkout = workout;
+  await saveSetting('activeWorkout', workout);
+  renderToday();
+}
+
+async function startEmptyWorkout() {
+  state.activeWorkout = {
+    id: uid(),
+    programId: null,
+    name: 'Quick Workout',
+    date: Date.now(),
+    startedAt: Date.now(),
+    exercises: []
+  };
+  await saveSetting('activeWorkout', state.activeWorkout);
+  renderToday();
+}
+
+async function updateSet(exIdx, sIdx, field, value) {
+  const v = value === '' ? null : parseFloat(value);
+  state.activeWorkout.exercises[exIdx].sets[sIdx][field] = v;
+  await saveSetting('activeWorkout', state.activeWorkout);
+}
+
+async function toggleSetDone(exIdx, sIdx) {
+  const set = state.activeWorkout.exercises[exIdx].sets[sIdx];
+  set.done = !set.done;
+  if (set.done) {
+    if (set.weight == null && set.targetWeight) set.weight = set.targetWeight;
+    if (set.reps == null && set.targetReps) set.reps = set.targetReps;
+    startRest(state.settings.defaultRest);
+    if (navigator.vibrate) navigator.vibrate(40);
+  }
+  await saveSetting('activeWorkout', state.activeWorkout);
+  renderToday();
+}
+
+async function addSet(exIdx) {
+  const ex = state.activeWorkout.exercises[exIdx];
+  const last = ex.sets[ex.sets.length - 1];
+  ex.sets.push({
+    weight: null, reps: null, done: false,
+    targetWeight: last?.targetWeight ?? null,
+    targetReps: last?.targetReps ?? null
+  });
+  await saveSetting('activeWorkout', state.activeWorkout);
+  renderToday();
+}
+
+async function deleteSet(exIdx, sIdx) {
+  state.activeWorkout.exercises[exIdx].sets.splice(sIdx, 1);
+  await saveSetting('activeWorkout', state.activeWorkout);
+  renderToday();
+}
+
+async function removeExercise(exIdx) {
+  if (!confirm('Remove this exercise?')) return;
+  state.activeWorkout.exercises.splice(exIdx, 1);
+  await saveSetting('activeWorkout', state.activeWorkout);
+  renderToday();
+}
+
+function editLiveExercise(exIdx) {
+  const ex = state.activeWorkout.exercises[exIdx];
+  // Use first unlogged set's targets as the "current target" display, fall back to any set
+  const sampleSet = ex.sets.find(s => !s.done) || ex.sets[0] || {};
+  const html = `<h2>EDIT EXERCISE</h2>
+    <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px">CHANGES APPLY TO THIS SESSION ONLY</div>
+    <div class="field"><label>NAME</label><input type="text" id="liveExN" class="input" value="${escapeHtml(ex.name)}" autofocus></div>
+    <div class="field"><label>TARGET REPS (applies to unlogged sets)</label><input type="number" id="liveExR" class="input" value="${sampleSet.targetReps ?? ''}" placeholder="10"></div>
+    <div class="field"><label>TARGET WEIGHT (applies to unlogged sets)</label><input type="number" id="liveExW" class="input" value="${sampleSet.targetWeight ?? ''}" placeholder="60"></div>
+    <button class="btn" onclick="saveLiveExerciseEdit(${exIdx})">SAVE</button>
+    <button class="btn btn-ghost" style="margin-top:8px" onclick="closeModal()">CANCEL</button>`;
+  openModal(html);
+}
+
+async function saveLiveExerciseEdit(exIdx) {
+  const name = document.getElementById('liveExN').value.trim();
+  if (!name) return toast('NAME REQUIRED');
+  const reps = parseInt(document.getElementById('liveExR').value) || null;
+  const weight = parseFloat(document.getElementById('liveExW').value) || null;
+  const ex = state.activeWorkout.exercises[exIdx];
+  ex.name = name;
+  // Only update targets on sets that haven't been logged yet
+  ex.sets.forEach(s => {
+    if (!s.done) {
+      if (reps !== null) s.targetReps = reps;
+      if (weight !== null) s.targetWeight = weight;
+    }
+  });
+  await saveSetting('activeWorkout', state.activeWorkout);
+  closeModal();
+  renderToday();
+  toast('UPDATED');
+}
+
+function openAddExercise() {
+  const recent = [...new Set(state.workouts.flatMap(w => w.exercises.map(e => e.name)))].slice(0, 12);
+  let html = `<h2>ADD EXERCISE</h2>
+    <div class="field">
+      <label>EXERCISE NAME</label>
+      <input type="text" id="newExName" class="input" placeholder="e.g. Bench Press" autofocus>
+    </div>
+    <div class="field">
+      <label>SETS</label>
+      <input type="number" id="newExSets" class="input" value="3" min="1">
+    </div>
+    <button class="btn" onclick="confirmAddExercise()">ADD</button>`;
+  if (recent.length) {
+    html += '<div class="section-title" style="margin-top:24px">RECENT</div>';
+    recent.forEach(n => {
+      html += `<div class="ex-list-item" onclick="quickAddExercise('${escapeHtml(n).replace(/'/g, "\\'")}')">${escapeHtml(n)} <span style="color:var(--accent)">+</span></div>`;
+    });
+  }
+  openModal(html);
+}
+
+async function quickAddExercise(name) {
+  state.activeWorkout.exercises.push({
+    name, sets: Array.from({ length: 3 }, () => ({ weight: null, reps: null, done: false, targetWeight: null, targetReps: null }))
+  });
+  await saveSetting('activeWorkout', state.activeWorkout);
+  closeModal();
+  renderToday();
+}
+
+async function confirmAddExercise() {
+  const name = document.getElementById('newExName').value.trim();
+  const sets = parseInt(document.getElementById('newExSets').value) || 3;
+  if (!name) return toast('NAME REQUIRED');
+  state.activeWorkout.exercises.push({
+    name, sets: Array.from({ length: sets }, () => ({ weight: null, reps: null, done: false, targetWeight: null, targetReps: null }))
+  });
+  await saveSetting('activeWorkout', state.activeWorkout);
+  closeModal();
+  renderToday();
+}
+
+async function cancelWorkout() {
+  if (!confirm('Cancel workout? All progress will be lost.')) return;
+  state.activeWorkout = null;
+  await saveSetting('activeWorkout', null);
+  stopRest();
+  renderToday();
+}
+
+async function finishWorkout() {
+  const w = state.activeWorkout;
+  // strip incomplete sets
+  w.exercises = w.exercises.map(ex => ({
+    ...ex,
+    sets: ex.sets.filter(s => s.done && s.weight != null && s.reps != null)
+  })).filter(ex => ex.sets.length > 0);
+
+  if (w.exercises.length === 0) {
+    if (!confirm('No sets logged. Finish anyway?')) return;
+  }
+  w.completedAt = Date.now();
+  w.duration = w.completedAt - w.startedAt;
+
+  await dbPut('workouts', w);
+  state.workouts.unshift(w);
+  state.workouts.sort((a, b) => b.date - a.date);
+  state.activeWorkout = null;
+  await saveSetting('activeWorkout', null);
+  syncToServer();
+  stopRest();
+  toast('WORKOUT SAVED');
+  renderToday();
+}
+
+/* ============================ REST TIMER ============================ */
+let restInterval = null;
+let restEnd = 0;
+
+function startRest(seconds) {
+  restEnd = Date.now() + seconds * 1000;
+  document.getElementById('restTimer').classList.add('active');
+  if (restInterval) clearInterval(restInterval);
+  updateRestDisplay();
+  restInterval = setInterval(updateRestDisplay, 250);
+}
+
+function updateRestDisplay() {
+  const remaining = Math.max(0, Math.ceil((restEnd - Date.now()) / 1000));
+  const m = Math.floor(remaining / 60);
+  const s = remaining % 60;
+  document.getElementById('restTime').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+  if (remaining === 0) {
+    if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    stopRest();
+  }
+}
+
+function adjustRest(delta) {
+  restEnd += delta * 1000;
+  updateRestDisplay();
+}
+
+function stopRest() {
+  if (restInterval) clearInterval(restInterval);
+  restInterval = null;
+  document.getElementById('restTimer').classList.remove('active');
+}
+
+/* ============================ PROGRAMS VIEW ============================ */
+function renderPrograms() {
+  const list = document.getElementById('programsList');
+  if (state.programs.length === 0) {
+    list.innerHTML = `<div class="empty"><div class="big">▤</div><p>NO PROGRAMS YET</p><button class="btn" onclick="openNewProgram()">CREATE FIRST PROGRAM</button></div>`;
+    return;
+  }
+  let html = '';
+  state.programs.forEach(p => {
+    html += `<div class="card">
+      <div class="card-row" onclick="openEditProgram('${p.id}')">
+        <div>
+          <h3>${escapeHtml(p.name)}</h3>
+          <div class="meta">${p.workouts.length} WORKOUTS · ${p.workouts.reduce((s,w)=>s+w.exercises.length,0)} EXERCISES</div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+    </div>`;
+  });
+  list.innerHTML = html;
+}
+
+function openNewProgram() {
+  const html = `<h2>NEW PROGRAM</h2>
+    <div class="field">
+      <label>PROGRAM NAME</label>
+      <input type="text" id="progName" class="input" placeholder="e.g. PPL, Upper/Lower" autofocus>
+    </div>
+    <button class="btn" onclick="createProgram()">CREATE</button>`;
+  openModal(html);
+}
+
+async function createProgram() {
+  const name = document.getElementById('progName').value.trim();
+  if (!name) return toast('NAME REQUIRED');
+  const program = { id: uid(), name, workouts: [] };
+  await dbPut('programs', program);
+  state.programs.push(program);
+  syncToServer();
+  closeModal();
+  openEditProgram(program.id);
+  renderPrograms();
+}
+
+function openEditProgram(id) {
+  const p = state.programs.find(x => x.id === id);
+  if (!p) return;
+  let html = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+      <h2 style="flex:1;margin:0">${escapeHtml(p.name)}</h2>
+      <button class="btn-icon" onclick="renameProgram('${id}')" title="Rename">✎</button>
+    </div>
+    <div class="section-title">WORKOUTS <button onclick="addWorkoutToProgram('${id}')">+ ADD</button></div>`;
+  if (p.workouts.length === 0) {
+    html += '<p style="color:var(--text-dim);font-size:13px;margin-bottom:16px">No workouts yet. Add one to start.</p>';
+  } else {
+    p.workouts.forEach((w, i) => {
+      const isFirst = i === 0;
+      const isLast = i === p.workouts.length - 1;
+      html += `<div class="edit-row">
+        <div class="edit-row-main" onclick="openEditWorkout('${id}',${i})">
+          <div class="edit-row-title">${escapeHtml(w.name)}</div>
+          <div class="edit-row-meta">${w.exercises.length} EXERCISES</div>
+        </div>
+        <div class="edit-actions">
+          <button class="btn-icon" onclick="moveWorkout('${id}',${i},-1)" ${isFirst ? 'disabled' : ''} title="Up">↑</button>
+          <button class="btn-icon" onclick="moveWorkout('${id}',${i},1)" ${isLast ? 'disabled' : ''} title="Down">↓</button>
+          <button class="btn-icon" onclick="renameWorkout('${id}',${i})" title="Rename">✎</button>
+          <button class="btn-icon" onclick="duplicateWorkout('${id}',${i})" title="Duplicate">⧉</button>
+          <button class="btn-icon btn-icon-danger" onclick="removeWorkoutFromProgram('${id}',${i})" title="Delete">×</button>
+        </div>
+      </div>`;
+    });
+  }
+  html += `<div style="margin-top:24px"><button class="btn btn-ghost btn-danger" onclick="deleteProgram('${id}')">DELETE PROGRAM</button></div>`;
+  openModal(html);
+}
+
+async function renameProgram(id) {
+  const p = state.programs.find(x => x.id === id);
+  if (!p) return;
+  const name = prompt('Program name:', p.name);
+  if (!name || !name.trim()) return;
+  p.name = name.trim();
+  await dbPut('programs', p);
+  openEditProgram(id);
+  renderPrograms();
+  renderToday();
+}
+
+async function renameWorkout(programId, workoutIdx) {
+  const p = state.programs.find(x => x.id === programId);
+  if (!p) return;
+  const w = p.workouts[workoutIdx];
+  const name = prompt('Workout name:', w.name);
+  if (!name || !name.trim()) return;
+  w.name = name.trim();
+  await dbPut('programs', p);
+  openEditProgram(programId);
+  renderPrograms();
+  renderToday();
+}
+
+async function moveWorkout(programId, workoutIdx, delta) {
+  const p = state.programs.find(x => x.id === programId);
+  if (!p) return;
+  const target = workoutIdx + delta;
+  if (target < 0 || target >= p.workouts.length) return;
+  const [w] = p.workouts.splice(workoutIdx, 1);
+  p.workouts.splice(target, 0, w);
+  await dbPut('programs', p);
+  openEditProgram(programId);
+  renderToday();
+}
+
+async function duplicateWorkout(programId, workoutIdx) {
+  const p = state.programs.find(x => x.id === programId);
+  if (!p) return;
+  const orig = p.workouts[workoutIdx];
+  const copy = JSON.parse(JSON.stringify(orig));
+  copy.name = orig.name + ' (copy)';
+  p.workouts.splice(workoutIdx + 1, 0, copy);
+  await dbPut('programs', p);
+  openEditProgram(programId);
+  renderToday();
+}
+
+async function addWorkoutToProgram(programId) {
+  const name = prompt('Workout name (e.g. Push Day, Legs A):');
+  if (!name || !name.trim()) return;
+  const p = state.programs.find(x => x.id === programId);
+  p.workouts.push({ name: name.trim(), exercises: [] });
+  await dbPut('programs', p);
+  openEditProgram(programId);
+  renderPrograms();
+  renderToday();
+}
+
+function openEditWorkout(programId, workoutIdx) {
+  const p = state.programs.find(x => x.id === programId);
+  const w = p.workouts[workoutIdx];
+  let html = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+      <h2 style="flex:1;margin:0">${escapeHtml(w.name)}</h2>
+      <button class="btn-icon" onclick="renameWorkout('${programId}',${workoutIdx})" title="Rename">✎</button>
+    </div>
+    <div class="section-title">EXERCISES <button onclick="addExerciseToWorkout('${programId}',${workoutIdx})">+ ADD</button></div>`;
+  if (w.exercises.length === 0) {
+    html += '<p style="color:var(--text-dim);font-size:13px;margin-bottom:16px">No exercises yet.</p>';
+  } else {
+    w.exercises.forEach((e, i) => {
+      const isFirst = i === 0;
+      const isLast = i === w.exercises.length - 1;
+      html += `<div class="edit-row">
+        <div class="edit-row-main">
+          <div class="edit-row-title">${escapeHtml(e.name)} <a class="form-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(e.name + ' proper form')}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Form check">▶</a></div>
+          <div class="edit-row-meta">${e.sets || 3} SETS${e.targetReps ? ' × ' + e.targetReps + ' REPS' : ''}${e.targetWeight ? ' @ ' + e.targetWeight + state.settings.unit : ''}</div>
+        </div>
+        <div class="edit-actions">
+          <button class="btn-icon" onclick="moveExercise('${programId}',${workoutIdx},${i},-1)" ${isFirst ? 'disabled' : ''} title="Up">↑</button>
+          <button class="btn-icon" onclick="moveExercise('${programId}',${workoutIdx},${i},1)" ${isLast ? 'disabled' : ''} title="Down">↓</button>
+          <button class="btn-icon" onclick="editExercise('${programId}',${workoutIdx},${i})" title="Edit">✎</button>
+          <button class="btn-icon" onclick="duplicateExercise('${programId}',${workoutIdx},${i})" title="Duplicate">⧉</button>
+          <button class="btn-icon btn-icon-danger" onclick="removeExFromWorkout('${programId}',${workoutIdx},${i})" title="Delete">×</button>
+        </div>
+      </div>`;
+    });
+  }
+  html += `<div style="margin-top:16px;display:grid;gap:8px">
+    <button class="btn btn-ghost" onclick="openEditProgram('${programId}')">← BACK</button>
+    <button class="btn btn-ghost btn-danger" onclick="removeWorkoutFromProgram('${programId}',${workoutIdx})">DELETE WORKOUT</button>
+  </div>`;
+  openModal(html);
+}
+
+async function moveExercise(programId, workoutIdx, exIdx, delta) {
+  const p = state.programs.find(x => x.id === programId);
+  const list = p.workouts[workoutIdx].exercises;
+  const target = exIdx + delta;
+  if (target < 0 || target >= list.length) return;
+  const [e] = list.splice(exIdx, 1);
+  list.splice(target, 0, e);
+  await dbPut('programs', p);
+  openEditWorkout(programId, workoutIdx);
+}
+
+async function duplicateExercise(programId, workoutIdx, exIdx) {
+  const p = state.programs.find(x => x.id === programId);
+  const list = p.workouts[workoutIdx].exercises;
+  const copy = JSON.parse(JSON.stringify(list[exIdx]));
+  list.splice(exIdx + 1, 0, copy);
+  await dbPut('programs', p);
+  openEditWorkout(programId, workoutIdx);
+}
+
+function editExercise(programId, workoutIdx, exIdx) {
+  const p = state.programs.find(x => x.id === programId);
+  const e = p.workouts[workoutIdx].exercises[exIdx];
+  const html = `<h2>EDIT EXERCISE</h2>
+    <div class="field"><label>NAME</label><input type="text" id="exN" class="input" value="${escapeHtml(e.name)}" autofocus></div>
+    <div class="field"><label>SETS</label><input type="number" id="exS" class="input" value="${e.sets || 3}" min="1"></div>
+    <div class="field"><label>TARGET REPS (optional)</label><input type="number" id="exR" class="input" value="${e.targetReps ?? ''}" placeholder="8"></div>
+    <div class="field"><label>TARGET WEIGHT (optional)</label><input type="number" id="exW" class="input" value="${e.targetWeight ?? ''}" placeholder="60"></div>
+    <button class="btn" onclick="saveEditedExercise('${programId}',${workoutIdx},${exIdx})">SAVE</button>
+    <button class="btn btn-ghost" style="margin-top:8px" onclick="openEditWorkout('${programId}',${workoutIdx})">CANCEL</button>`;
+  openModal(html);
+}
+
+async function saveEditedExercise(programId, workoutIdx, exIdx) {
+  const name = document.getElementById('exN').value.trim();
+  if (!name) return toast('NAME REQUIRED');
+  const p = state.programs.find(x => x.id === programId);
+  const e = p.workouts[workoutIdx].exercises[exIdx];
+  e.name = name;
+  e.sets = parseInt(document.getElementById('exS').value) || 3;
+  e.targetReps = parseInt(document.getElementById('exR').value) || null;
+  e.targetWeight = parseFloat(document.getElementById('exW').value) || null;
+  await dbPut('programs', p);
+  openEditWorkout(programId, workoutIdx);
+}
+
+function addExerciseToWorkout(programId, workoutIdx) {
+  const html = `<h2>ADD EXERCISE</h2>
+    <div class="field"><label>NAME</label><input type="text" id="exN" class="input" placeholder="e.g. Squat" autofocus></div>
+    <div class="field"><label>SETS</label><input type="number" id="exS" class="input" value="3" min="1"></div>
+    <div class="field"><label>TARGET REPS (optional)</label><input type="number" id="exR" class="input" placeholder="8"></div>
+    <div class="field"><label>TARGET WEIGHT (optional)</label><input type="number" id="exW" class="input" placeholder="60"></div>
+    <button class="btn" onclick="confirmAddExToWorkout('${programId}',${workoutIdx})">ADD</button>
+    <button class="btn btn-ghost" style="margin-top:8px" onclick="openEditWorkout('${programId}',${workoutIdx})">CANCEL</button>`;
+  openModal(html);
+}
+
+async function confirmAddExToWorkout(programId, workoutIdx) {
+  const name = document.getElementById('exN').value.trim();
+  if (!name) return toast('NAME REQUIRED');
+  const sets = parseInt(document.getElementById('exS').value) || 3;
+  const reps = parseInt(document.getElementById('exR').value) || null;
+  const weight = parseFloat(document.getElementById('exW').value) || null;
+  const p = state.programs.find(x => x.id === programId);
+  p.workouts[workoutIdx].exercises.push({ name, sets, targetReps: reps, targetWeight: weight });
+  await dbPut('programs', p);
+  openEditWorkout(programId, workoutIdx);
+}
+
+async function removeExFromWorkout(programId, workoutIdx, exIdx) {
+  const p = state.programs.find(x => x.id === programId);
+  p.workouts[workoutIdx].exercises.splice(exIdx, 1);
+  await dbPut('programs', p);
+  openEditWorkout(programId, workoutIdx);
+}
+
+async function removeWorkoutFromProgram(programId, workoutIdx) {
+  if (!confirm('Delete this workout?')) return;
+  const p = state.programs.find(x => x.id === programId);
+  p.workouts.splice(workoutIdx, 1);
+  await dbPut('programs', p);
+  openEditProgram(programId);
+  renderPrograms();
+}
+
+async function deleteProgram(id) {
+  if (!confirm('Delete this program permanently?')) return;
+  await dbDel('programs', id);
+  state.programs = state.programs.filter(p => p.id !== id);
+  closeModal();
+  renderPrograms();
+}
+
+/* ============================ HISTORY ============================ */
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  if (state.workouts.length === 0) {
+    list.innerHTML = `<div class="empty"><div class="big">≡</div><p>NO WORKOUTS LOGGED YET</p></div>`;
+    return;
+  }
+  let html = '';
+  state.workouts.forEach(w => {
+    const totalVol = w.exercises.reduce((s, e) => s + e.sets.reduce((ss, st) => ss + (st.weight || 0) * (st.reps || 0), 0), 0);
+    html += `<div class="card" onclick="viewWorkoutDetail('${w.id}')" style="cursor:pointer">
+      <div class="card-row">
+        <div>
+          <h3>${escapeHtml(w.name)}</h3>
+          <div class="meta">${formatDate(w.date)} · ${w.exercises.length} EX · ${countSets(w)} SETS · ${Math.round(totalVol)}${state.settings.unit.toUpperCase()}</div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+    </div>`;
+  });
+  list.innerHTML = html;
+}
+
+function viewWorkoutDetail(id) {
+  const w = state.workouts.find(x => x.id === id);
+  if (!w) return;
+  let html = `<h2>${escapeHtml(w.name)}</h2>
+    <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px">${formatDate(w.date)} · ${Math.round(w.duration / 60000)} MIN</div>`;
+  w.exercises.forEach(ex => {
+    html += `<div style="margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--line)">
+      <div style="font-family:'Arial Black',sans-serif;text-transform:uppercase;font-size:13px;margin-bottom:8px">${escapeHtml(ex.name)}</div>`;
+    ex.sets.forEach((s, i) => {
+      html += `<div style="font-family:monospace;font-size:13px;color:var(--text-dim)">SET ${i+1}: <span style="color:var(--accent);font-weight:bold">${s.weight}${state.settings.unit} × ${s.reps}</span></div>`;
+    });
+    html += '</div>';
+  });
+  html += `<button class="btn btn-ghost btn-danger" onclick="deleteWorkout('${id}')">DELETE WORKOUT</button>`;
+  openModal(html);
+}
+
+async function deleteWorkout(id) {
+  if (!confirm('Delete this workout?')) return;
+  await dbDel('workouts', id);
+  state.workouts = state.workouts.filter(w => w.id !== id);
+  closeModal();
+  renderHistory();
+}
+
+/* ============================ STATS / CHARTS ============================ */
+function renderStats() {
+  const el = document.getElementById('statsContent');
+  if (state.workouts.length === 0) {
+    el.innerHTML = `<div class="empty"><div class="big">▲</div><p>NO DATA YET<br>LOG WORKOUTS TO SEE PROGRESS</p></div>`;
+    return;
+  }
+
+  // Aggregate stats
+  const totalWorkouts = state.workouts.length;
+  const totalVolume = state.workouts.reduce((s, w) =>
+    s + w.exercises.reduce((ss, e) => ss + e.sets.reduce((sss, st) => sss + (st.weight || 0) * (st.reps || 0), 0), 0), 0);
+  const totalSets = state.workouts.reduce((s, w) => s + countSets(w), 0);
+  const last7 = state.workouts.filter(w => w.date > Date.now() - 7 * 86400000).length;
+
+  let html = `
+    <div class="stat-grid">
+      <div class="stat"><div class="num acc">${totalWorkouts}</div><div class="lbl">TOTAL WORKOUTS</div></div>
+      <div class="stat"><div class="num acc">${last7}</div><div class="lbl">LAST 7 DAYS</div></div>
+      <div class="stat"><div class="num">${Math.round(totalVolume).toLocaleString()}</div><div class="lbl">TOTAL VOLUME (${state.settings.unit.toUpperCase()})</div></div>
+      <div class="stat"><div class="num">${totalSets}</div><div class="lbl">TOTAL SETS</div></div>
+    </div>
+  `;
+
+  // Per-exercise progression charts
+  const exNames = [...new Set(state.workouts.flatMap(w => w.exercises.map(e => e.name)))];
+  html += '<div class="section-title">PROGRESSION</div>';
+
+  exNames.forEach(name => {
+    const points = [];
+    [...state.workouts].reverse().forEach(w => {
+      w.exercises.filter(e => e.name === name).forEach(e => {
+        let best = 0;
+        e.sets.forEach(s => {
+          // Estimated 1RM via Epley
+          const e1rm = (s.weight || 0) * (1 + (s.reps || 0) / 30);
+          if (e1rm > best) best = e1rm;
+        });
+        if (best > 0) points.push({ date: w.date, value: best });
+      });
+    });
+    if (points.length < 2) return;
+
+    const max = Math.max(...points.map(p => p.value));
+    const min = Math.min(...points.map(p => p.value));
+    const range = max - min || 1;
+    const w = 300, h = 120, padX = 8, padY = 12;
+    const stepX = (w - padX * 2) / (points.length - 1);
+    const path = points.map((p, i) => {
+      const x = padX + i * stepX;
+      const y = h - padY - ((p.value - min) / range) * (h - padY * 2);
+      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+    const areaPath = path + ` L${(padX + (points.length - 1) * stepX).toFixed(1)},${h - padY} L${padX},${h - padY} Z`;
+    const isPR = points[points.length - 1].value >= max;
+    const change = points.length > 1 ? points[points.length - 1].value - points[0].value : 0;
+    const changePct = points[0].value > 0 ? (change / points[0].value * 100).toFixed(0) : 0;
+
+    html += `
+      <div class="chart-card">
+        <h4>${escapeHtml(name)}${isPR ? '<span class="pr-badge">PR</span>' : ''}</h4>
+        <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+          <path d="${areaPath}" fill="rgba(168,85,247,0.12)"/>
+          <path d="${path}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+          ${points.map((p, i) => {
+            const x = padX + i * stepX;
+            const y = h - padY - ((p.value - min) / range) * (h - padY * 2);
+            return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.5" fill="var(--accent)"/>`;
+          }).join('')}
+        </svg>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;margin-top:8px">
+          <span>EST 1RM: <b style="color:var(--text)">${max.toFixed(1)}${state.settings.unit}</b></span>
+          <span style="color:${change >= 0 ? 'var(--accent)' : 'var(--danger)'}">${change >= 0 ? '+' : ''}${changePct}%</span>
+        </div>
+      </div>
+    `;
+  });
+
+  el.innerHTML = html;
+}
+
+
+/* ============================ AUTH + API ============================ */
+
+async function apiCall(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+  if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+  try {
+    const res = await fetch(API_URL + path, { ...opts, headers });
+    return res;
+  } catch (err) {
+    console.warn('API call failed (offline?):', path, err.message);
+    return null;
+  }
+}
+
+async function syncToServer() {
+  if (!authToken || !navigator.onLine) return;
+  try {
+    // Sync user programs
+    await apiCall('/api/user/programs/sync', {
+      method: 'POST',
+      body: JSON.stringify({ programs: state.programs })
+    });
+    // Sync workout history
+    await apiCall('/api/user/workouts/sync', {
+      method: 'POST',
+      body: JSON.stringify({ workouts: state.workouts })
+    });
+    // Sync food logs (last 90 days)
+    const cutoff = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const recentLogs = state.foodLogs.filter(l => l.date >= cutoff);
+    await apiCall('/api/user/food-logs/sync', {
+      method: 'POST',
+      body: JSON.stringify({ logs: recentLogs })
+    });
+  } catch (err) {
+    console.warn('Sync failed:', err.message);
+  }
+}
+
+async function loadFromServer() {
+  if (!authToken || !navigator.onLine) return;
+  try {
+    // Load user's programs from server (merge with local)
+    const progRes = await apiCall('/api/user/programs');
+    if (progRes && progRes.ok) {
+      const serverProgs = await progRes.json();
+      for (const p of serverProgs) {
+        const prog = { id: p.id, name: p.name, workouts: p.workouts || [] };
+        await dbPut('programs', prog);
+        const idx = state.programs.findIndex(x => x.id === p.id);
+        if (idx >= 0) state.programs[idx] = prog;
+        else state.programs.push(prog);
+      }
+    }
+    // Load workout history from server
+    const wRes = await apiCall('/api/user/workouts');
+    if (wRes && wRes.ok) {
+      const serverWorkouts = await wRes.json();
+      for (const w of serverWorkouts) {
+        const workout = { id: w.id, programId: w.program_id, name: w.name, date: w.date, exercises: w.exercises || [], duration: w.duration, startedAt: w.started_at, completedAt: w.completed_at };
+        await dbPut('workouts', workout);
+        const idx = state.workouts.findIndex(x => x.id === w.id);
+        if (idx >= 0) state.workouts[idx] = workout;
+        else state.workouts.push(workout);
+      }
+      state.workouts.sort((a, b) => b.date - a.date);
+    }
+    // Load official programs for Library
+    const libRes = await apiCall('/api/programs/official');
+    if (libRes && libRes.ok) {
+      state.officialPrograms = await libRes.json();
+    }
+    // Load food database from server
+    const foodRes = await apiCall('/api/foods');
+    if (foodRes && foodRes.ok) {
+      const serverFoods = await foodRes.json();
+      if (serverFoods.length > 0) {
+        for (const f of serverFoods) await dbPut('foods', f);
+        state.foods = serverFoods;
+      }
+    }
+    // Load food logs from server
+    const logRes = await apiCall('/api/user/food-logs');
+    if (logRes && logRes.ok) {
+      const serverLogs = await logRes.json();
+      for (const l of serverLogs) {
+        const log = { id: l.id, date: l.date, loggedAt: l.logged_at, name: l.name, serving: l.serving, kcal: l.kcal, protein: l.protein, carbs: l.carbs, fat: l.fat };
+        await dbPut('foodLogs', log);
+        const idx = state.foodLogs.findIndex(x => x.id === l.id);
+        if (idx >= 0) state.foodLogs[idx] = log;
+        else state.foodLogs.push(log);
+      }
+    }
+  } catch (err) {
+    console.warn('Load from server failed:', err.message);
+  }
+}
+
+/* ============================ FOOD DATABASE ============================ */
+
+const DEFAULT_FOODS = [
+  { id: 'qf-chicken', name: 'Chicken Breast', serving: '100g', kcal: 165, protein: 31, carbs: 0, fat: 3.6 },
+  { id: 'qf-rice', name: 'White Rice', serving: '100g cooked', kcal: 130, protein: 2.7, carbs: 28, fat: 0.3 },
+  { id: 'qf-egg', name: 'Egg', serving: '1 large', kcal: 72, protein: 6, carbs: 0.4, fat: 5 },
+  { id: 'qf-oats', name: 'Oats', serving: '50g dry', kcal: 190, protein: 6.5, carbs: 32, fat: 3.5 },
+  { id: 'qf-banana', name: 'Banana', serving: '1 medium', kcal: 89, protein: 1.1, carbs: 23, fat: 0.3 },
+  { id: 'qf-salmon', name: 'Salmon', serving: '100g', kcal: 208, protein: 20, carbs: 0, fat: 13 },
+  { id: 'qf-sweet-potato', name: 'Sweet Potato', serving: '100g', kcal: 86, protein: 1.6, carbs: 20, fat: 0.1 },
+  { id: 'qf-pb', name: 'Peanut Butter', serving: '2 tbsp', kcal: 190, protein: 8, carbs: 6, fat: 16 },
+  { id: 'qf-greek-yogurt', name: 'Greek Yogurt', serving: '170g', kcal: 100, protein: 17, carbs: 6, fat: 0.7 },
+  { id: 'qf-whey', name: 'Whey Protein', serving: '1 scoop (30g)', kcal: 120, protein: 25, carbs: 3, fat: 1.5 },
+  { id: 'qf-beef', name: 'Beef Mince', serving: '100g', kcal: 175, protein: 26, carbs: 0, fat: 7 },
+  { id: 'qf-broccoli', name: 'Broccoli', serving: '100g', kcal: 34, protein: 2.8, carbs: 7, fat: 0.4 },
+];
+
+async function seedDefaultFoods() {
+  for (const f of DEFAULT_FOODS) await dbPut('foods', f);
+  state.foods = [...DEFAULT_FOODS];
+}
+
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getTodayFoodLogs() {
+  return state.foodLogs.filter(l => l.date === todayStr());
+}
+
+function getTodayMacros() {
+  return getTodayFoodLogs().reduce((acc, l) => {
+    acc.kcal += l.kcal || 0; acc.protein += l.protein || 0;
+    acc.carbs += l.carbs || 0; acc.fat += l.fat || 0;
+    return acc;
+  }, { kcal: 0, protein: 0, carbs: 0, fat: 0 });
+}
+
+function renderFood() {
+  const el = document.getElementById('foodContent');
+  const macros = getTodayMacros();
+  const logs = getTodayFoodLogs();
+  const s = state.settings;
+
+  let html = `
+    <div style="padding:20px 20px 8px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-dim);margin-bottom:12px">${formatDate(Date.now())} · NUTRITION</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px">
+        <div style="background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:12px 8px;text-align:center">
+          <div style="font-family:'Arial Black',sans-serif;font-size:22px;line-height:1;color:var(--accent)">${Math.round(macros.kcal)}</div>
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);margin-top:3px">KCAL</div>
+          <div style="font-size:9px;color:var(--text-faint);margin-top:1px">/ ${s.calorieGoal}</div>
+        </div>
+        <div style="background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:12px 8px;text-align:center">
+          <div style="font-family:'Arial Black',sans-serif;font-size:18px;line-height:1;color:var(--accent)">${Math.round(macros.protein)}<span style="font-size:10px">g</span></div>
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);margin-top:3px">PROTEIN</div>
+          <div style="font-size:9px;color:var(--text-faint);margin-top:1px">/ ${s.proteinGoal}g</div>
+        </div>
+        <div style="background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:12px 8px;text-align:center">
+          <div style="font-family:'Arial Black',sans-serif;font-size:18px;line-height:1;color:var(--accent)">${Math.round(macros.carbs)}<span style="font-size:10px">g</span></div>
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);margin-top:3px">CARBS</div>
+          <div style="font-size:9px;color:var(--text-faint);margin-top:1px">/ ${s.carbGoal}g</div>
+        </div>
+        <div style="background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:12px 8px;text-align:center">
+          <div style="font-family:'Arial Black',sans-serif;font-size:18px;line-height:1;color:var(--accent)">${Math.round(macros.fat)}<span style="font-size:10px">g</span></div>
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);margin-top:3px">FAT</div>
+          <div style="font-size:9px;color:var(--text-faint);margin-top:1px">/ ${s.fatGoal}g</div>
+        </div>
+      </div>
+
+      <div class="section-title">QUICK ADD <button onclick="openCustomFoodLog()">+ CUSTOM</button></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px">
+        ${state.foods.map(f => `
+          <button onclick="logQuickFood('${f.id}')" style="background:var(--bg-3);border:1px solid var(--line);border-radius:8px;padding:12px;text-align:left;cursor:pointer">
+            <div style="font-family:'Arial Black',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:-0.01em;margin-bottom:4px">${escapeHtml(f.name)}</div>
+            <div style="font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em">${f.kcal} kcal · ${escapeHtml(f.serving || '')}</div>
+            <div style="font-size:9px;color:var(--text-faint);margin-top:2px">P:${f.protein}g C:${f.carbs}g F:${f.fat}g</div>
+          </button>`).join('')}
+      </div>
+  `;
+
+  if (logs.length > 0) {
+    html += `<div class="section-title">TODAY'S LOG <button onclick="clearTodayFoodLog()">CLEAR</button></div>`;
+    logs.forEach(l => {
+      html += `<div style="display:flex;align-items:center;background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px;gap:12px">
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Arial Black',sans-serif;font-size:13px;text-transform:uppercase">${escapeHtml(l.name)}</div>
+          <div style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;margin-top:3px">${Math.round(l.kcal)} KCAL · P:${Math.round(l.protein)}g · C:${Math.round(l.carbs)}g · F:${Math.round(l.fat)}g</div>
+        </div>
+        <button onclick="deleteFoodLog('${l.id}')" style="background:none;border:none;color:var(--text-faint);font-size:20px;cursor:pointer;padding:4px">×</button>
+      </div>`;
+    });
+  } else {
+    html += `<div style="text-align:center;padding:32px 20px;color:var(--text-faint);font-size:12px;text-transform:uppercase;letter-spacing:0.1em">NO FOOD LOGGED TODAY</div>`;
+  }
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+async function logQuickFood(foodId) {
+  const food = state.foods.find(f => f.id === foodId);
+  if (!food) return;
+  const entry = { id: uid(), date: todayStr(), loggedAt: Date.now(), name: food.name, serving: food.serving || '', kcal: food.kcal, protein: food.protein, carbs: food.carbs, fat: food.fat };
+  await dbPut('foodLogs', entry);
+  state.foodLogs.push(entry);
+  syncToServer();
+  renderFood();
+  toast(`+${food.kcal} KCAL`);
+}
+
+async function deleteFoodLog(id) {
+  await dbDel('foodLogs', id);
+  state.foodLogs = state.foodLogs.filter(l => l.id !== id);
+  syncToServer();
+  renderFood();
+  toast('REMOVED');
+}
+
+async function clearTodayFoodLog() {
+  if (!confirm("Clear today's food log?")) return;
+  const today = todayStr();
+  for (const l of state.foodLogs.filter(x => x.date === today)) await dbDel('foodLogs', l.id);
+  state.foodLogs = state.foodLogs.filter(l => l.date !== today);
+  syncToServer();
+  renderFood();
+  toast('CLEARED');
+}
+
+function openCustomFoodLog() {
+  openModal(`<h2>LOG FOOD</h2>
+    <div class="field"><label>NAME</label><input type="text" id="cfName" class="input" placeholder="e.g. Protein Bar" autofocus></div>
+    <div class="field"><label>SERVING (optional)</label><input type="text" id="cfServing" class="input" placeholder="e.g. 1 bar, 60g"></div>
+    <div class="field"><label>CALORIES (kcal)</label><input type="number" id="cfKcal" class="input" placeholder="0" min="0"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+      <div class="field" style="margin:0"><label>PROTEIN (g)</label><input type="number" id="cfProt" class="input" placeholder="0" min="0"></div>
+      <div class="field" style="margin:0"><label>CARBS (g)</label><input type="number" id="cfCarbs" class="input" placeholder="0" min="0"></div>
+      <div class="field" style="margin:0"><label>FAT (g)</label><input type="number" id="cfFat" class="input" placeholder="0" min="0"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="btn btn-ghost" onclick="confirmCustomFood(false)">LOG ONCE</button>
+      <button class="btn" onclick="confirmCustomFood(true)">LOG + SAVE</button>
+    </div>
+    <div style="font-size:10px;color:var(--text-faint);margin-top:10px;text-align:center;text-transform:uppercase;letter-spacing:0.08em">LOG + SAVE adds it to quick-add foods</div>`);
+}
+
+async function confirmCustomFood(save) {
+  const name = document.getElementById('cfName').value.trim();
+  if (!name) return toast('ADD A NAME FIRST');
+  const kcal = parseFloat(document.getElementById('cfKcal').value) || 0;
+  const protein = parseFloat(document.getElementById('cfProt').value) || 0;
+  const carbs = parseFloat(document.getElementById('cfCarbs').value) || 0;
+  const fat = parseFloat(document.getElementById('cfFat').value) || 0;
+  const serving = document.getElementById('cfServing').value.trim();
+  if (save) {
+    const food = { id: uid(), name, serving, kcal, protein, carbs, fat };
+    await dbPut('foods', food);
+    state.foods.push(food);
+  }
+  const entry = { id: uid(), date: todayStr(), loggedAt: Date.now(), name, serving, kcal, protein, carbs, fat };
+  await dbPut('foodLogs', entry);
+  state.foodLogs.push(entry);
+  syncToServer();
+  closeModal();
+  renderFood();
+  toast(`+${Math.round(kcal)} KCAL LOGGED`);
+}
+
+/* ============================ LIBRARY ============================ */
+
+function renderLibrary() {
+  const el = document.getElementById('libraryContent');
+  el.innerHTML = '';
+  const div = document.createElement('div');
+  div.style.padding = '20px';
+
+  if (!authToken) {
+    div.innerHTML = `<div class="section-title">OFFICIAL PROGRAMS</div>
+      <div style="text-align:center;padding:40px 20px;color:var(--text-dim)">
+        <p style="margin-bottom:16px">Sign in to access the program library.</p>
+        <button class="btn" onclick="openAuthModal()">SIGN IN</button>
+      </div>`;
+    el.appendChild(div);
+    return;
+  }
+
+  let html = `<div class="section-title">OFFICIAL PROGRAMS</div>`;
+  if (state.officialPrograms.length === 0) {
+    html += `<div style="text-align:center;padding:40px 20px;color:var(--text-dim)">
+      <p>No official programs yet.</p>
+      <p style="font-size:12px;margin-top:8px;color:var(--text-faint)">Check back soon — new programs are added regularly.</p>
+    </div>`;
+  } else {
+    state.officialPrograms.forEach(p => {
+      const workouts = p.workouts || [];
+      const exCount = workouts.reduce((s, w) => s + (w.exercises || []).length, 0);
+      const alreadyAdded = state.programs.some(x => x.id === p.id || x.name === p.name);
+      html += `<div class="card" style="margin-bottom:12px">
+        <h3 style="font-family:'Arial Black',sans-serif;font-size:15px;text-transform:uppercase;letter-spacing:-0.01em;margin-bottom:6px">${escapeHtml(p.name)}</h3>
+        ${p.description ? `<p style="font-size:13px;color:var(--text-dim);margin-bottom:10px;line-height:1.5">${escapeHtml(p.description)}</p>` : ''}
+        <div style="font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px">${workouts.length} WORKOUTS · ${exCount} EXERCISES</div>
+        <button class="btn ${alreadyAdded ? 'btn-ghost' : ''}" onclick="addOfficialProgram('${p.id}')" ${alreadyAdded ? 'disabled style="opacity:0.5"' : ''}>
+          ${alreadyAdded ? '✓ ADDED TO YOUR PROGRAMS' : 'ADD TO MY PROGRAMS'}
+        </button>
+      </div>`;
+    });
+  }
+  div.innerHTML = html;
+  el.appendChild(div);
+}
+
+async function addOfficialProgram(id) {
+  const p = state.officialPrograms.find(x => x.id === id);
+  if (!p) return;
+  const copy = { id: uid(), name: p.name, workouts: JSON.parse(JSON.stringify(p.workouts || [])) };
+  await dbPut('programs', copy);
+  state.programs.push(copy);
+  syncToServer();
+  renderLibrary();
+  renderToday();
+  toast('PROGRAM ADDED');
+}
+
+/* ============================ SETTINGS ============================ */
+document.getElementById('settingsBtn').addEventListener('click', () => {
+  const accountHtml = currentUser
+    ? `<div style="background:var(--bg-3);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+        <div><div style="font-size:13px;font-weight:bold">${escapeHtml(currentUser.name)}</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">${escapeHtml(currentUser.email)}</div></div>
+        <button class="btn btn-ghost btn-sm" onclick="signOut()">SIGN OUT</button>
+      </div>`
+    : `<button class="btn btn-ghost" style="margin-bottom:12px;width:100%" onclick="closeModal();openAuthModal()">SIGN IN / REGISTER</button>`;
+
+  const html = \`<h2>SETTINGS</h2>
+    \${accountHtml}
+    <div class="field">
+      <label>UNIT</label>
+      <select id="setUnit" class="input">
+        <option value="kg" \${state.settings.unit === 'kg' ? 'selected' : ''}>KG</option>
+        <option value="lb" \${state.settings.unit === 'lb' ? 'selected' : ''}>LB</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>DEFAULT REST (SECONDS)</label>
+      <input type="number" id="setRest" class="input" value="\${state.settings.defaultRest}" min="0">
+    </div>
+    <div class="section-title" style="margin-top:16px">NUTRITION GOALS</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <div class="field" style="margin:0"><label>CALORIES</label><input type="number" id="setCalGoal" class="input" value="\${state.settings.calorieGoal}"></div>
+      <div class="field" style="margin:0"><label>PROTEIN (g)</label><input type="number" id="setProtGoal" class="input" value="\${state.settings.proteinGoal}"></div>
+      <div class="field" style="margin:0"><label>CARBS (g)</label><input type="number" id="setCarbGoal" class="input" value="\${state.settings.carbGoal}"></div>
+      <div class="field" style="margin:0"><label>FAT (g)</label><input type="number" id="setFatGoal" class="input" value="\${state.settings.fatGoal}"></div>
+    </div>
+    <button class="btn" onclick="saveSettings()">SAVE</button>\`;
+    <div class="section-title" style="margin-top:24px">DATA</div>
+    <button class="btn btn-ghost" onclick="exportData()">EXPORT BACKUP (JSON)</button>
+    <button class="btn btn-ghost" style="margin-top:8px" onclick="importData()">IMPORT BACKUP</button>
+    <div class="section-title" style="margin-top:24px">EXERCISE IMAGES</div>
+    <button class="btn btn-ghost" onclick="manualSyncImages()">SYNC IMAGES FROM WGER</button>
+    <div style="font-size:10px;color:var(--text-faint);margin-top:6px;text-transform:uppercase;letter-spacing:0.08em">FREE OPEN-SOURCE EXERCISE LIBRARY · NEEDS INTERNET</div>
+    <button class="btn btn-ghost btn-danger" style="margin-top:24px" onclick="wipeAll()">WIPE ALL DATA</button>
+    <div style="margin-top:20px;font-size:10px;color:var(--text-faint);text-align:center;text-transform:uppercase;letter-spacing:0.1em">DATA STORED ON THIS DEVICE ONLY</div>`;
+  openModal(html);
+});
+
+async function saveSettings() {
+  const unit = document.getElementById('setUnit').value;
+  const rest = parseInt(document.getElementById('setRest').value) || 90;
+  const calGoal = parseInt(document.getElementById('setCalGoal').value) || 2000;
+  const protGoal = parseInt(document.getElementById('setProtGoal').value) || 150;
+  const carbGoal = parseInt(document.getElementById('setCarbGoal').value) || 200;
+  const fatGoal = parseInt(document.getElementById('setFatGoal').value) || 65;
+  state.settings = { ...state.settings, unit, defaultRest: rest, calorieGoal: calGoal, proteinGoal: protGoal, carbGoal, fatGoal };
+  await saveSetting('unit', unit);
+  await saveSetting('defaultRest', rest);
+  await saveSetting('calorieGoal', calGoal);
+  await saveSetting('proteinGoal', protGoal);
+  await saveSetting('carbGoal', carbGoal);
+  await saveSetting('fatGoal', fatGoal);
+  closeModal();
+  toast('SAVED');
+  renderToday();
+}
+
+async function exportData() {
+  const data = {
+    version: 2,
+    exportedAt: Date.now(),
+    programs: await dbAll('programs'),
+    workouts: await dbAll('workouts'),
+    foodLogs: await dbAll('foodLogs'),
+    settings: state.settings
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `lift-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('EXPORTED');
+}
+
+function importData() {
+  // Show options modal: file picker OR paste text
+  const html = `<h2>IMPORT BACKUP</h2>
+    <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Choose a backup file from your phone, or paste the JSON text directly.</p>
+    <button class="btn" onclick="importFromFile()">CHOOSE FILE</button>
+    <div style="text-align:center;margin:16px 0;color:var(--text-faint);font-size:11px;letter-spacing:0.1em">— OR —</div>
+    <div class="field">
+      <label>PASTE BACKUP JSON</label>
+      <textarea id="pasteJson" class="input" rows="6" placeholder="Paste the contents of your .json file here" style="font-family:monospace;font-size:12px;resize:vertical;min-height:120px"></textarea>
+    </div>
+    <button class="btn btn-ghost" onclick="importFromPaste()">IMPORT PASTED TEXT</button>`;
+  openModal(html);
+}
+
+function importFromFile() {
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  // Accept JSON + plain text + wildcard so Android shows the proper file browser
+  // (not the camera/gallery picker) on Samsung Internet, Chrome, and Firefox
+  inp.accept = '.json,application/json,text/plain,text/*,*/*';
+  inp.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      processImport(text);
+    } catch (err) {
+      toast('COULD NOT READ FILE');
+    }
+  };
+  inp.click();
+}
+
+function importFromPaste() {
+  const text = document.getElementById('pasteJson').value.trim();
+  if (!text) return toast('PASTE SOMETHING FIRST');
+  processImport(text);
+}
+
+async function processImport(text) {
+  try {
+    const data = JSON.parse(text);
+    if (!confirm(`Import ${data.programs?.length || 0} programs and ${data.workouts?.length || 0} workouts? This will merge with existing data.`)) return;
+    for (const p of (data.programs || [])) await dbPut('programs', p);
+    for (const w of (data.workouts || [])) await dbPut('workouts', w);
+    for (const l of (data.foodLogs || [])) await dbPut('foodLogs', l);
+    await loadAll();
+    syncToServer();
+    closeModal();
+    toast('IMPORTED');
+    renderToday();
+    // Auto-fetch images for newly imported exercises in the background
+    if (navigator.onLine) {
+      setTimeout(() => syncExerciseImages(false), 600);
+    }
+  } catch (err) {
+    toast('INVALID JSON');
+  }
+}
+
+async function manualSyncImages() {
+  closeModal();
+  await syncExerciseImages(false);
+  renderToday();
+}
+
+async function wipeAll() {
+  if (!confirm('This will delete ALL data permanently. Continue?')) return;
+  if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
+  for (const p of state.programs) await dbDel('programs', p.id);
+  for (const w of state.workouts) await dbDel('workouts', w.id);
+  await saveSetting('activeWorkout', null);
+  state.programs = []; state.workouts = []; state.activeWorkout = null;
+  closeModal();
+  renderToday();
+  toast('WIPED');
+}
+
+/* ============================ UTILS ============================ */
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function formatDate(ts) {
+  const d = new Date(ts);
+  const today = new Date();
+  const yest = new Date(); yest.setDate(yest.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return 'Today';
+  if (d.toDateString() === yest.toDateString()) return 'Yesterday';
+  return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+}
+function formatHeaderDate(ts) {
+  const d = new Date(ts);
+  const dateStr = d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+  return `TODAY · ${dateStr.toUpperCase()}`;
+}
+
+/* ============================ WELCOME / INSTALL ============================ */
+function isStandalone() {
+  // Detect if already running as installed PWA
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone === true;
+}
+
+function detectPlatform() {
+  const ua = navigator.userAgent;
+  const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+  const isAndroid = /Android/.test(ua);
+  const isMobile = isIOS || isAndroid;
+  return { isIOS, isAndroid, isMobile };
+}
+
+function showWelcomeIfNeeded() {
+  // Skip if already installed as PWA
+  if (isStandalone()) return;
+  // Skip if user has dismissed before
+  try {
+    if (localStorage.getItem('liftee-welcome-seen')) return;
+  } catch (e) { /* private mode */ }
+
+  const { isIOS, isAndroid, isMobile } = detectPlatform();
+  const body = document.getElementById('welcomeBody');
+
+  let html = '';
+
+  if (isIOS) {
+    html = `
+      <h3>WELCOME TO LIFTEE</h3>
+      <p>Your personal gym tracker. Build your program, track every set, watch your progress climb. Lives on your phone — no accounts, no cloud, no nonsense.</p>
+      <h3>INSTALL ON IPHONE</h3>
+      <div class="welcome-step"><div class="num">1</div><div class="txt">Make sure you're in <b>Safari</b> (not Chrome) — Apple only lets Safari install web apps.</div></div>
+      <div class="welcome-step"><div class="num">2</div><div class="txt">Tap the <b>Share button</b> <span class="share-icon">↑</span> at the bottom of your screen.</div></div>
+      <div class="welcome-step"><div class="num">3</div><div class="txt">Scroll down and tap <b>"Add to Home Screen"</b>.</div></div>
+      <div class="welcome-step"><div class="num">4</div><div class="txt">Tap <b>Add</b>. LifTee appears on your home screen like any other app.</div></div>
+      <p style="margin-top:14px;font-size:12px"><strong>Tip:</strong> Export a backup every couple of weeks (Settings → Export Backup). iPhone storage can clear if you don't open the app for a while.</p>
+    `;
+  } else if (isAndroid) {
+    html = `
+      <h3>WELCOME TO LIFTEE</h3>
+      <p>Your personal gym tracker. Build your program, track every set, watch your progress climb. Lives on your phone — no accounts, no cloud, no nonsense.</p>
+      <h3>INSTALL ON ANDROID</h3>
+      <div class="welcome-step"><div class="num">1</div><div class="txt">Tap the <b>three dots menu</b> at the top right of your browser.</div></div>
+      <div class="welcome-step"><div class="num">2</div><div class="txt">Tap <b>"Install app"</b> or <b>"Add to Home screen"</b>.</div></div>
+      <div class="welcome-step"><div class="num">3</div><div class="txt">Confirm. LifTee appears on your home screen like any other app.</div></div>
+      <p style="margin-top:14px;font-size:12px"><strong>Tip:</strong> Export a backup occasionally (Settings → Export Backup) so you never lose your progress.</p>
+    `;
+  } else {
+    // Desktop
+    html = `
+      <h3>WELCOME TO LIFTEE</h3>
+      <p>Your personal gym tracker. Build your program, track every set, watch your progress climb. Lives on your device — no accounts, no cloud, no nonsense.</p>
+      <h3>BEST ON YOUR PHONE</h3>
+      <p>LifTee is built for your phone — that's where it's most useful (mid-set, with sweaty hands). Open this same link on your phone to install it properly:</p>
+      <p style="margin-top:8px"><strong>iPhone:</strong> Open in Safari → Share → Add to Home Screen</p>
+      <p><strong>Android:</strong> Open in Chrome → Menu → Install app</p>
+      <p style="margin-top:14px;font-size:12px">You can still use it here on desktop if you like — it works the same.</p>
+    `;
+  }
+
+  body.innerHTML = html;
+  document.getElementById('welcomeOverlay').classList.add('show');
+}
+
+document.getElementById('welcomeDismiss').addEventListener('click', () => {
+  try { localStorage.setItem('liftee-welcome-seen', '1'); } catch (e) {}
+  document.getElementById('welcomeOverlay').classList.remove('show');
+});
+
+/* ============================ AUTH MODAL ============================ */
+
+function openAuthModal() {
+  openModal(`<h2>SIGN IN</h2>
+    <div id="authMode">
+      <div class="field"><label>NAME</label><input type="text" id="authName" class="input" placeholder="Your name" style="display:none" id="authNameField"></div>
+      <div class="field"><label>EMAIL</label><input type="email" id="authEmail" class="input" placeholder="you@email.com" autofocus></div>
+      <div class="field"><label>PASSWORD</label><input type="password" id="authPassword" class="input" placeholder="••••••••"></div>
+      <div id="authError" style="color:var(--danger);font-size:13px;margin-bottom:12px;display:none"></div>
+      <button class="btn" style="width:100%;margin-bottom:12px" onclick="doAuth(false)">SIGN IN</button>
+      <button class="btn btn-ghost" style="width:100%" onclick="switchToRegister()">CREATE ACCOUNT</button>
+    </div>`);
+}
+
+function switchToRegister() {
+  document.querySelector('#authMode').innerHTML = `
+    <div class="field"><label>NAME</label><input type="text" id="authName" class="input" placeholder="Your name" autofocus></div>
+    <div class="field"><label>EMAIL</label><input type="email" id="authEmail" class="input" placeholder="you@email.com"></div>
+    <div class="field"><label>PASSWORD (min 6 chars)</label><input type="password" id="authPassword" class="input" placeholder="••••••••"></div>
+    <div id="authError" style="color:var(--danger);font-size:13px;margin-bottom:12px;display:none"></div>
+    <button class="btn" style="width:100%;margin-bottom:12px" onclick="doAuth(true)">CREATE ACCOUNT</button>
+    <button class="btn btn-ghost" style="width:100%" onclick="openAuthModal()">BACK TO SIGN IN</button>`;
+}
+
+async function doAuth(isRegister) {
+  const errEl = document.getElementById('authError');
+  errEl.style.display = 'none';
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const nameEl = document.getElementById('authName');
+  const name = nameEl ? nameEl.value.trim() : '';
+
+  if (!email || !password) { errEl.textContent = 'Email and password required'; errEl.style.display = 'block'; return; }
+  if (isRegister && !name) { errEl.textContent = 'Name required'; errEl.style.display = 'block'; return; }
+
+  const path = isRegister ? '/api/auth/register' : '/api/auth/login';
+  const body = isRegister ? { name, email, password } : { email, password };
+
+  try {
+    const res = await fetch(API_URL + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) { errEl.textContent = data.error || 'Failed'; errEl.style.display = 'block'; return; }
+    authToken = data.token;
+    currentUser = data.user;
+    localStorage.setItem('liftee_token', authToken);
+    localStorage.setItem('liftee_user', JSON.stringify(currentUser));
+    closeModal();
+    toast(`WELCOME, ${currentUser.name.toUpperCase()}`);
+    // Load their data from server
+    await loadFromServer();
+    renderToday();
+    renderPrograms();
+  } catch (err) {
+    errEl.textContent = 'Could not connect — check your connection';
+    errEl.style.display = 'block';
+  }
+}
+
+function signOut() {
+  authToken = null;
+  currentUser = null;
+  localStorage.removeItem('liftee_token');
+  localStorage.removeItem('liftee_user');
+  closeModal();
+  toast('SIGNED OUT');
+  renderToday();
+}
+
+/* ============================ INIT ============================ */
+(async () => {
+  await openDB();
+  await loadAll();
+  await loadExerciseImages();
+  renderToday();
+  showWelcomeIfNeeded();
+  // Load from server in background if logged in
+  if (authToken && navigator.onLine) {
+    loadFromServer().then(() => {
+      renderToday();
+      renderPrograms();
+    });
+  } else if (!authToken && navigator.onLine) {
+    // Load official programs for library even without login
+    try {
+      const res = await fetch(API_URL + '/api/programs/official');
+      if (res.ok) state.officialPrograms = await res.json();
+      const foodRes = await fetch(API_URL + '/api/foods');
+      if (foodRes.ok) {
+        const serverFoods = await foodRes.json();
+        if (serverFoods.length > 0) {
+          for (const f of serverFoods) await dbPut('foods', f);
+          state.foods = serverFoods;
+        }
+      }
+    } catch {}
+  }
+  // Sync when coming back online
+  window.addEventListener('online', () => {
+    if (authToken) syncToServer();
+  });
+})();
+</script>
+</body>
+</html>
