@@ -1,5 +1,21 @@
 {
   "version": 2,
+  "buildCommand": "echo 'Static PWA - no build needed'",
+  "outputDirectory": ".",
+  "builds": [
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.json",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.png",
+      "use": "@vercel/static"
+    }
+  ],
   "routes": [
     {
       "src": "^/(?!api).*",
