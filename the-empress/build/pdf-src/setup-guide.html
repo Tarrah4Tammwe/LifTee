@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>The Empress — Setup Guide</title>
+<style>
+@page { size: Letter; margin: 0; }
+*{box-sizing:border-box;}
+body{ margin:0; font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color:#2B1E1A; }
+h1,h2,h3{ font-family: Georgia, "Times New Roman", serif; margin:0; }
+.page{ width:8.5in; height:11in; position:relative; overflow:hidden; page-break-after:always; background:#FBF3E6; }
+.page:last-child{ page-break-after:auto; }
+.pad{ padding:0.75in 0.85in; height:100%; box-sizing:border-box; }
+.eyebrow{ font-size:10px; letter-spacing:3px; text-transform:uppercase; color:#B07C2C; font-weight:700; margin-bottom:10px; }
+.crown{ width:34px; height:34px; }
+.footer-row{ position:absolute; bottom:0.5in; left:0.85in; right:0.85in; display:flex; justify-content:space-between; font-size:9px; color:#9B8A7A; letter-spacing:1px; text-transform:uppercase; border-top:1px solid #E7D7BB; padding-top:8px; }
+.pagenum{ font-weight:700; color:#B07C2C; }
+
+/* COVER */
+.cover{ background: linear-gradient(160deg,#241834 0%, #180F22 60%, #2E1F42 100%); color:#F4ECDD; }
+.cover .pad{ display:flex; flex-direction:column; justify-content:center; align-items:flex-start; text-align:left; }
+.cover .brandrow{ display:flex; align-items:center; gap:14px; margin-bottom:60px; }
+.cover .brandrow span{ font-size:13px; letter-spacing:4px; text-transform:uppercase; color:#CBBBD9; }
+.cover h1{ font-size:56px; color:#F4ECDD; line-height:1.08; margin-bottom:14px; }
+.cover .gold{ color:#E3C46B; }
+.cover .sub{ font-size:18px; font-style:italic; color:#CBBBD9; margin-bottom:50px; }
+.cover .rule{ width:90px; height:2px; background:#E3C46B; margin-bottom:26px; }
+.cover .tagline{ font-size:13px; color:#9B8AAE; max-width:420px; line-height:1.6; }
+.cover .guidelabel{ position:absolute; top:0.75in; right:0.85in; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:#E3C46B; border:1px solid #E3C46B; padding:8px 16px; border-radius:99px; }
+
+/* generic content page */
+.content h2{ font-size:30px; color:#2B1E1A; margin-bottom:6px; }
+.content .dek{ font-size:14px; font-style:italic; color:#6B5A4E; margin-bottom:26px; }
+.section{ margin-bottom:22px; }
+.section h3{ font-size:15px; color:#B07C2C; margin-bottom:8px; letter-spacing:0.3px; }
+.section p, .section li{ font-size:12.5px; line-height:1.65; color:#3A2C24; }
+.section ul, .section ol{ margin:0; padding-left:18px; }
+.numbadge{ display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:#B07C2C; color:#fff; font-size:11px; font-weight:700; margin-right:8px; }
+.step{ display:flex; align-items:flex-start; gap:0; margin-bottom:12px; }
+.step .txt{ flex:1; font-size:12.5px; line-height:1.6; }
+.two-col{ display:flex; gap:34px; }
+.two-col > div{ flex:1; }
+.callout{ background:#F4E7D2; border-left:3px solid #B07C2C; padding:14px 18px; font-size:12px; line-height:1.6; border-radius:6px; margin-top:6px;}
+.roomcard{ display:flex; gap:14px; margin-bottom:16px; align-items:flex-start; }
+.swatch{ width:14px; height:14px; border-radius:4px; flex:none; margin-top:3px; }
+.roomcard h4{ font-family: Georgia, serif; font-size:14.5px; margin:0 0 3px; }
+.roomcard p{ font-size:11.5px; color:#4A3B31; margin:0; line-height:1.55; }
+.toolkit-item{ margin-bottom:11px; font-size:12px; line-height:1.55; }
+.toolkit-item b{ color:#B07C2C; }
+.small-cap{ font-size:9.5px; text-transform:uppercase; letter-spacing:2px; color:#9B8A7A; font-weight:700; }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1 — COVER -->
+<div class="page cover">
+  <div class="guidelabel">Setup Guide</div>
+  <div class="pad">
+    <div class="brandrow">
+      <svg class="crown" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#2E1F42" stroke="#E3C46B" stroke-width="1.5"/><path d="M14 42 L18 20 L28 32 L32 14 L36 32 L46 20 L50 42 Z" fill="#E3C46B"/></svg>
+      <span>KiTee Studio</span>
+    </div>
+    <h1>The Empress<br><span class="gold">A Full Life Planner</span></h1>
+    <div class="rule"></div>
+    <div class="sub">Setup Guide</div>
+    <div class="tagline">Everything you need to open your file, understand the two layers of the system, and start running your whole life from one place you own. No accounts. No subscriptions. No servers — just you and your file.</div>
+  </div>
+</div>
+
+<!-- PAGE 2 — WELCOME & PHILOSOPHY -->
+<div class="page">
+  <div class="pad content">
+    <div class="eyebrow">Welcome</div>
+    <h2>How The Empress works</h2>
+    <div class="dek">Two layers, both always present. One is how you run your life. The other is how you support the brain doing the running.</div>
+
+    <div class="section">
+      <h3>LAYER 1 — THE EMPRESS (core)</h3>
+      <p>Seven named rooms hold every part of a full life: your schedule, your money, your body, your goals, your self-care, and your home — plus a landing hub that shows you what matters today. You move through the rooms the way you'd move through a house, not the way you'd click through tabs on a spreadsheet.</p>
+      <p>The Empress plans across every horizon at once: today, this week, this month, and the long arc of your goals — all visible, none of them forced into a single rhythm.</p>
+    </div>
+
+    <div class="section">
+      <h3>LAYER 2 — THE COURT TOOLKIT (optional, on by default)</h3>
+      <p>Seven small, independent features live underneath the core system for the days willpower alone doesn't cut it — task avoidance, energy that isn't the same every day, the need for a bit more external structure, and progress tracking that never punishes you for being human.</p>
+      <p>Every one of the seven toolkit features can be switched off individually in <b>Settings</b>. Nothing here is mandatory. Turn on only what actually helps.</p>
+    </div>
+
+    <div class="section">
+      <h3>THE NO-SHAME PRINCIPLE</h3>
+      <p>There are no red states in The Empress. No punishing streak resets. No numbers designed to make you feel behind. Progress is shown in warm gold and amber tones — because a planner that shames you into using it stops getting used. This is a system built to be picked back up, gently, as many times as you need to.</p>
+    </div>
+  </div>
+  <div class="footer-row"><span>The Empress — Setup Guide</span><span class="pagenum">02</span></div>
+</div>
+
+<!-- PAGE 3 — GETTING STARTED -->
+<div class="page">
+  <div class="pad content">
+    <div class="eyebrow">Getting Started</div>
+    <h2>Opening &amp; saving your file</h2>
+    <div class="dek">Your planner is a single file. Here's how it stores your data, and how to make sure you never lose it.</div>
+
+    <div class="section">
+      <h3>OPENING THE FILE</h3>
+      <div class="step"><span class="numbadge">1</span><div class="txt">Double-click <b>KiTeeStudio-TheEmpress-EDITABLE.html</b> — it opens directly in your browser. No install, no login, no internet connection required.</div></div>
+      <div class="step"><span class="numbadge">2</span><div class="txt">Everything you enter is saved automatically to that browser, on that device, the moment you make a change.</div></div>
+      <div class="step"><span class="numbadge">3</span><div class="txt">Bookmark the file or keep a shortcut on your desktop so you can return to the exact same planner each time.</div></div>
+    </div>
+
+    <div class="section">
+      <h3>LINKING A REAL FILE ON YOUR DISK (RECOMMENDED)</h3>
+      <p>In Settings, under <b>"Your data, your file,"</b> choose <b>Create linked file</b>. Pick a spot on your computer — your Documents folder, or a synced folder like iCloud Drive, Google Drive, or Dropbox. From then on, every change you make saves straight to that real file automatically.</p>
+      <div class="callout">Why this matters: a linked file survives clearing your browser's data, and if you save it inside a synced folder, it keeps itself backed up and available across your devices — with no account or subscription involved.</div>
+      <p style="margin-top:10px">This feature works best in desktop Chrome or Edge. If your browser doesn't support it, you won't see the option — your data will still save safely inside the browser itself, and the Export option below becomes your backup method.</p>
+    </div>
+
+    <div class="section">
+      <h3>MANUAL BACKUPS</h3>
+      <p>Whether or not you link a file, use <b>Export backup (.json)</b> in Settings any time you want an extra copy. <b>Import backup</b> restores from any exported file — useful when moving to a new computer or browser.</p>
+    </div>
+  </div>
+  <div class="footer-row"><span>The Empress — Setup Guide</span><span class="pagenum">03</span></div>
+</div>
+
+<!-- PAGE 4 — ROOM TOUR PART 1 -->
+<div class="page">
+  <div class="pad content">
+    <div class="eyebrow">The Rooms</div>
+    <h2>A tour of your kingdom, part one</h2>
+    <div class="dek">Each room is built for one part of your life, with its own accent colour and its own rhythm.</div>
+
+    <div class="roomcard"><div class="swatch" style="background:#B07C2C"></div><div><h4>The Throne Room — your landing hub</h4><p>The first thing you see: today's schedule, your top 1–3 priorities, a money snapshot, a body/habit pulse, and a gentle self-care nudge if you haven't checked in lately. Not everything — just what matters right now.</p></div></div>
+    <div class="roomcard"><div class="swatch" style="background:#345E8C"></div><div><h4>The Court — schedule</h4><p>Day and week views of your appointments, time-blocked tasks, and recurring commitments, side by side. If Energy-Based Planning is on, tell it your current capacity and it'll surface what actually fits.</p></div></div>
+    <div class="roomcard"><div class="swatch" style="background:#1E7A5B"></div><div><h4>The Vault — money</h4><p>What's coming in, what's going out, and what's due — income, bills, and everyday spending in one place, with a six-month chart. Multi-currency built in (GBP, USD, EUR, AUD, CAD). This is everyday budgeting, not debt payoff planning.</p></div></div>
+    <div class="roomcard"><div class="swatch" style="background:#A63A57"></div><div><h4>The Body — health</h4><p>Movement and wellness habits with gentle, non-punishing streaks; a general wellness log; and a cycle tracker for period start/end dates, flow, symptoms and mood, with a simple next-cycle estimate once you've logged a couple of cycles.</p></div></div>
+  </div>
+  <div class="footer-row"><span>The Empress — Setup Guide</span><span class="pagenum">04</span></div>
+</div>
+
+<!-- PAGE 5 — ROOM TOUR PART 2 + TOOLKIT -->
+<div class="page">
+  <div class="pad content">
+    <div class="eyebrow">The Rooms &amp; The Toolkit</div>
+    <h2>A tour of your kingdom, part two</h2>
+
+    <div class="two-col">
+      <div>
+        <div class="roomcard"><div class="swatch" style="background:#6B4A8C"></div><div><h4>The Ledger — goals</h4><p>Quarterly, yearly, and long-term goals. Turn any goal into five auto-generated milestones (20% each) so progress moves in small, frequent wins instead of one giant leap.</p></div></div>
+        <div class="roomcard"><div class="swatch" style="background:#A96777"></div><div><h4>The Sanctuary — self-care</h4><p>Mood check-ins, rest logging, and rotating reflection prompts. Deliberately the lowest-pressure room — no streaks, no red states, ever.</p></div></div>
+        <div class="roomcard"><div class="swatch" style="background:#1D7373"></div><div><h4>The Estate — home</h4><p>Chores, errands, and a weekly meal rotation. The lowest-stakes room functionally, styled with the same care as everywhere else.</p></div></div>
+      </div>
+      <div>
+        <div class="small-cap" style="margin-bottom:8px">The Court Toolkit — toggle in Settings</div>
+        <div class="toolkit-item"><b>Redirect Method</b> — a smaller adjacent step when a task feels stuck.</div>
+        <div class="toolkit-item"><b>Micro-Milestones</b> — goals auto-broken into 5 wins.</div>
+        <div class="toolkit-item"><b>Visual-First Progress</b> — bars &amp; rings, not just numbers.</div>
+        <div class="toolkit-item"><b>Body Doubling Mode</b> — a visible "working alongside you" session timer.</div>
+        <div class="toolkit-item"><b>Task Fog Log</b> — judgment-free capture for what you can't start yet.</div>
+        <div class="toolkit-item"><b>Energy-Based Planning</b> — tag tasks by energy; see what fits now.</div>
+        <div class="toolkit-item"><b>Check-In Nudges</b> — gentle prompts, never punishing.</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-row"><span>The Empress — Setup Guide</span><span class="pagenum">05</span></div>
+</div>
+
+<!-- PAGE 6 — CARE & FAQ -->
+<div class="page">
+  <div class="pad content">
+    <div class="eyebrow">Care &amp; Troubleshooting</div>
+    <h2>Keeping your planner running smoothly</h2>
+
+    <div class="section">
+      <h3>SWITCHING MODES</h3>
+      <p>Use the toggle in the top right to move between <b>In Gold</b> (light) and <b>In Shadow</b> (dark). Both are fully designed — pick whichever suits your eyes and your hour of the day. Your choice is remembered automatically.</p>
+    </div>
+    <div class="section">
+      <h3>MY DATA LOOKS LIKE IT DISAPPEARED</h3>
+      <p>Check you're opening the file in the same browser and same device you were using before — local data is tied to both. If you linked a real file, use <b>Reconnect</b> in Settings; browsers occasionally ask you to reconfirm permission. If you have any exported backup (.json), use <b>Import backup</b> to restore it.</p>
+    </div>
+    <div class="section">
+      <h3>STARTING COMPLETELY FRESH</h3>
+      <p><b>Reset everything</b> in Settings clears all data on this device permanently and returns you to the example starter content. Export a backup first if there's anything you want to keep.</p>
+    </div>
+    <div class="section">
+      <h3>A NOTE ON PRIVACY</h3>
+      <p>The Empress makes no network requests, has no accounts, and sends nothing anywhere. Every word you write about your money, your body, or your mood stays on your device, in your file, under your control — permanently.</p>
+    </div>
+    <div class="callout" style="margin-top:20px">Welcome to your kingdom. Take what serves you, ignore what doesn't, and come back to it as many times as you need — The Empress will be exactly where you left it.</div>
+  </div>
+  <div class="footer-row"><span>The Empress — Setup Guide · KiTee Studio</span><span class="pagenum">06</span></div>
+</div>
+
+</body>
+</html>

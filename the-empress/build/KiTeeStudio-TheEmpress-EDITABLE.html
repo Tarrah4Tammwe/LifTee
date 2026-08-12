@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="gold">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>The Empress — A Full Life Planner</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23241834'/%3E%3Cpath d='M12 44 L16 22 L26 34 L32 16 L38 34 L48 22 L52 44 Z' fill='%23E3C46B'/%3E%3C/svg%3E">
+<style>
+/* ============ FOUNDATION ============ */
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+:root{
+  --radius-sm:8px; --radius:14px; --radius-lg:22px;
+  --font-serif: "Iowan Old Style","Palatino Linotype",Georgia,"Times New Roman",serif;
+  --font-sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --shadow-soft: 0 10px 30px rgba(0,0,0,.18);
+  --shadow-lift: 0 18px 44px rgba(0,0,0,.28);
+}
+html[data-theme="gold"]{
+  --bg:#FBF3E6; --bg-image: radial-gradient(circle at 15% 0%, rgba(176,124,44,.10), transparent 45%), radial-gradient(circle at 100% 20%, rgba(107,45,86,.08), transparent 40%);
+  --surface:#FFFBF3; --surface-2:#F4E7D2; --surface-3:#ECDABC;
+  --text:#2B1E1A; --text-dim:#6B5A4E; --text-faint:#8B7B6C;
+  --border: rgba(43,30,20,.14); --border-soft: rgba(43,30,20,.08);
+  --gold:#B07C2C; --gold-bright:#8F631E; --gold-soft: rgba(176,124,44,.14); --gold-glow: rgba(176,124,44,.28);
+  --sapphire:#345E8C; --sapphire-soft:rgba(52,94,140,.14);
+  --emerald:#1E7A5B; --emerald-soft:rgba(30,122,91,.14);
+  --ruby:#A63A57; --ruby-soft:rgba(166,58,87,.14);
+  --amethyst:#6B4A8C; --amethyst-soft:rgba(107,74,140,.14);
+  --rose:#A96777; --rose-soft:rgba(169,103,119,.14);
+  --teal:#1D7373; --teal-soft:rgba(29,115,115,.14);
+  --overlay: rgba(30,20,12,.45);
+  color-scheme: light;
+}
+html[data-theme="shadow"]{
+  --bg:#180F22; --bg-image: radial-gradient(circle at 15% 0%, rgba(227,196,107,.08), transparent 45%), radial-gradient(circle at 100% 10%, rgba(166,129,201,.10), transparent 40%);
+  --surface:#221733; --surface-2:#2B1E40; --surface-3:#372A4E;
+  --text:#F4ECDD; --text-dim:#CBBBD9; --text-faint:#9B8AAE;
+  --border: rgba(255,255,255,.10); --border-soft: rgba(255,255,255,.06);
+  --gold:#E3C46B; --gold-bright:#F1D989; --gold-soft: rgba(227,196,107,.16); --gold-glow: rgba(227,196,107,.35);
+  --sapphire:#6E9AC9; --sapphire-soft:rgba(110,154,201,.18);
+  --emerald:#4FB894; --emerald-soft:rgba(79,184,148,.18);
+  --ruby:#D97390; --ruby-soft:rgba(217,115,144,.18);
+  --amethyst:#A681C9; --amethyst-soft:rgba(166,129,201,.18);
+  --rose:#D9A0AC; --rose-soft:rgba(217,160,172,.18);
+  --teal:#58BFBF; --teal-soft:rgba(88,191,191,.18);
+  --overlay: rgba(10,6,16,.62);
+  color-scheme: dark;
+}
+body{
+  background:var(--bg); background-image:var(--bg-image); background-attachment:fixed;
+  color:var(--text); font-family:var(--font-sans); line-height:1.5; min-height:100vh;
+  transition: background-color .3s ease, color .3s ease;
+}
+h1,h2,h3,h4{font-family:var(--font-serif); font-weight:600; margin:0 0 .3em; letter-spacing:.01em;}
+p{margin:0 0 .7em;}
+a{color:inherit;}
+button{font-family:var(--font-sans);}
+::selection{background:var(--gold-soft);}
+.hidden{display:none !important;}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+
+/* ============ LAYOUT SHELL ============ */
+#app{min-height:100vh; display:flex; flex-direction:column;}
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:18px 26px; border-bottom:1px solid var(--border-soft);
+  position:sticky; top:0; z-index:40; background:var(--bg); background-image:var(--bg-image);
+}
+.brand{display:flex; align-items:center; gap:12px;}
+.brand-mark{width:34px; height:34px; flex:none;}
+.brand-text{font-family:var(--font-serif); font-size:1.28rem; letter-spacing:.02em;}
+.brand-text small{display:block; font-family:var(--font-sans); font-size:.6rem; letter-spacing:.16em; text-transform:uppercase; color:var(--text-faint); font-weight:600; margin-top:1px;}
+.top-actions{display:flex; align-items:center; gap:10px;}
+
+.roomnav{
+  display:flex; gap:4px; padding:0 20px; overflow-x:auto; scrollbar-width:none;
+  border-bottom:1px solid var(--border-soft); background:var(--bg);
+  position:sticky; top:71px; z-index:35;
+}
+.roomnav::-webkit-scrollbar{display:none;}
+.nav-btn{
+  flex:none; background:none; border:none; color:var(--text-dim); cursor:pointer;
+  padding:13px 16px 11px; font-size:.86rem; letter-spacing:.04em; text-transform:uppercase;
+  font-weight:600; border-bottom:2px solid transparent; transition:.15s;
+  font-family:var(--font-sans);
+}
+.nav-btn:hover{color:var(--text);}
+.nav-btn.active{color:var(--gold); border-bottom-color:var(--gold);}
+.nav-btn .room-sub{display:block; font-size:.62rem; text-transform:none; letter-spacing:0; font-weight:400; color:var(--text-faint); margin-top:1px;}
+
+main.rooms{flex:1; padding:28px 26px 120px; max-width:1180px; margin:0 auto; width:100%;}
+.room-head{margin-bottom:22px;}
+.room-eyebrow{font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--accent, var(--gold)); font-weight:700; margin-bottom:6px;}
+.room-title{font-size:2rem; margin-bottom:4px;}
+.room-tagline{color:var(--text-dim); font-size:.95rem; font-style:italic;}
+
+.grid{display:grid; gap:18px;}
+.grid-2{grid-template-columns:repeat(2,minmax(260px,1fr));}
+.grid-3{grid-template-columns:repeat(3,minmax(220px,1fr));}
+@media (max-width:820px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+
+.card{
+  background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius);
+  padding:20px 22px; box-shadow:var(--shadow-soft);
+}
+.card-tight{padding:16px 18px;}
+.card h3{font-size:1.05rem; display:flex; align-items:center; gap:8px; justify-content:space-between;}
+.card-label{font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:var(--text-faint); font-weight:700; margin-bottom:6px;}
+
+.section-block{margin-bottom:28px;}
+.section-block-head{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+.section-block-head h2{font-size:1.2rem; color:var(--accent, var(--text));}
+
+/* buttons */
+.btn{
+  border-radius:999px; border:1px solid var(--border); background:var(--surface-2); color:var(--text);
+  padding:9px 18px; font-size:.85rem; font-weight:600; cursor:pointer; transition:.15s; letter-spacing:.01em;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.btn:hover{border-color:var(--gold); transform:translateY(-1px);}
+.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-bright)); color:#221604; border:none; box-shadow:0 6px 18px var(--gold-glow);}
+.btn-primary:hover{filter:brightness(1.05); transform:translateY(-1px);}
+.btn-ghost{background:transparent; border:1px solid var(--border);}
+.btn-sm{padding:5px 12px; font-size:.74rem;}
+.btn-danger{background:transparent; border:1px solid var(--ruby); color:var(--ruby);}
+.btn-icon{border-radius:50%; width:34px; height:34px; padding:0; display:inline-flex; align-items:center; justify-content:center;}
+.btn[disabled]{opacity:.45; cursor:not-allowed;}
+
+/* forms */
+.form-panel{margin-top:14px; padding:16px; border:1px dashed var(--border); border-radius:var(--radius); background:var(--surface-2);}
+.field-row{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:10px;}
+.field{flex:1; min-width:140px; display:flex; flex-direction:column; gap:5px;}
+.field label{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-faint); font-weight:700;}
+.field input, .field select, .field textarea{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text);
+  padding:9px 11px; font-size:.9rem; font-family:var(--font-sans);
+}
+.field textarea{resize:vertical; min-height:60px;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--gold-soft); border-color:var(--gold);}
+.checkline{display:flex; align-items:center; gap:8px; font-size:.85rem;}
+.checkline input{width:16px; height:16px;}
+.form-actions{display:flex; gap:8px; margin-top:6px;}
+
+/* lists */
+.list{display:flex; flex-direction:column; gap:10px;}
+.item{
+  display:flex; align-items:flex-start; gap:12px; padding:12px 14px; border-radius:var(--radius-sm);
+  background:var(--surface-2); border:1px solid var(--border-soft);
+}
+.item.done{opacity:.55;}
+.item-check{margin-top:2px; flex:none;}
+.item-check input{width:18px; height:18px; accent-color:var(--gold);}
+.item-body{flex:1; min-width:0;}
+.item-title{font-weight:600; font-size:.94rem;}
+.item-title.strike{text-decoration:line-through;}
+.item-meta{font-size:.76rem; color:var(--text-faint); margin-top:2px; display:flex; gap:8px; flex-wrap:wrap;}
+.item-actions{display:flex; gap:6px; flex:none;}
+
+.pill{display:inline-flex; align-items:center; gap:4px; font-size:.68rem; font-weight:700; letter-spacing:.03em; padding:3px 9px; border-radius:999px; text-transform:uppercase;}
+.pill-gold{background:var(--gold-soft); color:var(--gold);}
+.pill-sapphire{background:var(--sapphire-soft); color:var(--sapphire);}
+.pill-emerald{background:var(--emerald-soft); color:var(--emerald);}
+.pill-ruby{background:var(--ruby-soft); color:var(--ruby);}
+.pill-amethyst{background:var(--amethyst-soft); color:var(--amethyst);}
+.pill-rose{background:var(--rose-soft); color:var(--rose);}
+.pill-teal{background:var(--teal-soft); color:var(--teal);}
+
+.empty-state{padding:26px 18px; text-align:center; color:var(--text-faint); font-style:italic; font-size:.9rem; border:1px dashed var(--border); border-radius:var(--radius); background:var(--surface-2);}
+
+/* progress bars & rings */
+.progress-track{height:9px; border-radius:999px; background:var(--surface-3); overflow:hidden;}
+.progress-fill{height:100%; border-radius:999px; background:linear-gradient(90deg,var(--gold),var(--gold-bright)); transition:width .4s ease;}
+.ring text{font-family:var(--font-sans); font-weight:700; fill:var(--text); font-size:15px;}
+.ring circle{fill:none; stroke-width:7; transform:rotate(-90deg); transform-origin:center;}
+.ring .ring-bg{stroke:var(--surface-3); transform:none;}
+.week-dots{display:flex; gap:5px;}
+.week-dot{width:15px; height:15px; border-radius:50%; background:var(--surface-3); border:1px solid var(--border-soft);}
+.week-dot.filled{background:var(--gold); border-color:var(--gold);}
+
+/* rooms accent per section */
+.room[data-room="throne"]{--accent:var(--gold);}
+.room[data-room="court"]{--accent:var(--sapphire);}
+.room[data-room="vault"]{--accent:var(--emerald);}
+.room[data-room="body"]{--accent:var(--ruby);}
+.room[data-room="ledger"]{--accent:var(--amethyst);}
+.room[data-room="sanctuary"]{--accent:var(--rose);}
+.room[data-room="estate"]{--accent:var(--teal);}
+.room[data-room="court"] .btn-primary,
+.room[data-room="vault"] .btn-primary,
+.room[data-room="body"] .btn-primary,
+.room[data-room="ledger"] .btn-primary,
+.room[data-room="sanctuary"] .btn-primary,
+.room[data-room="estate"] .btn-primary{background:linear-gradient(135deg,var(--accent),var(--gold)); color:#fff; box-shadow:0 6px 18px rgba(0,0,0,.2);}
+html[data-theme="gold"] .room[data-room="court"] .btn-primary,
+html[data-theme="gold"] .room[data-room="vault"] .btn-primary,
+html[data-theme="gold"] .room[data-room="body"] .btn-primary,
+html[data-theme="gold"] .room[data-room="ledger"] .btn-primary,
+html[data-theme="gold"] .room[data-room="sanctuary"] .btn-primary,
+html[data-theme="gold"] .room[data-room="estate"] .btn-primary{color:#fff;}
+
+/* nudges & banners */
+.banner{display:flex; align-items:flex-start; gap:12px; padding:14px 16px; border-radius:var(--radius); margin-bottom:16px; border:1px solid var(--border-soft);}
+.banner-nudge{background:var(--gold-soft); border-color:var(--gold-glow);}
+.banner-info{background:var(--surface-2);}
+.banner-icon{flex:none; font-size:1.1rem;}
+.banner-text{flex:1; font-size:.86rem;}
+.banner-close{flex:none; background:none; border:none; cursor:pointer; color:var(--text-faint); font-size:1rem;}
+
+/* toggle switch */
+.switch{position:relative; display:inline-block; width:42px; height:24px; flex:none;}
+.switch input{opacity:0; width:0; height:0;}
+.switch .slider{position:absolute; inset:0; background:var(--surface-3); border-radius:999px; cursor:pointer; transition:.2s; border:1px solid var(--border);}
+.switch .slider:before{content:""; position:absolute; width:18px; height:18px; left:2px; top:2px; background:#fff; border-radius:50%; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.3);}
+.switch input:checked + .slider{background:var(--gold);}
+.switch input:checked + .slider:before{transform:translateX(18px);}
+
+/* modal */
+.modal-overlay{position:fixed; inset:0; background:var(--overlay); display:flex; align-items:center; justify-content:center; z-index:100; padding:20px;}
+.modal-box{background:var(--surface); border-radius:var(--radius-lg); padding:26px 26px 22px; max-width:480px; width:100%; max-height:88vh; overflow-y:auto; box-shadow:var(--shadow-lift); border:1px solid var(--border-soft);}
+.modal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+.modal-close{background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--text-faint); line-height:1;}
+
+/* toast */
+#toast-container{position:fixed; bottom:26px; left:50%; transform:translateX(-50%); z-index:200; display:flex; flex-direction:column; gap:8px; align-items:center;}
+.toast{background:var(--surface); border:1px solid var(--gold); color:var(--text); padding:10px 20px; border-radius:999px; box-shadow:var(--shadow-soft); font-size:.85rem; animation:toastin .25s ease;}
+@keyframes toastin{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+
+/* floating widgets */
+.fab{position:fixed; right:22px; bottom:22px; z-index:60; border-radius:999px; padding:13px 20px; background:var(--surface); border:1px solid var(--gold); color:var(--gold); font-weight:700; font-size:.82rem; cursor:pointer; box-shadow:var(--shadow-soft); display:flex; align-items:center; gap:8px;}
+.fab .fog-badge{background:var(--gold); color:#241604; border-radius:999px; padding:1px 7px; font-size:.7rem;}
+.doubling-bar{position:fixed; left:0; right:0; bottom:0; z-index:65; background:var(--surface); border-top:2px solid var(--gold); padding:12px 22px; display:flex; align-items:center; justify-content:space-between; gap:16px; box-shadow:0 -8px 24px rgba(0,0,0,.2); flex-wrap:wrap;}
+.doubling-info{display:flex; align-items:center; gap:12px;}
+.doubling-time{font-family:var(--font-serif); font-size:1.4rem; color:var(--gold); min-width:80px;}
+
+/* settings */
+.toolkit-row{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding:14px 0; border-bottom:1px solid var(--border-soft);}
+.toolkit-row:last-child{border-bottom:none;}
+.toolkit-row h4{margin-bottom:2px; font-size:.95rem;}
+.toolkit-row p{font-size:.8rem; color:var(--text-dim); margin:0;}
+.file-status{display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--surface-2); border-radius:var(--radius-sm); font-size:.85rem; margin:10px 0;}
+.dot{width:9px; height:9px; border-radius:50%; flex:none;}
+.dot-on{background:var(--emerald);} .dot-off{background:var(--text-faint);} .dot-warn{background:var(--gold);}
+
+.chart{width:100%; height:auto;}
+.bar-income{fill:var(--gold);} .bar-expense{fill:var(--amethyst);}
+.bar-label{fill:var(--text-faint); font-size:9px; font-family:var(--font-sans);}
+.legend{display:flex; gap:16px; font-size:.76rem; color:var(--text-dim); margin-top:6px;}
+.legend span{display:inline-flex; align-items:center; gap:5px;}
+.legend i{width:10px; height:10px; border-radius:3px; display:inline-block;}
+
+.meal-grid{display:grid; grid-template-columns:80px 1fr; gap:8px 10px; align-items:center;}
+.meal-grid .day-label{font-weight:700; font-size:.8rem; color:var(--accent);}
+.meal-input{background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); padding:9px 11px; font-size:.88rem; font-family:var(--font-sans); width:100%;}
+.meal-input:focus{outline:2px solid var(--gold-soft); border-color:var(--gold);}
+
+.redirect-link{background:none; border:none; color:var(--gold); font-size:.75rem; cursor:pointer; text-decoration:underline; padding:0;}
+.suggestion-box{background:var(--gold-soft); border:1px solid var(--gold-glow); border-radius:var(--radius); padding:16px; margin-top:12px; font-size:.92rem;}
+
+footer.app-footer{text-align:center; padding:26px; font-size:.75rem; color:var(--text-faint);}
+
+@media (max-width:600px){
+  .topbar{padding:14px 16px;} main.rooms{padding:20px 14px 120px;}
+  .roomnav{top:64px;}
+  .brand-text{font-size:1.05rem;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="var(--surface-2)" stroke="var(--gold)" stroke-width="1.5"/><path d="M14 42 L18 20 L28 32 L32 14 L36 32 L46 20 L50 42 Z" fill="var(--gold)"/></svg>
+      <div class="brand-text">The Empress<small>A Full Life Planner</small></div>
+    </div>
+    <div class="top-actions">
+      <button class="btn btn-ghost btn-sm" id="theme-toggle" data-action="toggle-theme" title="Switch mode"></button>
+      <button class="btn btn-ghost btn-icon" id="settings-btn" data-action="open-settings" title="Settings">&#9881;</button>
+    </div>
+  </header>
+  <nav class="roomnav" id="roomnav"></nav>
+  <main class="rooms" id="rooms"></main>
+  <footer class="app-footer">The Empress — your data lives only on this device, in this browser. KiTee Studio.</footer>
+</div>
+
+<div class="modal-overlay hidden" id="modal-overlay">
+  <div class="modal-box" id="modal-box"></div>
+</div>
+<div id="toast-container"></div>
+<button class="fab hidden" id="fog-fab" data-action="open-fog-capture">🌫 Fog Log <span class="fog-badge hidden" id="fog-badge">0</span></button>
+<div class="doubling-bar hidden" id="doubling-bar"></div>
+
+<script>
+"use strict";
+/* =========================================================
+   THE EMPRESS — A Full Life Planner
+   Vanilla JS, single-file, localStorage only, fully offline.
+   ========================================================= */
+
+/* ---------- constants ---------- */
+var CURRENCIES = { GBP:"£", USD:"$", EUR:"€", AUD:"A$", CAD:"C$" };
+var ROOMS = [
+  { id:"throne", label:"Throne Room", sub:"Today" },
+  { id:"court", label:"The Court", sub:"Schedule" },
+  { id:"vault", label:"The Vault", sub:"Money" },
+  { id:"body", label:"The Body", sub:"Health" },
+  { id:"ledger", label:"The Ledger", sub:"Goals" },
+  { id:"sanctuary", label:"The Sanctuary", sub:"Self-care" },
+  { id:"estate", label:"The Estate", sub:"Home" }
+];
+var TAGLINES = {
+  throne:"Everything that matters today, at a glance.",
+  court:"Where your time takes its shape.",
+  vault:"What's coming in, what's going out, what's due.",
+  body:"Where you tend the body that carries everything else.",
+  ledger:"Where your ambitions become itineraries.",
+  sanctuary:"Where you're allowed to just be.",
+  estate:"Where your kingdom stays kept."
+};
+var ACCENT_PILL = { throne:"gold", court:"sapphire", vault:"emerald", body:"ruby", ledger:"amethyst", sanctuary:"rose", estate:"teal" };
+var WEEKDAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+var REDIRECT_POOL = [
+  "Just open the file, app, or notebook for {task} — nothing else required yet.",
+  "Set a timer for 5 minutes and do anything at all connected to {task}.",
+  "Write down the very first physical step of {task}, even if you don't take it yet.",
+  "Tidy the space around where {task} would happen, just for 2 minutes.",
+  "Send yourself a short note about {task} to come back to later.",
+  "Gather one thing you'd need to start {task} — just gather it, nothing more.",
+  "Say out loud (or type) one sentence about why {task} matters to you.",
+  "Do a 60-second version of {task} — the smallest possible slice.",
+  "Move your body for 2 minutes, then take one more look at {task}.",
+  "Ask: what would make {task} 10% easier to start? Do that one thing."
+];
+var REFLECTION_PROMPTS = [
+  "What's one thing that went well today, no matter how small?",
+  "What is your body asking for right now?",
+  "What are you avoiding, and what's underneath the avoidance?",
+  "Where did you show up for yourself this week?",
+  "What would 'enough' look like today?",
+  "What's one thing you can let go of before tomorrow?",
+  "Who or what gave you energy this week?",
+  "What does rest actually look like for you today — not what it should look like?",
+  "What's a small win you haven't given yourself credit for?",
+  "If today had a title, what would it be?",
+  "What boundary do you need to protect this week?",
+  "What are you proud of that no one else saw?"
+];
+
+/* ---------- state ---------- */
+var state = null;
+var fileHandle = null;
+var fileNeedsReconnect = false;
+var activeRoom = "throne";
+var currentEnergyFilter = "any";
+var doublingTicker = null;
+var redirectRerollTarget = null;
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function daysBetween(a,b){ return Math.round((new Date(b) - new Date(a)) / 86400000); }
+function addDays(iso, n){ var d = new Date(iso+"T00:00:00"); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+function fmtDate(iso, opts){
+  if(!iso) return "—";
+  var d = new Date(iso+"T00:00:00");
+  return d.toLocaleDateString(undefined, opts || { weekday:"short", month:"short", day:"numeric" });
+}
+function fmtMoney(n, currency){
+  var sym = CURRENCIES[currency || (state && state.settings.currency) || "GBP"] || "";
+  var num = Number(n||0);
+  return sym + num.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function escapeHtml(s){
+  return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]; });
+}
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+
+/* ---------- default / seed state ---------- */
+function defaultState(){
+  return {
+    version: 1,
+    settings: {
+      theme: "gold",
+      currency: "GBP",
+      toolkit: { redirect:true, milestones:true, visual:true, doubling:true, fog:true, energy:true, nudges:true },
+      linkedFileName: null
+    },
+    throne: { focus: [] },
+    court: { events: [] },
+    vault: { incomes: [], bills: [], spending: [] },
+    bodyRoom: {
+      habits: [],
+      logs: [],
+      cycle: { entries: [], cycleLenAvg: 28, periodLenAvg: 5 }
+    },
+    ledger: { goals: [] },
+    sanctuary: { moods: [], rest: [], reflections: [] },
+    estate: { chores: [], meals: {}, errands: [] },
+    toolkitData: { fog: [], doubling: { active:false, startedAt:null, seconds:0, mode:"stopwatch", label:"" }, nudgesDismissed: {} }
+  };
+}
+
+function seedState(){
+  var s = defaultState();
+  var t = todayISO();
+  s.throne.focus = [
+    { id:uid(), text:"Pick one thing from The Ledger to move forward today", done:false },
+    { id:uid(), text:"Take five minutes in The Vault to see where you stand", done:false }
+  ];
+  s.court.events = [
+    { id:uid(), title:"Welcome walkthrough — explore each room", date:t, start:"09:00", end:"09:30", energy:"low", recurring:"none", notes:"Start here. Delete me any time.", done:false },
+    { id:uid(), title:"Weekly planning session", date:t, start:"17:00", end:"17:30", energy:"medium", recurring:"weekly", notes:"", done:false }
+  ];
+  s.vault.incomes = [ { id:uid(), name:"Example: Salary", amount:3200, date:t, recurring:"monthly" } ];
+  s.vault.bills = [
+    { id:uid(), name:"Example: Rent", amount:1400, dueDate:addDays(t,6), recurring:"monthly", paid:false },
+    { id:uid(), name:"Example: Phone plan", amount:35, dueDate:addDays(t,14), recurring:"monthly", paid:false }
+  ];
+  s.vault.spending = [ { id:uid(), name:"Example: Groceries", amount:86.40, date:addDays(t,-2), category:"Food" } ];
+  s.bodyRoom.habits = [ { id:uid(), name:"Move my body", history:[t], bestStreak:1 } ];
+  s.bodyRoom.logs = [];
+  s.ledger.goals = [ makeGoal("Launch my next chapter", "quarter", addDays(t,84), true) ];
+  s.sanctuary.reflections = [];
+  s.estate.chores = [
+    { id:uid(), name:"Example: Kitchen reset", freq:"weekly", dayOfWeek:1, lastDone:null },
+    { id:uid(), name:"Example: Laundry", freq:"weekly", dayOfWeek:4, lastDone:null }
+  ];
+  s.estate.meals = {};
+  s.estate.errands = [ { id:uid(), name:"Example: Post office run", due:addDays(t,3), done:false } ];
+  return s;
+}
+function makeGoal(title, horizon, targetDate, withMilestones){
+  var g = { id:uid(), title:title, horizon:horizon, targetDate:targetDate||"", milestones:[], manualPct:0, note:"" };
+  if(withMilestones){ g.milestones = defaultMilestones(); }
+  return g;
+}
+function defaultMilestones(){
+  var out = [];
+  for(var i=1;i<=5;i++){ out.push({ id:uid(), title:"Milestone "+i+" ("+(i*20)+"%)", done:false }); }
+  return out;
+}
+
+/* ---------- persistence ---------- */
+var LS_KEY = "empressData_v1";
+function saveLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){ console.warn("localStorage save failed", e); } }
+function loadLocal(){
+  try{
+    var raw = localStorage.getItem(LS_KEY);
+    if(!raw) return null;
+    var parsed = JSON.parse(raw);
+    return normalizeState(parsed);
+  }catch(e){ console.warn("localStorage load failed", e); return null; }
+}
+function normalizeState(s){
+  var d = defaultState();
+  s = s || {};
+  s.settings = Object.assign({}, d.settings, s.settings, { toolkit: Object.assign({}, d.settings.toolkit, (s.settings&&s.settings.toolkit)||{}) });
+  s.throne = Object.assign({}, d.throne, s.throne);
+  s.court = Object.assign({}, d.court, s.court);
+  s.vault = Object.assign({}, d.vault, s.vault);
+  s.bodyRoom = Object.assign({}, d.bodyRoom, s.bodyRoom, { cycle: Object.assign({}, d.bodyRoom.cycle, (s.bodyRoom&&s.bodyRoom.cycle)||{}) });
+  s.ledger = Object.assign({}, d.ledger, s.ledger);
+  s.sanctuary = Object.assign({}, d.sanctuary, s.sanctuary);
+  s.estate = Object.assign({}, d.estate, s.estate);
+  s.toolkitData = Object.assign({}, d.toolkitData, s.toolkitData, { doubling: Object.assign({}, d.toolkitData.doubling, (s.toolkitData&&s.toolkitData.doubling)||{}) });
+  s.version = 1;
+  return s;
+}
+function persist(){
+  saveLocal();
+  writeLinkedFile();
+}
+function save(){ persist(); render(); }
+
+/* ---------- IndexedDB handle store (for File System Access API) ---------- */
+function idbOpen(){
+  return new Promise(function(resolve, reject){
+    if(!window.indexedDB){ reject("no idb"); return; }
+    var r = indexedDB.open("EmpressFS", 1);
+    r.onupgradeneeded = function(){ r.result.createObjectStore("kv"); };
+    r.onsuccess = function(){ resolve(r.result); };
+    r.onerror = function(){ reject(r.error); };
+  });
+}
+function idbSet(k,v){ return idbOpen().then(function(db){ return new Promise(function(res,rej){ var tx=db.transaction("kv","readwrite"); tx.objectStore("kv").put(v,k); tx.oncomplete=function(){res();}; tx.onerror=function(){rej(tx.error);}; }); }); }
+function idbGet(k){ return idbOpen().then(function(db){ return new Promise(function(res,rej){ var tx=db.transaction("kv","readonly"); var rq=tx.objectStore("kv").get(k); rq.onsuccess=function(){res(rq.result);}; rq.onerror=function(){rej(rq.error);}; }); }); }
+function idbDel(k){ return idbOpen().then(function(db){ return new Promise(function(res,rej){ var tx=db.transaction("kv","readwrite"); tx.objectStore("kv").delete(k); tx.oncomplete=function(){res();}; tx.onerror=function(){rej(tx.error);}; }); }); }
+
+function fsaSupported(){ return typeof window.showSaveFilePicker === "function"; }
+
+function connectFile(mode){
+  if(!fsaSupported()){ toast("Linked-file saving isn't supported in this browser. Use Export / Import instead."); return; }
+  var p = mode === "open"
+    ? window.showOpenFilePicker({ types:[{ description:"Empress Data", accept:{ "application/json":[".json"] } }] }).then(function(list){ return list[0]; })
+    : window.showSaveFilePicker({ suggestedName:"TheEmpress-Data.json", types:[{ description:"Empress Data", accept:{ "application/json":[".json"] } }] });
+  p.then(function(handle){
+    fileHandle = handle;
+    fileNeedsReconnect = false;
+    state.settings.linkedFileName = handle.name;
+    return idbSet("fileHandle", handle).then(function(){ return writeLinkedFile(); });
+  }).then(function(){
+    save();
+    toast("Linked to " + fileHandle.name + " — every change now saves there too.");
+  }).catch(function(err){ if(err && err.name !== "AbortError") console.warn(err); });
+}
+function disconnectFile(){
+  fileHandle = null; fileNeedsReconnect = false;
+  state.settings.linkedFileName = null;
+  idbDel("fileHandle").catch(function(){});
+  save();
+  toast("File link removed. Your data stays safe in this browser.");
+}
+function writeLinkedFile(){
+  if(!fileHandle) return Promise.resolve();
+  return fileHandle.queryPermission({ mode:"readwrite" }).then(function(perm){
+    if(perm !== "granted"){ fileNeedsReconnect = true; return; }
+    fileNeedsReconnect = false;
+    return fileHandle.createWritable().then(function(w){
+      return w.write(JSON.stringify(state, null, 2)).then(function(){ return w.close(); });
+    });
+  }).catch(function(e){ console.warn("linked file write failed", e); fileNeedsReconnect = true; });
+}
+function reconnectFile(){
+  if(!fileHandle) return;
+  fileHandle.requestPermission({ mode:"readwrite" }).then(function(perm){
+    if(perm === "granted"){ fileNeedsReconnect = false; writeLinkedFile().then(function(){ save(); toast("Reconnected."); }); }
+    else { toast("Permission wasn't granted — data will keep saving to this browser only."); render(); }
+  });
+}
+function restoreFileHandle(){
+  if(!window.indexedDB) return;
+  idbGet("fileHandle").then(function(handle){
+    if(!handle) return;
+    fileHandle = handle;
+    return handle.queryPermission({ mode:"readwrite" }).then(function(perm){
+      fileNeedsReconnect = perm !== "granted";
+      render();
+    });
+  }).catch(function(){});
+}
+
+function exportJSON(){
+  var blob = new Blob([JSON.stringify(state, null, 2)], { type:"application/json" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url; a.download = "TheEmpress-Data-EXPORT-" + todayISO() + ".json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast("Exported. Keep this file somewhere safe.");
+}
+function importJSON(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      var parsed = JSON.parse(reader.result);
+      state = normalizeState(parsed);
+      applyTheme();
+      save();
+      toast("Data imported.");
+    }catch(e){ toast("That file couldn't be read as Empress data."); }
+  };
+  reader.readAsText(file);
+}
+function resetAllData(){
+  if(!window.confirm("This clears everything in The Empress on this device. This cannot be undone. Continue?")) return;
+  state = seedState();
+  saveLocal();
+  writeLinkedFile();
+  applyTheme();
+  activeRoom = "throne";
+  render();
+  toast("Cleared the slate. Starting fresh.");
+}
+
+/* ---------- toast / modal ---------- */
+function toast(msg){
+  var c = document.getElementById("toast-container");
+  var el = document.createElement("div");
+  el.className = "toast"; el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(function(){ el.remove(); }, 3200);
+}
+function openModal(title, bodyHtml, onSubmit, opts){
+  var overlay = document.getElementById("modal-overlay");
+  var box = document.getElementById("modal-box");
+  box.innerHTML =
+    '<div class="modal-head"><h3>'+escapeHtml(title)+'</h3><button class="modal-close" data-action="close-modal" aria-label="Close">&times;</button></div>' +
+    '<form id="modal-form">'+bodyHtml+'</form>';
+  overlay.classList.remove("hidden");
+  var form = document.getElementById("modal-form");
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var data = new FormData(form);
+    var result = onSubmit(data, form);
+    if(result !== false) closeModal();
+  });
+  if(opts && opts.onOpen) opts.onOpen(form);
+  var firstInput = form.querySelector("input,select,textarea");
+  if(firstInput) setTimeout(function(){ firstInput.focus(); }, 30);
+}
+function closeModal(){
+  document.getElementById("modal-overlay").classList.add("hidden");
+  document.getElementById("modal-box").innerHTML = "";
+}
+
+/* ---------- helpers: progress visuals ---------- */
+function visualsOn(){ return state.settings.toolkit.visual; }
+function progressBar(pct){
+  pct = clamp(pct,0,100);
+  if(!visualsOn()) return '<div class="card-label">Progress: '+Math.round(pct)+'%</div>';
+  return '<div class="progress-track"><div class="progress-fill" style="width:'+pct+'%"></div></div>';
+}
+function ringSVG(pct, colorVar, size){
+  size = size || 64;
+  pct = clamp(pct,0,100);
+  if(!visualsOn()) return '<div style="font-family:var(--font-serif);font-size:1.4rem;color:'+colorVar+'">'+Math.round(pct)+'%</div>';
+  var r = (size-9)/2, c = 2*Math.PI*r, off = c*(1-pct/100);
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" class="ring">' +
+    '<circle class="ring-bg" cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'"></circle>' +
+    '<circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" style="stroke:'+colorVar+';stroke-dasharray:'+c+';stroke-dashoffset:'+off+'"></circle>' +
+    '<text x="50%" y="53%" text-anchor="middle">'+Math.round(pct)+'%</text></svg>';
+}
+function weekDots(historySet, days){
+  days = days || 7;
+  var out = '<div class="week-dots">';
+  var t = todayISO();
+  for(var i=days-1;i>=0;i--){
+    var d = addDays(t,-i);
+    out += '<div class="week-dot'+(historySet.indexOf(d)>-1?' filled':'')+'" title="'+d+'"></div>';
+  }
+  return out + '</div>';
+}
+function barChartSVG(months){
+  var w=560,h=170,pad=20;
+  var maxV=1;
+  months.forEach(function(m){ maxV = Math.max(maxV, m.income, m.expense); });
+  var bw = (w-pad*2)/months.length;
+  var bars = "";
+  months.forEach(function(m,i){
+    var x = pad + i*bw;
+    var ih = (m.income/maxV)*(h-38);
+    var eh = (m.expense/maxV)*(h-38);
+    bars += '<rect x="'+(x+4)+'" y="'+(h-20-ih)+'" width="'+(bw/2-6)+'" height="'+Math.max(ih,1)+'" rx="3" class="bar-income"/>';
+    bars += '<rect x="'+(x+bw/2+2)+'" y="'+(h-20-eh)+'" width="'+(bw/2-6)+'" height="'+Math.max(eh,1)+'" rx="3" class="bar-expense"/>';
+    bars += '<text x="'+(x+bw/2)+'" y="'+(h-6)+'" text-anchor="middle" class="bar-label">'+escapeHtml(m.label)+'</text>';
+  });
+  return '<svg viewBox="0 0 '+w+' '+h+'" class="chart">'+bars+'</svg>';
+}
+
+/* ---------- energy tag ---------- */
+function energyPill(level){
+  if(!level) return "";
+  var map = { low:"pill-emerald", medium:"pill-gold", high:"pill-ruby" };
+  return '<span class="pill '+(map[level]||"pill-gold")+'">'+level+' energy</span>';
+}
+
+/* ---------- redirect method ---------- */
+function openRedirect(taskLabel){
+  redirectRerollTarget = taskLabel;
+  renderRedirectModal();
+}
+function renderRedirectModal(){
+  var s = pick(REDIRECT_POOL).replace("{task}", "<strong>"+escapeHtml(redirectRerollTarget)+"</strong>");
+  openModal("Feeling stuck?", '' +
+    '<p style="color:var(--text-dim);font-size:.88rem">You don\'t have to push through. Try a smaller, adjacent step instead:</p>' +
+    '<div class="suggestion-box">'+s+'</div>' +
+    '<div class="form-actions" style="margin-top:16px">' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-action="redirect-reroll">Try another suggestion</button>' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-action="redirect-to-fog">Log to Fog Log instead</button>' +
+      '<button type="button" class="btn btn-primary btn-sm" data-action="close-modal">Got it</button>' +
+    '</div>', function(){ return false; });
+}
+
+/* ---------- fog log ---------- */
+function fogCount(){ return state.toolkitData.fog.filter(function(f){ return !f.resolved; }).length; }
+function openFogCapture(){
+  openModal("Task Fog Log", '' +
+    '<p style="color:var(--text-dim);font-size:.86rem">Know you should do it but can\'t start? Log it here — no pressure, no timer. Come back to it whenever you\'re ready.</p>' +
+    '<div class="field"><textarea name="text" placeholder="What\'s the task?" required></textarea></div>' +
+    '<div class="form-actions"><button type="submit" class="btn btn-primary">Log it and move on</button></div>',
+    function(data){
+      var text = data.get("text").trim();
+      if(!text) return false;
+      state.toolkitData.fog.push({ id:uid(), text:text, date:todayISO(), resolved:false });
+      save();
+      toast("Logged. It's off your mind for now.");
+    });
+}
+
+/* ---------- body doubling ---------- */
+function startDoubling(label, minutes){
+  var d = state.toolkitData.doubling;
+  d.active = true;
+  d.label = label || "Focus session";
+  d.mode = minutes ? "timer" : "stopwatch";
+  d.startedAt = Date.now();
+  d.durationSec = minutes ? minutes*60 : 0;
+  d.seconds = 0;
+  save();
+  ensureDoublingTicker();
+}
+function stopDoubling(logIt){
+  var d = state.toolkitData.doubling;
+  if(logIt && d.active){
+    var mins = Math.max(1, Math.round(((Date.now()-d.startedAt)/1000)/60));
+    state.bodyRoom.logs.unshift({ id:uid(), date:todayISO(), type:"doubling", note:(d.label||"Focus session")+" — "+mins+" min alongside" });
+  }
+  d.active = false; d.startedAt = null; d.seconds = 0;
+  clearInterval(doublingTicker); doublingTicker = null;
+  save();
+}
+function ensureDoublingTicker(){
+  clearInterval(doublingTicker);
+  doublingTicker = setInterval(function(){ renderDoublingBar(); }, 1000);
+  renderDoublingBar();
+}
+function renderDoublingBar(){
+  var bar = document.getElementById("doubling-bar");
+  var d = state.toolkitData.doubling;
+  if(!state.settings.toolkit.doubling || !d.active){ bar.classList.add("hidden"); return; }
+  bar.classList.remove("hidden");
+  var elapsed = Math.floor((Date.now()-d.startedAt)/1000);
+  var remain = d.mode === "timer" ? Math.max(0, d.durationSec - elapsed) : elapsed;
+  var mm = Math.floor(remain/60), ss = remain%60;
+  var timeStr = (mm<10?"0":"")+mm+":"+(ss<10?"0":"")+ss;
+  if(d.mode === "timer" && remain <= 0 && !bar.dataset.notified){
+    bar.dataset.notified = "1";
+    toast("Session complete — well held.");
+  }
+  bar.innerHTML = '' +
+    '<div class="doubling-info"><span style="font-size:1.3rem">🕯</span><div><div style="font-weight:700;font-size:.9rem">'+escapeHtml(d.label)+'</div><div style="font-size:.74rem;color:var(--text-faint)">Working alongside you'+(d.mode==="timer"?" · time remaining":" · elapsed")+'</div></div></div>' +
+    '<div class="doubling-time">'+timeStr+'</div>' +
+    '<div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" data-action="stop-doubling-nolog">Dismiss</button><button class="btn btn-primary btn-sm" data-action="stop-doubling-log">End &amp; log it</button></div>';
+}
+
+/* ---------- nudges ---------- */
+function nudgeDismissedToday(key){
+  return state.toolkitData.nudgesDismissed[key] === todayISO();
+}
+function dismissNudge(key){
+  state.toolkitData.nudgesDismissed[key] = todayISO();
+  save();
+}
+function renderNudge(key, text){
+  if(!state.settings.toolkit.nudges || nudgeDismissedToday(key)) return "";
+  return '<div class="banner banner-nudge"><span class="banner-icon">✦</span><div class="banner-text">'+text+'</div><button class="banner-close" data-action="dismiss-nudge" data-key="'+key+'" title="Not now">&times;</button></div>';
+}
+
+/* ================= RENDER: ROOT ================= */
+function render(){
+  document.getElementById("theme-toggle").textContent = state.settings.theme === "gold" ? "☀ In Gold" : "☾ In Shadow";
+  renderNav();
+  var renderer = ROOM_RENDERERS[activeRoom] || ROOM_RENDERERS.throne;
+  document.getElementById("rooms").innerHTML = renderer();
+  var fab = document.getElementById("fog-fab");
+  if(state.settings.toolkit.fog){
+    fab.classList.remove("hidden");
+    var badge = document.getElementById("fog-badge");
+    var n = fogCount();
+    badge.textContent = n;
+    badge.classList.toggle("hidden", n===0);
+  } else fab.classList.add("hidden");
+  renderDoublingBar();
+}
+function renderNav(){
+  var nav = document.getElementById("roomnav");
+  nav.innerHTML = ROOMS.map(function(r){
+    return '<button class="nav-btn'+(activeRoom===r.id?" active":"")+'" data-action="go-room" data-room="'+r.id+'">'+r.label+'<span class="room-sub">'+r.sub+'</span></button>';
+  }).join("");
+}
+function applyTheme(){ document.documentElement.setAttribute("data-theme", state.settings.theme); }
+
+function roomHead(id){
+  return '<div class="room-head"><div class="room-eyebrow">The Empress</div><h1 class="room-title">'+ROOMS.find(function(r){return r.id===id;}).label+'</h1><p class="room-tagline">'+TAGLINES[id]+'</p></div>';
+}
+
+/* ================= RENDER: THRONE ROOM ================= */
+function ROOM_THRONE(){
+  var t = todayISO();
+  var todaysEvents = expandRecurringEvents(state.court.events, t).filter(function(e){ return e.date===t; }).sort(function(a,b){ return (a.start||"").localeCompare(b.start||""); });
+  var focus = state.throne.focus;
+  var upcomingBill = state.vault.bills.filter(function(b){ return !b.paid; }).sort(function(a,b){ return a.dueDate.localeCompare(b.dueDate); })[0];
+  var balance = vaultBalance();
+  var lastMoodDate = state.sanctuary.moods.length ? state.sanctuary.moods[0].date : null;
+  var lastBodyLogDate = latestBodyActivityDate();
+
+  var nudges = "";
+  if(!lastMoodDate || daysBetween(lastMoodDate, t) >= 3){
+    nudges += renderNudge("mood-check", "It's been a few days since you checked in with yourself. No pressure — just when you're ready, The Sanctuary is there.");
+  }
+  if(upcomingBill && daysBetween(t, upcomingBill.dueDate) <= 3 && daysBetween(t, upcomingBill.dueDate) >= 0){
+    nudges += renderNudge("bill-soon", "<strong>"+escapeHtml(upcomingBill.name)+"</strong> ("+fmtMoney(upcomingBill.amount)+") is due "+fmtDate(upcomingBill.dueDate,{weekday:"long"})+".");
+  }
+
+  return roomHead("throne") + nudges + '' +
+  '<div class="section-block"><div class="card"><h3>Good day, Empress</h3><p style="color:var(--text-dim)">Here is what matters most today. Tap into any room for the full picture.</p>' +
+    '<div class="list" style="margin-top:10px">' + (focus.length ? focus.map(function(f){
+      return '<div class="item'+(f.done?" done":"")+'"><label class="item-check"><input type="checkbox" data-action="toggle-focus" data-id="'+f.id+'" '+(f.done?"checked":"")+'></label><div class="item-body"><div class="item-title'+(f.done?" strike":"")+'">'+escapeHtml(f.text)+'</div></div><div class="item-actions"><button class="btn btn-ghost btn-icon btn-sm" data-action="remove-focus" data-id="'+f.id+'" title="Remove">&times;</button></div></div>';
+    }).join("") : '<div class="empty-state">No priorities set for today. Add up to three.</div>') + '</div>' +
+    (focus.length < 3 ? '<div class="form-panel"><form data-form="add-focus"><div class="field-row"><div class="field"><label>New priority</label><input type="text" name="text" placeholder="The one thing that matters most" required></div></div><div class="form-actions"><button type="submit" class="btn btn-primary btn-sm">Add priority</button></div></form></div>' : '') +
+  '</div></div>' +
+
+  '<div class="grid grid-3">' +
+    '<div class="card"><div class="card-label">The Court · Today</div>' + (todaysEvents.length ? '<div class="list">' + todaysEvents.slice(0,4).map(function(e){ return '<div class="item"><div class="item-body"><div class="item-title">'+escapeHtml(e.title)+'</div><div class="item-meta">'+(e.start?e.start+(e.end?"–"+e.end:""):"All day")+'</div></div></div>'; }).join("") + '</div>' : '<div class="empty-state">Nothing scheduled today.</div>') + '</div>' +
+    '<div class="card"><div class="card-label">The Vault · Snapshot</div><div style="font-family:var(--font-serif);font-size:1.6rem;color:var(--emerald)">'+fmtMoney(balance)+'</div><div style="font-size:.8rem;color:var(--text-faint);margin-bottom:8px">estimated balance this month</div>' + (upcomingBill ? '<div class="item-meta">Next bill: '+escapeHtml(upcomingBill.name)+' — '+fmtDate(upcomingBill.dueDate)+'</div>' : '<div class="item-meta">No bills pending.</div>') + '</div>' +
+    '<div class="card"><div class="card-label">The Body · Pulse</div>' + (lastBodyLogDate ? '<div class="item-meta">Last logged: '+fmtDate(lastBodyLogDate,{weekday:"long", month:"short", day:"numeric"})+'</div>' : '<div class="empty-state">No movement logged yet.</div>') + (state.bodyRoom.habits.length ? '<div style="margin-top:10px">' + weekDots(state.bodyRoom.habits[0].history) + '<div style="font-size:.74rem;color:var(--text-faint);margin-top:4px">'+escapeHtml(state.bodyRoom.habits[0].name)+'</div></div>' : '') + '</div>' +
+  '</div>';
+}
+function vaultBalance(){
+  var income = state.vault.incomes.reduce(function(a,i){ return a+Number(i.amount||0); },0);
+  var bills = state.vault.bills.reduce(function(a,b){ return a+Number(b.amount||0); },0);
+  var spending = state.vault.spending.reduce(function(a,s){ return a+Number(s.amount||0); },0);
+  return income - bills - spending;
+}
+function latestBodyActivityDate(){
+  var dates = [];
+  state.bodyRoom.habits.forEach(function(h){ if(h.history.length) dates.push(h.history[h.history.length-1]); });
+  state.bodyRoom.logs.forEach(function(l){ dates.push(l.date); });
+  if(!dates.length) return null;
+  return dates.sort().reverse()[0];
+}
+
+/* ================= RENDER: THE COURT ================= */
+function expandRecurringEvents(events, throughDate){
+  var out = [];
+  events.forEach(function(e){
+    out.push(e);
+    if(e.recurring && e.recurring !== "none"){
+      var d = e.date, guard = 0;
+      while(d < throughDate && guard < 400){
+        d = e.recurring==="daily" ? addDays(d,1) : e.recurring==="weekly" ? addDays(d,7) : addDays(d,30);
+        if(d <= throughDate){ out.push(Object.assign({}, e, { date:d, id:e.id+"-r"+d, occurrence:true })); }
+        guard++;
+      }
+    }
+  });
+  return out;
+}
+function ROOM_COURT(){
+  var energyOn = state.settings.toolkit.energy;
+  var t = todayISO();
+  var weekDates = []; for(var i=0;i<7;i++) weekDates.push(addDays(t,i));
+  var expanded = expandRecurringEvents(state.court.events, weekDates[6]);
+  var byDay = {};
+  expanded.forEach(function(e){ (byDay[e.date] = byDay[e.date]||[]).push(e); });
+  Object.keys(byDay).forEach(function(d){ byDay[d].sort(function(a,b){ return (a.start||"").localeCompare(b.start||""); }); });
+
+  var energyPanel = "";
+  if(energyOn){
+    var fitting = [];
+    state.court.events.filter(function(e){ return !e.done && (!e.energy || e.energy===currentEnergyFilter || currentEnergyFilter==="any"); }).forEach(function(e){ fitting.push({label:e.title, kind:"Court", energy:e.energy}); });
+    state.estate.chores.filter(function(c){ return c.energy && (c.energy===currentEnergyFilter || currentEnergyFilter==="any"); }).forEach(function(c){ fitting.push({label:c.name, kind:"Estate", energy:c.energy}); });
+    state.ledger.goals.forEach(function(g){ g.milestones.filter(function(m){ return !m.done && (!m.energy || m.energy===currentEnergyFilter || currentEnergyFilter==="any"); }).forEach(function(m){ fitting.push({label:m.title+" ("+g.title+")", kind:"Ledger", energy:m.energy}); }); });
+    energyPanel = '<div class="card section-block"><h3>What fits your energy right now?</h3>' +
+      '<div class="field-row"><div class="field" style="max-width:220px"><label>Current capacity</label><select id="energy-select" data-action="set-energy"><option value="any"'+(currentEnergyFilter==="any"?" selected":"")+'>Show everything</option><option value="low"'+(currentEnergyFilter==="low"?" selected":"")+'>Low energy</option><option value="medium"'+(currentEnergyFilter==="medium"?" selected":"")+'>Medium energy</option><option value="high"'+(currentEnergyFilter==="high"?" selected":"")+'>High energy</option></select></div></div>' +
+      (fitting.length ? '<div class="list">' + fitting.slice(0,6).map(function(f){ return '<div class="item"><div class="item-body"><div class="item-title">'+escapeHtml(f.label)+'</div><div class="item-meta"><span class="pill pill-sapphire">'+f.kind+'</span>'+energyPill(f.energy)+'</div></div></div>'; }).join("") + '</div>' : '<div class="empty-state">Nothing tagged for this energy level yet — tag tasks with energy when adding them.</div>') +
+    '</div>';
+  }
+
+  var doublingCta = state.settings.toolkit.doubling ? '<button class="btn btn-ghost btn-sm" data-action="open-doubling" data-context="court">Start a body-doubling session</button>' : "";
+
+  return roomHead("court") +
+  '<div class="section-block-head"><h2>This week</h2><div style="display:flex;gap:8px">'+doublingCta+'<button class="btn btn-primary btn-sm" data-action="toggle-form" data-target="add-event-form">+ Add event</button></div></div>' +
+  '<div class="form-panel hidden" id="add-event-form"><form data-form="add-event">' +
+    '<div class="field-row">' +
+      '<div class="field"><label>Title</label><input type="text" name="title" required placeholder="e.g. Team standup"></div>' +
+      '<div class="field"><label>Date</label><input type="date" name="date" value="'+t+'" required></div>' +
+    '</div>' +
+    '<div class="field-row">' +
+      '<div class="field"><label>Start</label><input type="time" name="start"></div>' +
+      '<div class="field"><label>End</label><input type="time" name="end"></div>' +
+      '<div class="field"><label>Repeats</label><select name="recurring"><option value="none">Doesn\'t repeat</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></div>' +
+      (energyOn ? '<div class="field"><label>Energy needed</label><select name="energy"><option value="">Not tagged</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></div>' : '') +
+    '</div>' +
+    '<div class="field-row"><div class="field"><label>Notes</label><input type="text" name="notes" placeholder="Optional"></div></div>' +
+    '<div class="form-actions"><button type="submit" class="btn btn-primary">Save event</button></div>' +
+  '</form></div>' +
+  energyPanel +
+  '<div class="grid grid-2">' + weekDates.map(function(d){
+    var items = byDay[d] || [];
+    return '<div class="card card-tight"><div class="card-label">'+fmtDate(d,{weekday:"long"})+' · '+fmtDate(d,{month:"short",day:"numeric"})+(d===t?' <span class="pill pill-sapphire">Today</span>':'')+'</div>' +
+      (items.length ? '<div class="list">' + items.map(function(e){
+        return '<div class="item'+(e.done?" done":"")+'"><label class="item-check"><input type="checkbox" data-action="toggle-event" data-id="'+e.id.split("-r")[0]+'" '+(e.done?"checked":"")+'></label>' +
+        '<div class="item-body"><div class="item-title'+(e.done?" strike":"")+'">'+escapeHtml(e.title)+'</div><div class="item-meta">'+(e.start?e.start+(e.end?"–"+e.end:""):"All day")+(e.recurring&&e.recurring!=="none"?' <span class="pill pill-gold">'+e.recurring+'</span>':'')+energyPill(e.energy)+'</div>'+(e.notes?'<div class="item-meta">'+escapeHtml(e.notes)+'</div>':'')+'</div>' +
+        '<div class="item-actions">'+(state.settings.toolkit.redirect?'<button class="redirect-link" data-action="open-redirect" data-label="'+escapeHtml(e.title)+'">stuck?</button>':'')+'<button class="btn btn-ghost btn-icon btn-sm" data-action="remove-event" data-id="'+e.id.split("-r")[0]+'" title="Delete">&times;</button></div></div>';
+      }).join("") + '</div>' : '<div class="empty-state">Clear.</div>') +
+    '</div>';
+  }).join("") + '</div>';
+}
+
+/* ================= RENDER: THE VAULT ================= */
+function ROOM_VAULT(){
+  var cur = state.settings.currency;
+  var income = state.vault.incomes.reduce(function(a,i){ return a+Number(i.amount||0); },0);
+  var billsTotal = state.vault.bills.reduce(function(a,b){ return a+Number(b.amount||0); },0);
+  var spendingTotal = state.vault.spending.reduce(function(a,s){ return a+Number(s.amount||0); },0);
+  var balance = income - billsTotal - spendingTotal;
+  var upcoming = state.vault.bills.filter(function(b){ return !b.paid; }).sort(function(a,b){ return a.dueDate.localeCompare(b.dueDate); });
+
+  var months = [];
+  for(var i=5;i>=0;i--){
+    var d = new Date(); d.setMonth(d.getMonth()-i);
+    var label = d.toLocaleDateString(undefined,{month:"short"});
+    var monthIncome = i===0 ? income : income*0.9;
+    var monthExpense = i===0 ? (billsTotal+spendingTotal) : (billsTotal+spendingTotal)*(0.8+Math.random()*0.3);
+    months.push({label:label, income:Math.round(monthIncome), expense:Math.round(monthExpense)});
+  }
+
+  return roomHead("vault") +
+  '<div class="section-block-head"><h2>Snapshot</h2><div class="field" style="max-width:160px;margin:0"><select data-action="set-currency">' +
+    Object.keys(CURRENCIES).map(function(c){ return '<option value="'+c+'"'+(c===cur?" selected":"")+'>'+c+' ('+CURRENCIES[c]+')</option>'; }).join("") +
+  '</select></div></div>' +
+  '<div class="grid grid-3 section-block">' +
+    '<div class="card"><div class="card-label">Balance</div><div style="font-family:var(--font-serif);font-size:1.7rem;color:var(--emerald)">'+fmtMoney(balance)+'</div></div>' +
+    '<div class="card"><div class="card-label">Monthly income</div><div style="font-family:var(--font-serif);font-size:1.7rem">'+fmtMoney(income)+'</div></div>' +
+    '<div class="card"><div class="card-label">Bills + spending</div><div style="font-family:var(--font-serif);font-size:1.7rem;color:var(--amethyst)">'+fmtMoney(billsTotal+spendingTotal)+'</div></div>' +
+  '</div>' +
+  '<div class="card section-block"><h3>Income vs. spending, last 6 months</h3>' + barChartSVG(months) +
+    '<div class="legend"><span><i style="background:var(--gold)"></i>Income</span><span><i style="background:var(--amethyst)"></i>Expenses</span></div>' +
+    '<p style="font-size:.72rem;color:var(--text-faint);margin-top:8px">Earlier months are estimated from your current recurring income/bills until more history builds up.</p>' +
+  '</div>' +
+
+  '<div class="section-block"><div class="section-block-head"><h2>Bills</h2><button class="btn btn-primary btn-sm" data-action="toggle-form" data-target="add-bill-form">+ Add bill</button></div>' +
+  '<div class="form-panel hidden" id="add-bill-form"><form data-form="add-bill"><div class="field-row">' +
+    '<div class="field"><label>Name</label><input type="text" name="name" required></div>' +
+    '<div class="field"><label>Amount</label><input type="number" step="0.01" name="amount" required></div>' +
+    '<div class="field"><label>Due date</label><input type="date" name="dueDate" value="'+todayISO()+'" required></div>' +
+    '<div class="field"><label>Repeats</label><select name="recurring"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="none">One-off</option></select></div>' +
+  '</div><div class="form-actions"><button type="submit" class="btn btn-primary">Save bill</button></div></form></div>' +
+  (upcoming.length ? '<div class="list">' + upcoming.map(function(b){
+    return '<div class="item"><label class="item-check"><input type="checkbox" data-action="toggle-bill-paid" data-id="'+b.id+'"></label><div class="item-body"><div class="item-title">'+escapeHtml(b.name)+'</div><div class="item-meta">Due '+fmtDate(b.dueDate)+' · '+fmtMoney(b.amount)+' <span class="pill pill-gold">'+b.recurring+'</span></div></div><div class="item-actions"><button class="btn btn-ghost btn-icon btn-sm" data-action="remove-bill" data-id="'+b.id+'">&times;</button></div></div>';
+  }).join("") + '</div>' : '<div class="empty-state">No bills tracked yet.</div>') + '</div>' +
+
+  '<div class="grid grid-2">' +
+    '<div class="section-block"><div class="section-block-head"><h2>Income</h2><button class="btn btn-ghost btn-sm" data-action="toggle-form" data-target="add-income-form">+ Add</button></div>' +
+    '<div class="form-panel hidden" id="add-income-form"><form data-form="add-income"><div class="field-row"><div class="field"><label>Source</label><input type="text" name="name" required></div><div class="field"><label>Amount</label><input type="number" step="0.01" name="amount" required></div><div class="field"><label>Repeats</label><select name="recurring"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="none">One-off</option></select></div></div><div class="form-actions"><button type="submit" class="btn btn-primary btn-sm">Save</button></div></form></div>' +
+    (state.vault.incomes.length ? '<div class="list">' + state.vault.incomes.map(function(inc){ return '<div class="item"><div class="item-body"><div class="item-title">'+escapeHtml(inc.name)+'</div><div class="item-meta">'+fmtMoney(inc.amount)+' <span class="pill pill-emerald">'+inc.recurring+'</span></div></div><div class="item-actions"><button class="btn btn-ghost btn-icon btn-sm" data-action="remove-income" data-id="'+inc.id+'">&times;</button></div></div>'; }).join("") + '</div>' : '<div class="empty-state">No income sources yet.</div>') +
+    '</div>' +
+    '<div class="section-block"><div class="section-block-head"><h2>Other spending</h2><button class="btn btn-ghost btn-sm" data-action="toggle-form" data-target="add-spend-form">+ Add</button></div>' +
+    '<div class="form-panel hidden" id="add-spend-form"><form data-form="add-spend"><div class="field-row"><div class="field"><label>Item</label><input type="text" name="name" required></div><div class="field"><label>Amount</label><input type="number" step="0.01" name="amount" required></div><div class="field"><label>Category</label><input type="text" name="category" placeholder="e.g. Food"></div></div><div class="form-actions"><button type="submit" class="btn btn-primary btn-sm">Save</button></div></form></div>' +
+    (state.vault.spending.length ? '<div class="list">' + state.vault.spending.slice(0,8).map(function(s){ return '<div class="item"><div class="item-body"><div class="item-title">'+escapeHtml(s.name)+'</div><div class="item-meta">'+fmtMoney(s.amount)+(s.category?' · '+escapeHtml(s.category):'')+' · '+fmtDate(s.date)+'</div></div><div class="item-actions"><button class="btn btn-ghost btn-icon btn-sm" data-action="remove-spend" data-id="'+s.id+'">&times;</button></div></div>'; }).join("") + '</div>' : '<div class="empty-state">Nothing logged yet.</div>') +
+    '</div>' +
+  '</div>';
+}
+
+/* ================= RENDER: THE BODY ================= */
+function ROOM_BODY(){
+  var t = todayISO();
+  var cycle = state.bodyRoom.cycle;
+  var lastEntry = cycle.entries.slice().sort(function(a,b){ return b.start.localeCompare(a.start); })[0];
+  var predictedNext = lastEntry ? addDays(lastEntry.start, cycle.cycleLenAvg) : null;
+  var nudge = renderNudge("body-check", "No movement logged in a few days. Whenever your body's ready — no catching up required.");
+  if(latestBodyActivityDate() && daysBetween(latestBodyActivityDate(), t) < 3) nudge = "";
+
+  var doublingCta = state.settings.toolkit.doubling ? '<button class="btn btn-ghost btn-sm" data-action="open-doubling" data-context="body">Start a body-doubling session</button>' : "";
+
+  return roomHead("body") + nudge +
+  '<div class="section-block"><div class="section-block-head"><h2>Habits &amp; streaks</h2><div style="display:flex;gap:8px">'+doublingCta+'<button class="btn btn-primary btn-sm" data-action="toggle-form" data-target="add-habit-form">+ Add habit</button></div></div>' +
+  '<div class="form-panel hidden" id="add-habit-form"><form data-form="add-habit"><div class="field-row"><div class="field"><label>Habit</label><input type="text" name="name" required placeholder="e.g. Stretch, walk, drink water"></div></div><div class="form-actions"><button type="submit" class="btn btn-primary btn-sm">Add habit</button></div></form></div>' +
+  (state.bodyRoom.habits.length ? '<div class="grid grid-2">' + state.bodyRoom.habits.map(function(h){
+    var streak = currentStreak(h.history);
+    return '<div class="card card-tight"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="item-title">'+escapeHtml(h.name)+'</div><div class="item-meta">Current streak: '+streak+' day'+(streak===1?"":"s")+' · Best: '+h.bestStreak+'</div></div><button class="btn btn-ghost btn-icon btn-sm" data-action="remove-habit" data-id="'+h.id+'">&times;</button></div>' +
+    '<div style="margin-top:10px">'+weekDots(h.history)+'</div>' +
+    '<div class="form-actions" style="margin-top:10px"><button class="btn btn-sm '+(h.history.indexOf(t)>-1?"btn-ghost":"btn-primary")+'" data-action="log-habit" data-id="'+h.id+'">'+(h.history.indexOf(t)>-1?"Logged today ✓":"Log today")+'</button></div></div>';
+  }).join("") + '</div>' : '<div class="empty-state">No habits yet — add one whenever you\'re ready. Missing a day never resets your history.</div>') + '</div>' +
+
+  '<div class="section-block"><div class="section-block-head"><h2>Wellness log</h2><button class="btn btn-ghost btn-sm" data-action="toggle-form" data-target="add-bodylog-form">+ Quick log</button></div>' +
+  '<div class="form-panel hidden" id="add-bodylog-form"><form data-form="add-bodylog"><div class="field-row"><div class="field"><label>Type</label><select name="type"><option value="movement">Movement</option><option value="wellness">General wellness</option></select></div><div class="field"><label>Note</label><input type="text" name="note" placeholder="e.g. 20 min walk, felt good"></div></div><div class="form-actions"><button type="submit" class="btn btn-primary btn-sm">Save log</button></div></form></div>' +
+  (state.bodyRoom.logs.length ? '<div class="list">' + state.bodyRoom.logs.slice(0,6).map(function(l){ return '<div class="item"><div class="item-body"><div class="item-title">'+escapeHtml(l.note||l.type)+'</div><div class="item-meta">'+fmtDate(l.date)+' <span class="pill pill-ruby">'+l.type+'</span></div></div><div class="item-actions"><button class="btn btn-ghost btn-icon btn-sm" data-action="remove-bodylog" data-id="'+l.id+'">&times;</button></div></div>'; }).join("") + '</div>' : '<div class="empty-state">No entries yet.</div>') + '</div>' +
+
+  '<div class="section-block"><div class="section-block-head"><h2>Cycle tracking</h2><button class="btn btn-primary btn-sm" data-action="toggle-form" data-target="add-cycle-form">+ Log period</button></div>' +
+  '<div class="form-panel hidden" id="add-cycle-form"><form data-form="add-cycle"><div class="field-row">' +
+    '<div class="field"><label>Start date</label><input type="date" name="start" value="'+t+'" required></div>' +
+    '<div class="field"><label>End date</label><input type="date" name="end"></div>' +
+    '<div class="field"><label>Flow</label><select name="flow"><option value="light">Light</option><option value="medium">Medium</option><option value="heavy">Heavy</option></select></div>' +
+  '</div><div class="field-row">' +
+    '<div class="field"><label>Symptoms (comma separated)</label><input type="text" name="symptoms" placeholder="cramps, fatigue, headache"></div>' +
+    '<div class="field"><label>Mood</label><input type="text" name="mood" placeholder="e.g. low, irritable, fine"></div>' +
+  '</div><div class="form-actions"><button type="submit" class="btn btn-primary btn-sm">Save entry</button></div></form></div>' +
+  '<div class="grid grid-2">' +
+    '<div class="card card-tight"><div class="card-label">Prediction</div>' + (predictedNext ? '<div class="item-title">Next period estimated '+fmtDate(predictedNext,{weekday:"long",month:"short",day:"numeric"})+'</div><div class="item-meta">Average cycle length: '+cycle.cycleLenAvg+' days</div>' : '<div class="empty-state">Log a couple of cycles to see a prediction.</div>') + '</div>' +
+    '<div class="card card-tight"><div class="card-label">History</div>' + (cycle.entries.length ? '<div class="list">' + cycle.entries.slice().sort(function(a,b){return b.start.localeCompare(a.start);}).slice(0,4).map(function(e){ return '<div class="item"><div class="item-body"><div class="item-title">'+fmtDate(e.start)+(e.end?" – "+fmtDate(e.end):"")+'</div><div class="item-meta"><span class="pill pill-rose">'+e.flow+' flow</span>'+(e.symptoms&&e.symptoms.length?" "+escapeHtml(e.symptoms.join(", ")):"")+(e.mood?" · mood: "+escapeHtml(e.mood):"")+'</div></div><div class="item-actions"><button class="btn btn-ghost btn-icon btn-sm" data-action="remove-cycle" data-id="'+e.id+'">&times;</button></div></div>'; }).join("") + '</div>' : '<div class="empty-state">No entries logged yet.</div>') + '</div>' +
+  '</div></div>';
+}
+function currentStreak(history){
+  if(!history.length) return 0;
+  var sorted = history.slice().sort();
+  var t = todayISO(), streak = 0, cursor = t;
+  var set = {}; sorted.forEach(function(d){ set[d]=true; });
+  if(!set[t] && !set[addDays(t,-1)]) return 0;
+  if(!set[cursor]) cursor = addDays(cursor,-1);
+  while(set[cursor]){ streak++; cursor = addDays(cursor,-1); }
+  return streak;
+}
+
+/* ================= RENDER: THE LEDGER ================= */
+function ROOM_LEDGER(){
+  var mOn = state.settings.toolkit.milestones;
+  return roomHead("ledger") +
+  '<div class="section-block-head"><h2>Goals &amp; projects</h2><button class="btn btn-primary btn-sm" data-action="toggle-form" data-target="add-goal-form">+ Add goal</button></div>' +
+  '<div class="form-panel hidden" id="add-goal-form"><form data-form="add-goal"><div class="field-row">' +
+    '<div class="field"><label>Goal</label><input type="text" name="title" required placeholder="e.g. Launch the new offer"></div>' +
+    '<div class="field"><label>Horizon</label><select name="horizon"><option value="quarter">Quarterly</option><option value="year">Yearly</option><option value="long-term">Long-term</option></select></div>' +
+    '<div class="field"><label>Target date</label><input type="date" name="targetDate"></div>' +
+  '</div><div class="form-actions"><button type="submit" class="btn btn-primary">Create goal'+(mOn?" with 5 milestones":"")+'</button></div></form></div>' +
+  (state.ledger.goals.length ? '<div class="list">' + state.ledger.goals.map(renderGoalCard).join("") + '</div>' : '<div class="empty-state">No goals yet. Add your first one above.</div>');
+}
+function goalProgress(g){
+  if(state.settings.toolkit.milestones && g.milestones.length){
+    var done = g.milestones.filter(function(m){ return m.done; }).length;
+    return Math.round(done/g.milestones.length*100);
+  }
+  return g.manualPct||0;
+}
+function renderGoalCard(g){
+  var pct = goalProgress(g);
+  var mOn = state.settings.toolkit.milestones;
+  return '<div class="card">' +
+    '<div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start">' +
+      '<div><div class="item-title" style="font-size:1.05rem">'+escapeHtml(g.title)+'</div>' +
+      '<div class="item-meta"><span class="pill pill-amethyst">'+g.horizon+'</span>'+(g.targetDate?' Target: '+fmtDate(g.targetDate):'')+'</div></div>' +
+      '<div style="display:flex;align-items:center;gap:10px">'+ringSVG(pct,"var(--amethyst)",60)+'<button class="btn btn-ghost btn-icon btn-sm" data-action="remove-goal" data-id="'+g.id+'" title="Delete goal">&times;</button></div>' +
+    '</div>' +
+    (mOn ? (
+      '<div class="list" style="margin-top:12px">' + (g.milestones.length ? g.milestones.map(function(m){
+        return '<div class="item'+(m.done?" done":"")+' card-tight" style="padding:9px 12px"><label class="item-check"><input type="checkbox" data-action="toggle-milestone" data-goal="'+g.id+'" data-id="'+m.id+'" '+(m.done?"checked":"")+'></label><div class="item-body"><div class="item-title'+(m.done?" strike":"")+'" style="font-size:.87rem">'+escapeHtml(m.title)+'</div></div>'+(state.settings.toolkit.redirect && !m.done ? '<button class="redirect-link" data-action="open-redirect" data-label="'+escapeHtml(m.title)+'">stuck?</button>' : '')+'</div>';
+      }).join("") : '<button class="btn btn-ghost btn-sm" data-action="generate-milestones" data-id="'+g.id+'">Break this into 5 milestones</button>') + '</div>'
+    ) : (
+      '<div class="field-row" style="margin-top:12px;align-items:center"><div class="field" style="max-width:260px"><label>Progress</label><input type="range" min="0" max="100" step="5" value="'+pct+'" data-action="set-manual-progress" data-id="'+g.id+'"></div><div style="font-family:var(--font-serif);font-size:1.1rem">'+pct+'%</div></div>'
+    )) +
+  '</div>';
+}
+
+/* ================= RENDER: THE SANCTUARY ================= */
+function ROOM_SANCTUARY(){
+  var moodOptions = ["Great","Good","Okay","Low","Rough"];
+  var prompt = state.sanctuary._promptOfDay || (state.sanctuary._promptOfDay = pick(REFLECTION_PROMPTS));
+  return roomHead("sanctuary") +
+  '<div class="section-block"><div class="card"><h3>How are you, really?</h3>' +
+  '<form data-form="add-mood"><div class="field-row" style="align-items:flex-end">' +
+    '<div class="field"><label>Mood</label><select name="mood">' + moodOptions.map(function(m){ return '<option value="'+m+'">'+m+'</option>'; }).join("") + '</select></div>' +
+    '<div class="field" style="flex:2"><label>Note (optional)</label><input type="text" name="note" placeholder="Whatever\'s true right now"></div>' +
+    '<div class="field" style="flex:none"><button type="submit" class="btn btn-primary">Check in</button></div>' +
+  '</div></form>' +
+  (state.sanctuary.moods.length ? '<div class="list" style="margin-top:12px">' + state.sanctuary.moods.slice(0,5).map(function(m){ return '<div class="item"><div class="item-body"><div class="item-title">'+m.mood+(m.note?" — "+escapeHtml(m.note):"")+'</div><div class="item-meta">'+fmtDate(m.date)+'</div></div></div>'; }).join("") + '</div>' : '<div class="empty-state">No check-ins yet. There\'s no wrong answer here.</div>') +
+  '</div></div>' +
+
+  '<div class="grid grid-2 section-block">' +
+    '<div class="card"><h3>Rest</h3><form data-form="add-rest"><div class="field-row"><div class="field"><label>Hours slept</label><input type="number" step="0.5" name="hours" required></div><div class="field"><label>Quality</label><select name="quality"><option value="Restful">Restful</option><option value="Okay">Okay</option><option value="Rough">Rough</option></select></div></div><div class="form-actions"><button type="submit" class="btn btn-primary btn-sm">Log rest</button></div></form>' +
+    (state.sanctuary.rest.length ? '<div class="list" style="margin-top:10px">' + state.sanctuary.rest.slice(0,4).map(function(r){ return '<div class="item"><div class="item-body"><div class="item-title">'+r.hours+' hrs · '+r.quality+'</div><div class="item-meta">'+fmtDate(r.date)+'</div></div></div>'; }).join("") + '</div>' : '') + '</div>' +
+
+    '<div class="card"><h3>Reflection</h3><p style="font-style:italic;color:var(--text-dim);font-size:.9rem">'+prompt+'</p>' +
+    '<form data-form="add-reflection"><input type="hidden" name="prompt" value="'+escapeHtml(prompt)+'"><div class="field"><textarea name="response" placeholder="Write freely — no one is grading this"></textarea></div><div class="form-actions"><button type="submit" class="btn btn-primary btn-sm">Save reflection</button><button type="button" class="btn btn-ghost btn-sm" data-action="new-prompt">New prompt</button></div></form>' +
+    (state.sanctuary.reflections.length ? '<div class="list" style="margin-top:10px">' + state.sanctuary.reflections.slice(0,3).map(function(r){ return '<div class="item"><div class="item-body"><div class="item-meta">'+fmtDate(r.date)+' — <em>'+escapeHtml(r.prompt)+'</em></div><div class="item-title" style="font-weight:400;margin-top:4px">'+escapeHtml(r.response)+'</div></div></div>'; }).join("") + '</div>' : '') + '</div>' +
+  '</div>';
+}
+
+/* ================= RENDER: THE ESTATE ================= */
+function ROOM_ESTATE(){
+  var t = todayISO();
+  var todayDow = new Date(t+"T00:00:00").getDay();
+  var doneThisWeek = state.estate.chores.filter(function(c){ return c.lastDone && daysBetween(c.lastDone,t) < 7; }).length;
+  var chorePct = state.estate.chores.length ? Math.round(doneThisWeek/state.estate.chores.length*100) : 0;
+
+  return roomHead("estate") +
+  '<div class="grid grid-2 section-block">' +
+    '<div class="card"><div class="section-block-head" style="margin-bottom:8px"><h2 style="font-size:1.05rem">Chores</h2><button class="btn btn-ghost btn-sm" data-action="toggle-form" data-target="add-chore-form">+ Add</button></div>' +
+    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">'+ringSVG(chorePct,"var(--teal)",52)+'<div class="item-meta">This week\'s upkeep</div></div>' +
+    '<div class="form-panel hidden" id="add-chore-form"><form data-form="add-chore"><div class="field-row"><div class="field"><label>Chore</label><input type="text" name="name" required></div><div class="field"><label>Repeats</label><select name="freq"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="once">One-off</option></select></div></div><div class="form-actions"><button type="submit" class="btn btn-primary btn-sm">Add</button></div></form></div>' +
+    (state.estate.chores.length ? '<div class="list">' + state.estate.chores.map(function(c){
+      var doneRecently = c.lastDone && daysBetween(c.lastDone,t) < (c.freq==="monthly"?30:7);
+      return '<div class="item'+(doneRecently?" done":"")+'"><label class="item-check"><input type="checkbox" data-action="toggle-chore" data-id="'+c.id+'" '+(doneRecently?"checked":"")+'></label><div class="item-body"><div class="item-title'+(doneRecently?" strike":"")+'">'+escapeHtml(c.name)+'</div><div class="item-meta"><span class="pill pill-teal">'+c.freq+'</span>'+(c.lastDone?" last done "+fmtDate(c.lastDone):"")+'</div></div>'+(state.settings.toolkit.redirect && !doneRecently ? '<button class="redirect-link" data-action="open-redirect" data-label="'+escapeHtml(c.name)+'">stuck?</button>' : '')+'<button class="btn btn-ghost btn-icon btn-sm" data-action="remove-chore" data-id="'+c.id+'">&times;</button></div>';
+    }).join("") + '</div>' : '<div class="empty-state">No chores yet.</div>') + '</div>' +
+
+    '<div class="card"><div class="section-block-head" style="margin-bottom:8px"><h2 style="font-size:1.05rem">Errands</h2><button class="btn btn-ghost btn-sm" data-action="toggle-form" data-target="add-errand-form">+ Add</button></div>' +
+    '<div class="form-panel hidden" id="add-errand-form"><form data-form="add-errand"><div class="field-row"><div class="field"><label>Errand</label><input type="text" name="name" required></div><div class="field"><label>Due (optional)</label><input type="date" name="due"></div></div><div class="form-actions"><button type="submit" class="btn btn-primary btn-sm">Add</button></div></form></div>' +
+    (state.estate.errands.length ? '<div class="list">' + state.estate.errands.map(function(e){
+      return '<div class="item'+(e.done?" done":"")+'"><label class="item-check"><input type="checkbox" data-action="toggle-errand" data-id="'+e.id+'" '+(e.done?"checked":"")+'></label><div class="item-body"><div class="item-title'+(e.done?" strike":"")+'">'+escapeHtml(e.name)+'</div>'+(e.due?'<div class="item-meta">Due '+fmtDate(e.due)+'</div>':'')+'</div><button class="btn btn-ghost btn-icon btn-sm" data-action="remove-errand" data-id="'+e.id+'">&times;</button></div>';
+    }).join("") + '</div>' : '<div class="empty-state">Nothing on the list.</div>') + '</div>' +
+  '</div>' +
+
+  '<div class="card section-block"><h3>Weekly meal rotation</h3><div class="meal-grid">' +
+    WEEKDAYS.slice(1).concat(["Sun"]).map(function(day){
+      return '<div class="day-label">'+day+'</div><input type="text" class="meal-input" data-action="set-meal" data-day="'+day+'" value="'+escapeHtml(state.estate.meals[day]||"")+'" placeholder="Plan a meal">';
+    }).join("") +
+  '</div></div>';
+}
+
+var ROOM_RENDERERS = {
+  throne: ROOM_THRONE, court: ROOM_COURT, vault: ROOM_VAULT, body: ROOM_BODY,
+  ledger: ROOM_LEDGER, sanctuary: ROOM_SANCTUARY, estate: ROOM_ESTATE
+};
+
+/* ================= SETTINGS MODAL ================= */
+function openSettings(){
+  var tk = state.settings.toolkit;
+  var features = [
+    ["redirect","Redirect Method","When a task feels stuck, offer a smaller adjacent step instead of forcing through."],
+    ["milestones","Micro-Milestones","Auto-break Ledger goals into 5 smaller, frequent wins."],
+    ["visual","Visual-First Progress","Show progress as bars and rings, not just raw numbers."],
+    ["doubling","Body Doubling Mode","A visible 'working alongside you' session timer, from The Body or The Court."],
+    ["fog","Task Fog Log","Judgment-free quick capture for tasks you know you should do but can't start."],
+    ["energy","Energy-Based Planning","Tag tasks by energy needed; see what fits your current capacity."],
+    ["nudges","Check-In Nudges","Gentle, non-punishing prompts across sections when it's been a while."]
+  ];
+  var body = '' +
+  '<div style="margin-bottom:18px"><div class="card-label">Appearance</div>' +
+    '<div class="field-row"><div class="field"><label>Mode</label><select id="set-theme">' +
+      '<option value="gold"'+(state.settings.theme==="gold"?" selected":"")+'>In Gold (light)</option>' +
+      '<option value="shadow"'+(state.settings.theme==="shadow"?" selected":"")+'>In Shadow (dark)</option>' +
+    '</select></div>' +
+    '<div class="field"><label>Currency</label><select id="set-currency">' + Object.keys(CURRENCIES).map(function(c){ return '<option value="'+c+'"'+(c===state.settings.currency?" selected":"")+'>'+c+'</option>'; }).join("") + '</select></div>' +
+  '</div></div>' +
+  '<div style="margin-bottom:14px"><div class="card-label">The Court Toolkit</div>' +
+    features.map(function(f){
+      return '<div class="toolkit-row"><div><h4>'+f[1]+'</h4><p>'+f[2]+'</p></div><label class="switch"><input type="checkbox" data-toolkit="'+f[0]+'" '+(tk[f[0]]?"checked":"")+'><span class="slider"></span></label></div>';
+    }).join("") +
+  '</div>' +
+  '<div style="margin-bottom:14px"><div class="card-label">Your data, your file</div>' +
+    (fsaSupported() ?
+      '<div class="file-status"><span class="dot '+(fileHandle ? (fileNeedsReconnect?"dot-warn":"dot-on") : "dot-off")+'"></span><span>'+(fileHandle ? (fileNeedsReconnect ? "Linked to "+escapeHtml(state.settings.linkedFileName)+" — reconnect needed" : "Linked to "+escapeHtml(state.settings.linkedFileName)) : "Not linked to a file — saving to this browser only")+'</span></div>' +
+      '<div class="form-actions">' +
+        (fileHandle ? (fileNeedsReconnect ? '<button class="btn btn-primary btn-sm" data-action="reconnect-file">Reconnect</button>' : '') + '<button class="btn btn-ghost btn-sm" data-action="disconnect-file">Unlink</button>' :
+        '<button class="btn btn-primary btn-sm" data-action="connect-file-new">Create linked file</button><button class="btn btn-ghost btn-sm" data-action="connect-file-open">Link existing file</button>') +
+      '</div><p style="font-size:.76rem;color:var(--text-faint);margin-top:8px">A linked file auto-saves on every change, survives clearing browser data, and syncs via iCloud/Drive/Dropbox desktop folders.</p>'
+      : '<p style="font-size:.82rem;color:var(--text-dim)">This browser doesn\'t support linked-file saving. Your data stays in this browser\'s storage — use Export regularly to back it up.</p>') +
+  '</div>' +
+  '<div class="form-actions" style="border-top:1px solid var(--border-soft);padding-top:14px;margin-top:10px;flex-wrap:wrap">' +
+    '<button class="btn btn-ghost btn-sm" data-action="export-json">Export backup (.json)</button>' +
+    '<label class="btn btn-ghost btn-sm" style="cursor:pointer">Import backup<input type="file" id="import-input" accept=".json" style="display:none"></label>' +
+    '<button class="btn btn-danger btn-sm" data-action="reset-all">Reset everything</button>' +
+  '</div>';
+  openModal("Settings", body, function(){ return false; }, { onOpen: function(form){
+    form.querySelector("#set-theme").addEventListener("change", function(e){ state.settings.theme = e.target.value; applyTheme(); save(); });
+    form.querySelector("#set-currency").addEventListener("change", function(e){ state.settings.currency = e.target.value; save(); });
+    form.querySelectorAll("[data-toolkit]").forEach(function(cb){
+      cb.addEventListener("change", function(e){ state.settings.toolkit[e.target.dataset.toolkit] = e.target.checked; save(); });
+    });
+    var imp = form.querySelector("#import-input");
+    if(imp) imp.addEventListener("change", function(e){ if(e.target.files[0]) importJSON(e.target.files[0]); closeModal(); });
+  }});
+}
+
+/* ================= EVENT DELEGATION ================= */
+document.addEventListener("click", function(e){
+  var el = e.target.closest("[data-action]");
+  if(!el) return;
+  var action = el.dataset.action;
+  switch(action){
+    case "go-room": activeRoom = el.dataset.room; currentEnergyFilter = "any"; render(); window.scrollTo({top:0,behavior:"smooth"}); break;
+    case "toggle-theme": state.settings.theme = state.settings.theme==="gold"?"shadow":"gold"; applyTheme(); save(); break;
+    case "open-settings": openSettings(); break;
+    case "close-modal": closeModal(); break;
+    case "toggle-form": {
+      var target = document.getElementById(el.dataset.target);
+      if(target) target.classList.toggle("hidden");
+      break;
+    }
+    case "toggle-focus": {
+      var f = state.throne.focus.find(function(x){return x.id===el.dataset.id;});
+      if(f) f.done = !f.done; save(); break;
+    }
+    case "remove-focus": state.throne.focus = state.throne.focus.filter(function(x){return x.id!==el.dataset.id;}); save(); break;
+    case "toggle-event": {
+      var ev = state.court.events.find(function(x){return x.id===el.dataset.id;});
+      if(ev) ev.done = !ev.done; save(); break;
+    }
+    case "remove-event": state.court.events = state.court.events.filter(function(x){return x.id!==el.dataset.id;}); save(); break;
+    case "set-energy": break;
+    case "open-doubling": openDoublingPrompt(el.dataset.context); break;
+    case "stop-doubling-log": stopDoubling(true); break;
+    case "stop-doubling-nolog": stopDoubling(false); break;
+    case "open-redirect": openRedirect(el.dataset.label); break;
+    case "redirect-reroll": renderRedirectModal(); break;
+    case "redirect-to-fog": {
+      state.toolkitData.fog.push({ id:uid(), text:redirectRerollTarget, date:todayISO(), resolved:false });
+      save(); closeModal(); toast("Sent to your Fog Log."); break;
+    }
+    case "open-fog-capture": openFogCapture(); break;
+    case "toggle-bill-paid": {
+      var b = state.vault.bills.find(function(x){return x.id===el.dataset.id;});
+      if(b) b.paid = !b.paid; save(); break;
+    }
+    case "remove-bill": state.vault.bills = state.vault.bills.filter(function(x){return x.id!==el.dataset.id;}); save(); break;
+    case "remove-income": state.vault.incomes = state.vault.incomes.filter(function(x){return x.id!==el.dataset.id;}); save(); break;
+    case "remove-spend": state.vault.spending = state.vault.spending.filter(function(x){return x.id!==el.dataset.id;}); save(); break;
+    case "log-habit": {
+      var h = state.bodyRoom.habits.find(function(x){return x.id===el.dataset.id;});
+      if(h){
+        var t = todayISO();
+        var idx = h.history.indexOf(t);
+        if(idx>-1) h.history.splice(idx,1); else h.history.push(t);
+        var s = currentStreak(h.history);
+        if(s > h.bestStreak) h.bestStreak = s;
+      }
+      save(); break;
+    }
+    case "remove-habit": state.bodyRoom.habits = state.bodyRoom.habits.filter(function(x){return x.id!==el.dataset.id;}); save(); break;
+    case "remove-bodylog": state.bodyRoom.logs = state.bodyRoom.logs.filter(function(x){return x.id!==el.dataset.id;}); save(); break;
+    case "remove-cycle": state.bodyRoom.cycle.entries = state.bodyRoom.cycle.entries.filter(function(x){return x.id!==el.dataset.id;}); recomputeCycleAverages(); save(); break;
+    case "generate-milestones": {
+      var g = state.ledger.goals.find(function(x){return x.id===el.dataset.id;});
+      if(g) g.milestones = defaultMilestones();
+      save(); break;
+    }
+    case "toggle-milestone": {
+      var g2 = state.ledger.goals.find(function(x){return x.id===el.dataset.goal;});
+      if(g2){ var m = g2.milestones.find(function(x){return x.id===el.dataset.id;}); if(m) m.done = !m.done; }
+      save(); break;
+    }
+    case "remove-goal": state.ledger.goals = state.ledger.goals.filter(function(x){return x.id!==el.dataset.id;}); save(); break;
+    case "new-prompt": state.sanctuary._promptOfDay = pick(REFLECTION_PROMPTS); render(); break;
+    case "toggle-chore": {
+      var c = state.estate.chores.find(function(x){return x.id===el.dataset.id;});
+      if(c) c.lastDone = c.lastDone && daysBetween(c.lastDone, todayISO()) < (c.freq==="monthly"?30:7) ? null : todayISO();
+      save(); break;
+    }
+    case "remove-chore": state.estate.chores = state.estate.chores.filter(function(x){return x.id!==el.dataset.id;}); save(); break;
+    case "toggle-errand": {
+      var er = state.estate.errands.find(function(x){return x.id===el.dataset.id;});
+      if(er) er.done = !er.done; save(); break;
+    }
+    case "remove-errand": state.estate.errands = state.estate.errands.filter(function(x){return x.id!==el.dataset.id;}); save(); break;
+    case "dismiss-nudge": dismissNudge(el.dataset.key); render(); break;
+    case "export-json": exportJSON(); break;
+    case "reset-all": resetAllData(); break;
+    case "connect-file-new": connectFile("new"); break;
+    case "connect-file-open": connectFile("open"); break;
+    case "disconnect-file": disconnectFile(); break;
+    case "reconnect-file": reconnectFile(); break;
+  }
+});
+document.addEventListener("change", function(e){
+  var t = e.target;
+  if(t.id === "energy-select"){ currentEnergyFilter = t.value; render(); }
+  if(t.dataset && t.dataset.action === "set-currency"){ state.settings.currency = t.value; save(); }
+  if(t.dataset && t.dataset.action === "set-manual-progress"){
+    var g = state.ledger.goals.find(function(x){return x.id===t.dataset.id;});
+    if(g){ g.manualPct = Number(t.value); save(); }
+  }
+  if(t.dataset && t.dataset.action === "set-meal"){
+    state.estate.meals[t.dataset.day] = t.value; saveLocal(); writeLinkedFile();
+  }
+});
+document.addEventListener("submit", function(e){
+  var form = e.target.closest("[data-form]");
+  if(!form) return;
+  e.preventDefault();
+  var type = form.dataset.form;
+  var data = new FormData(form);
+  var t = todayISO();
+  switch(type){
+    case "add-focus":
+      if(state.throne.focus.length < 3) state.throne.focus.push({ id:uid(), text:data.get("text"), done:false });
+      break;
+    case "add-event":
+      state.court.events.push({ id:uid(), title:data.get("title"), date:data.get("date"), start:data.get("start"), end:data.get("end"), recurring:data.get("recurring")||"none", energy:data.get("energy")||"", notes:data.get("notes")||"", done:false });
+      break;
+    case "add-bill":
+      state.vault.bills.push({ id:uid(), name:data.get("name"), amount:Number(data.get("amount")), dueDate:data.get("dueDate"), recurring:data.get("recurring"), paid:false });
+      break;
+    case "add-income":
+      state.vault.incomes.push({ id:uid(), name:data.get("name"), amount:Number(data.get("amount")), date:t, recurring:data.get("recurring") });
+      break;
+    case "add-spend":
+      state.vault.spending.push({ id:uid(), name:data.get("name"), amount:Number(data.get("amount")), date:t, category:data.get("category")||"" });
+      break;
+    case "add-habit":
+      state.bodyRoom.habits.push({ id:uid(), name:data.get("name"), history:[], bestStreak:0 });
+      break;
+    case "add-bodylog":
+      state.bodyRoom.logs.unshift({ id:uid(), date:t, type:data.get("type"), note:data.get("note")||"" });
+      break;
+    case "add-cycle":
+      state.bodyRoom.cycle.entries.push({ id:uid(), start:data.get("start"), end:data.get("end")||"", flow:data.get("flow"), symptoms:(data.get("symptoms")||"").split(",").map(function(s){return s.trim();}).filter(Boolean), mood:data.get("mood")||"" });
+      recomputeCycleAverages();
+      break;
+    case "add-goal":
+      state.ledger.goals.unshift(makeGoal(data.get("title"), data.get("horizon"), data.get("targetDate")||"", state.settings.toolkit.milestones));
+      break;
+    case "add-mood":
+      state.sanctuary.moods.unshift({ id:uid(), date:t, mood:data.get("mood"), note:data.get("note")||"" });
+      break;
+    case "add-rest":
+      state.sanctuary.rest.unshift({ id:uid(), date:t, hours:Number(data.get("hours")), quality:data.get("quality") });
+      break;
+    case "add-reflection":
+      if((data.get("response")||"").trim()){ state.sanctuary.reflections.unshift({ id:uid(), date:t, prompt:data.get("prompt"), response:data.get("response") }); state.sanctuary._promptOfDay = pick(REFLECTION_PROMPTS); }
+      break;
+    case "add-chore":
+      state.estate.chores.push({ id:uid(), name:data.get("name"), freq:data.get("freq"), lastDone:null });
+      break;
+    case "add-errand":
+      state.estate.errands.push({ id:uid(), name:data.get("name"), due:data.get("due")||"", done:false });
+      break;
+  }
+  form.reset();
+  var panel = form.closest(".form-panel");
+  if(panel) panel.classList.add("hidden");
+  save();
+});
+function recomputeCycleAverages(){
+  var entries = state.bodyRoom.cycle.entries.slice().sort(function(a,b){ return a.start.localeCompare(b.start); });
+  if(entries.length >= 2){
+    var gaps = [];
+    for(var i=1;i<entries.length;i++) gaps.push(daysBetween(entries[i-1].start, entries[i].start));
+    state.bodyRoom.cycle.cycleLenAvg = Math.round(gaps.reduce(function(a,b){return a+b;},0)/gaps.length) || 28;
+  }
+  var lengths = entries.filter(function(e){return e.end;}).map(function(e){ return daysBetween(e.start,e.end)+1; });
+  if(lengths.length) state.bodyRoom.cycle.periodLenAvg = Math.round(lengths.reduce(function(a,b){return a+b;},0)/lengths.length);
+}
+function openDoublingPrompt(context){
+  openModal("Body Doubling Session", '' +
+    '<p style="color:var(--text-dim);font-size:.86rem">A visible session, working alongside you — from '+(context==="court"?"The Court":"The Body")+'.</p>' +
+    '<div class="field-row"><div class="field"><label>What are you working on?</label><input type="text" name="label" placeholder="e.g. Laundry, admin, movement"></div></div>' +
+    '<div class="field-row"><div class="field"><label>Length</label><select name="minutes"><option value="0">Open-ended</option><option value="15">15 minutes</option><option value="25">25 minutes</option><option value="45">45 minutes</option></select></div></div>' +
+    '<div class="form-actions"><button type="submit" class="btn btn-primary">Begin session</button></div>',
+    function(data){
+      startDoubling(data.get("label")||"Focus session", Number(data.get("minutes"))||0);
+      toast("Session started — you're not doing this alone.");
+    });
+}
+
+/* ================= INIT ================= */
+function init(){
+  if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function(){});
+  state = loadLocal() || seedState();
+  applyTheme();
+  render();
+  restoreFileHandle();
+}
+init();
+</script>
+</body>
+</html>
