@@ -5,6 +5,8 @@
 <title>Clientflow — Client &amp; Project Tracker</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="description" content="Clientflow — offline-first client and project tracker for solo service businesses. No login, no subscription, your data stays on your device." />
+<!-- Inline favicon keeps the app a single file and makes zero network requests. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23F0187A'/%3E%3Ctext x='16' y='23' font-family='Helvetica,Arial,sans-serif' font-size='20' font-weight='bold' fill='white' text-anchor='middle'%3EC%3C/text%3E%3C/svg%3E" />
 <style>
 /* ==========================================================================
    Clientflow — Neon Draft theme
@@ -367,6 +369,123 @@ table.data-table tbody tr.expanded-row{ background: var(--bg2); }
 .switch input:checked + .slider{ background: var(--accent); }
 .switch input:checked + .slider::before{ transform: translateX(16px); }
 
+/* ==========================================================================
+   Focus Room — body doubling
+   ========================================================================== */
+.focus-setup-grid{ display:grid; grid-template-columns: 1.15fr 1fr; gap:16px; align-items:start; }
+.focus-hero{ background: linear-gradient(150deg, rgba(240,24,122,0.10), rgba(163,230,53,0.05) 60%, transparent), var(--bg2);
+  border:1px solid var(--border); border-radius: var(--radius-lg); padding:22px; position:relative; overflow:hidden; }
+.focus-hero h3{ font-size:19px; margin-bottom:6px; }
+.focus-hero .fh-sub{ color: var(--text-dim); font-size:13px; max-width:460px; margin-bottom:18px; }
+.focus-hero .fh-badge{ display:inline-flex; align-items:center; gap:7px; font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.05em; color: var(--signal); background: rgba(163,230,53,0.1); border:1px solid rgba(163,230,53,0.25);
+  padding:4px 10px; border-radius:999px; margin-bottom:14px; }
+.focus-option-row{ display:grid; grid-template-columns: repeat(auto-fit, minmax(88px,1fr)); gap:8px; }
+.chip-select{ display:flex; flex-wrap:wrap; gap:8px; }
+.chip-select button{ appearance:none; background: var(--bg3); border:1px solid var(--border); color: var(--text-dim);
+  padding:8px 13px; border-radius:10px; font-size:12.5px; font-weight:600; cursor:pointer; transition: all .15s; text-align:left; }
+.chip-select button:hover{ color: var(--text); border-color: var(--border-strong); }
+.chip-select button.active{ color: var(--text); border-color: var(--accent); background: rgba(240,24,122,0.12); box-shadow: 0 0 14px rgba(240,24,122,0.16); }
+.chip-select button .chip-sub{ display:block; font-size:10.5px; font-weight:500; color: var(--text-dim2); margin-top:2px; }
+.focus-stat-grid{ display:grid; grid-template-columns: repeat(2,1fr); gap:12px; }
+.focus-stat{ background: var(--bg3); border-radius: var(--radius-md); padding:13px 15px; }
+.focus-stat .fs-val{ font-family: var(--font-display); font-size:22px; font-weight:800; }
+.focus-stat .fs-lbl{ font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color: var(--text-dim); margin-top:2px; }
+.focus-stat.signal .fs-val{ color: var(--signal); }
+.session-row{ display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:12.5px; }
+.session-row:last-child{ border-bottom:none; }
+.session-row .sr-main{ flex:1; min-width:0; }
+.session-row .sr-intent{ font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.session-row .sr-meta{ font-size:11px; color: var(--text-dim); }
+.volume-row{ display:flex; align-items:center; gap:10px; }
+input[type=range]{ -webkit-appearance:none; appearance:none; height:4px; border-radius:999px; background: var(--bg3); flex:1; outline:none; }
+input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:15px; height:15px; border-radius:50%; background: var(--accent); cursor:pointer; box-shadow: 0 0 10px rgba(240,24,122,0.5); }
+input[type=range]::-moz-range-thumb{ width:15px; height:15px; border:none; border-radius:50%; background: var(--accent); cursor:pointer; }
+
+/* The room itself */
+.focus-room{ position:fixed; inset:0; z-index:150; background: var(--bg); overflow:hidden; display:flex; flex-direction:column;
+  animation: roomIn .28s ease; }
+@keyframes roomIn{ from{ opacity:0; transform: scale(1.02);} to{ opacity:1; transform:none;} }
+#focus-canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+.room-shell{ position:relative; z-index:2; flex:1; display:flex; flex-direction:column; padding:22px 26px; overflow-y:auto; }
+.room-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+.room-presence{ display:flex; align-items:center; gap:10px; background: rgba(17,24,39,0.66); backdrop-filter: blur(8px);
+  border:1px solid var(--border); border-radius:999px; padding:7px 14px 7px 10px; }
+.presence-dot{ width:9px; height:9px; border-radius:50%; background: var(--green); box-shadow: 0 0 10px var(--green); animation: presencePulse 3.4s ease-in-out infinite; }
+@keyframes presencePulse{ 0%,100%{ transform: scale(1); opacity:1; } 50%{ transform: scale(1.5); opacity:.55; } }
+.room-presence .rp-name{ font-size:12.5px; font-weight:700; }
+.room-presence .rp-state{ font-size:11px; color: var(--text-dim); }
+.typing-dots{ display:inline-flex; gap:3px; margin-left:5px; vertical-align:middle; }
+.typing-dots i{ width:4px; height:4px; border-radius:50%; background: var(--signal); opacity:.35; animation: typedot 1.25s infinite; }
+.typing-dots i:nth-child(2){ animation-delay:.18s; }
+.typing-dots i:nth-child(3){ animation-delay:.36s; }
+@keyframes typedot{ 0%,100%{ opacity:.25; transform: translateY(0);} 40%{ opacity:1; transform: translateY(-2px);} }
+.typing-dots.idle i{ animation: none; opacity:.2; }
+.room-actions{ display:flex; gap:8px; align-items:center; }
+.room-center{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; }
+.timer-wrap{ position:relative; width:300px; height:300px; max-width:74vw; max-height:44vh; }
+.timer-wrap svg{ width:100%; height:100%; transform: rotate(-90deg); }
+.timer-inner{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
+.timer-time{ font-family: var(--font-mono); font-size:52px; font-weight:700; letter-spacing:-0.02em; font-variant-numeric: tabular-nums; }
+.timer-phase{ font-size:11.5px; text-transform:uppercase; letter-spacing:0.14em; color: var(--text-dim); font-weight:700; }
+.timer-phase.break{ color: var(--signal); }
+.room-intent{ font-family: var(--font-display); font-size:23px; font-weight:800; max-width:640px; }
+.room-intent-sub{ font-size:12.5px; color: var(--text-dim); }
+.room-breath{ font-size:12px; color: var(--text-dim2); letter-spacing:0.1em; text-transform:uppercase; min-height:16px; }
+.room-bottom{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; }
+.room-panel{ background: rgba(17,24,39,0.72); backdrop-filter: blur(10px); border:1px solid var(--border);
+  border-radius: var(--radius-lg); padding:14px 16px; width:min(340px,44vw); }
+.room-panel h4{ font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color: var(--text-dim); margin-bottom:10px; }
+.room-task{ display:flex; align-items:center; gap:9px; padding:6px 0; font-size:12.5px; }
+.room-task input[type=checkbox]{ width:16px; height:16px; accent-color: var(--green); cursor:pointer; flex-shrink:0; }
+.room-task.done span{ text-decoration:line-through; color: var(--text-dim2); }
+.room-sound{ display:flex; flex-direction:column; gap:10px; }
+.room-chip-row{ display:flex; gap:6px; flex-wrap:wrap; }
+.room-chip-row button{ appearance:none; background: rgba(255,255,255,0.05); border:1px solid var(--border); color: var(--text-dim);
+  padding:5px 10px; border-radius:8px; font-size:11.5px; font-weight:600; cursor:pointer; }
+.room-chip-row button.active{ color: var(--text); border-color: var(--accent); background: rgba(240,24,122,0.14); }
+.companion-note{ position:absolute; left:50%; bottom:118px; transform: translateX(-50%); z-index:3;
+  background: rgba(26,34,53,0.92); border:1px solid var(--border-strong); border-radius:12px; padding:10px 16px;
+  font-size:12.5px; max-width:min(420px,86vw); box-shadow: 0 14px 40px rgba(0,0,0,.45); opacity:0; transition: opacity .35s, transform .35s; }
+.companion-note.show{ opacity:1; transform: translateX(-50%) translateY(-6px); }
+.companion-note .cn-who{ color: var(--signal); font-weight:700; }
+
+/* Minimised pill */
+.focus-pill{ position:fixed; bottom:20px; left:20px; z-index:140; display:flex; align-items:center; gap:11px;
+  background: rgba(17,24,39,0.94); backdrop-filter: blur(10px); border:1px solid var(--accent);
+  box-shadow: 0 0 0 1px rgba(240,24,122,0.25), 0 14px 34px rgba(0,0,0,.45); border-radius:999px; padding:8px 10px 8px 14px; cursor:pointer; }
+.focus-pill:hover{ background: rgba(26,34,53,0.96); }
+.focus-pill .fp-time{ font-family: var(--font-mono); font-weight:700; font-size:14px; font-variant-numeric: tabular-nums; }
+.focus-pill .fp-label{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; color: var(--text-dim); }
+.focus-pill.paused{ border-color: var(--amber); box-shadow: 0 0 0 1px rgba(251,146,60,0.3), 0 14px 34px rgba(0,0,0,.45); }
+
+.resume-banner{ display:flex; align-items:center; gap:12px; justify-content:center; background: rgba(163,230,53,0.1);
+  border-bottom:1px solid rgba(163,230,53,0.3); color: var(--signal); padding:9px 20px; font-size:12.5px; font-weight:600; }
+
+.task-focus-btn{ appearance:none; background: rgba(240,24,122,0.12); border:1px solid rgba(240,24,122,0.35); color:#ff6bb0;
+  width:26px; height:26px; border-radius:8px; cursor:pointer; font-size:11px; display:inline-flex; align-items:center;
+  justify-content:center; flex-shrink:0; transition: all .15s; }
+.task-focus-btn:hover{ background: var(--accent); color:#fff; }
+
+@media (max-width: 900px){
+  .focus-setup-grid{ grid-template-columns: 1fr; }
+  .room-bottom{ flex-direction:column; align-items:stretch; }
+  .room-panel{ width:auto; }
+  .timer-time{ font-size:40px; }
+  .timer-wrap{ width:210px; height:210px; max-height:32vh; }
+  .room-center{ gap:12px; padding: 8px 0 14px; }
+  .room-shell{ padding-bottom: 62px; }
+  .companion-note{ position:static; transform:none; opacity:1; margin:10px 0 0; max-width:none; display:none; }
+  .companion-note.show{ display:block; transform:none; }
+}
+body.room-open .toast-wrap{ bottom: auto; top: 76px; right: 20px; }
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  .view{ animation: none; }
+  .presence-dot{ animation: none; }
+}
+
 @media (max-width: 1100px){
   .charts-row{ grid-template-columns: 1fr; }
   .kanban-board{ grid-template-columns: repeat(2,1fr); }
@@ -401,6 +520,7 @@ table.data-table tbody tr.expanded-row{ background: var(--bg2); }
       <button data-action="switch-tab" data-tab="projects">Projects</button>
       <button data-action="switch-tab" data-tab="clients">Clients</button>
       <button data-action="switch-tab" data-tab="invoices">Invoices</button>
+      <button data-action="switch-tab" data-tab="focus">Focus Room</button>
       <button data-action="switch-tab" data-tab="settings">Settings</button>
     </nav>
     <div class="header-actions">
@@ -416,10 +536,13 @@ table.data-table tbody tr.expanded-row{ background: var(--bg2); }
     <section class="view" id="view-projects" data-view="projects"></section>
     <section class="view" id="view-clients" data-view="clients"></section>
     <section class="view" id="view-invoices" data-view="invoices"></section>
+    <section class="view" id="view-focus" data-view="focus"></section>
     <section class="view" id="view-settings" data-view="settings"></section>
   </main>
 </div>
 
+<div id="focus-room-root"></div>
+<div id="focus-pill-root"></div>
 <div id="modal-root"></div>
 <div id="drawer-root"></div>
 <div class="toast-wrap" id="toast-wrap"></div>
@@ -456,12 +579,27 @@ function defaultState(){
     projects: [],
     tasks: [],
     invoices: [],
+    focusSessions: [],
+    activeFocus: null,
     settings: {
       businessName: 'My Business',
       defaultCurrency: 'GBP',
       financialYearStart: 4,
-      activeCurrencies: CURRENCIES.slice()
+      activeCurrencies: CURRENCIES.slice(),
+      focus: defaultFocusSettings()
     }
+  };
+}
+function defaultFocusSettings(){
+  return {
+    duration: 25,
+    breakMin: 5,
+    ambience: 'rain',
+    companion: true,
+    scene: 'breathe',
+    volume: 0.5,
+    chimes: true,
+    partnerName: 'Mo'
   };
 }
 
@@ -472,6 +610,8 @@ let fileHandle = null;
 let storageMode = null; // 'fsa' | 'idb' | null (not yet chosen)
 let saveTimer = null;
 let isSaving = false;
+let pendingSave = false;
+let resizeTimer = null;
 
 let projectsFilter = 'All';
 let projectsViewMode = 'kanban'; // kanban | list
@@ -479,6 +619,9 @@ let projectsSort = { key: 'dueDate', dir: 'asc' };
 let clientsFilter = 'All';
 let expandedClientId = null;
 let invoicesFilter = 'All';
+/* Pending Focus Room setup choices, kept outside the DOM so that re-rendering
+   the view (e.g. after tapping a chip) never discards what the user picked. */
+let focusSetup = { taskId: '', intent: '' };
 
 /* ---------------------------------- Utilities ---------------------------------- */
 function uid(prefix){ return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
@@ -595,12 +738,16 @@ function fsaSupported(){ return 'showSaveFilePicker' in window; }
 function mergeState(loaded){
   const base = defaultState();
   if(!loaded || typeof loaded !== 'object') return base;
+  const settings = Object.assign(base.settings, loaded.settings || {});
+  settings.focus = Object.assign(defaultFocusSettings(), (loaded.settings && loaded.settings.focus) || {});
   return {
     clients: Array.isArray(loaded.clients) ? loaded.clients : [],
     projects: Array.isArray(loaded.projects) ? loaded.projects : [],
     tasks: Array.isArray(loaded.tasks) ? loaded.tasks : [],
     invoices: Array.isArray(loaded.invoices) ? loaded.invoices : [],
-    settings: Object.assign(base.settings, loaded.settings || {})
+    focusSessions: Array.isArray(loaded.focusSessions) ? loaded.focusSessions : [],
+    activeFocus: (loaded.activeFocus && typeof loaded.activeFocus === 'object') ? loaded.activeFocus : null,
+    settings
   };
 }
 
@@ -772,7 +919,9 @@ function scheduleSave(){
 }
 
 async function doSave(immediate){
-  if(isSaving && !immediate){ return; }
+  // A save already in flight must not swallow the change that arrived during it:
+  // flag it and re-run once the current write finishes.
+  if(isSaving){ pendingSave = true; return; }
   isSaving = true;
   setSaveIndicator('saving');
   try{
@@ -795,6 +944,7 @@ async function doSave(immediate){
     toast('Could not save — check file permissions.', 'error');
   } finally {
     isSaving = false;
+    if(pendingSave){ pendingSave = false; doSave(true); }
   }
 }
 
@@ -892,27 +1042,32 @@ function effectiveInvoiceStatus(inv){
   return inv.status;
 }
 function syncInvoiceStatuses(){
+  let changed = false;
   state.invoices.forEach(inv=>{
     const eff = effectiveInvoiceStatus(inv);
     if(eff === 'Overdue' && inv.status !== 'Overdue' && inv.status !== 'Paid'){
       inv.status = 'Overdue';
+      changed = true;
     }
   });
+  // The status flip is real data, so persist it rather than waiting for the
+  // user's next edit.
+  if(changed) scheduleSave();
 }
 
 function clientColor(client){ return (client && client.colourTag) ? client.colourTag : CLIENT_COLORS[0]; }
 
 function clientTotals(clientId){
   const invs = invoicesForClient(clientId);
-  let billed=0, paid=0, outstanding=0;
+  let billed=0, paid=0, outstanding=0, draft=0;
   invs.forEach(inv=>{
     const amt = Number(inv.amount)||0;
-    billed += amt;
     const eff = effectiveInvoiceStatus(inv);
-    if(eff==='Paid') paid += amt;
-    else if(inv.status !== 'Draft') outstanding += amt;
+    if(eff==='Paid'){ paid += amt; billed += amt; }
+    else if(inv.status === 'Draft'){ draft += amt; }   // drafted, not yet billed
+    else { outstanding += amt; billed += amt; }
   });
-  return { billed, paid, outstanding };
+  return { billed, paid, outstanding, draft };
 }
 
 function clientLastActivity(clientId){
@@ -1120,7 +1275,7 @@ function prepCanvas(canvas){
   return { ctx, w, h };
 }
 
-function drawGridAndYLabels(ctx, padL, padT, chartW, chartH, niceMax, steps){
+function drawGridAndYLabels(ctx, padL, padT, chartW, chartH, niceMax, steps, unit){
   ctx.strokeStyle = COLORS.border;
   ctx.lineWidth = 1;
   ctx.font = '10.5px Inter, sans-serif';
@@ -1133,17 +1288,19 @@ function drawGridAndYLabels(ctx, padL, padT, chartW, chartH, niceMax, steps){
     ctx.moveTo(padL, Math.round(y)+0.5);
     ctx.lineTo(padL+chartW, Math.round(y)+0.5);
     ctx.stroke();
-    ctx.fillText(shortMoney(niceMax*i/steps), padL-8, y);
+    const v = niceMax*i/steps;
+    ctx.fillText(unit ? String(Math.round(v)) : shortMoney(v), padL-8, y);
   }
 }
 
-function drawBarChart(canvas, data){
+function drawBarChart(canvas, data, opts){
+  opts = opts || {};
   const { ctx, w, h } = prepCanvas(canvas);
   const padL=40, padR=10, padT=10, padB=24;
   const chartW = w-padL-padR, chartH = h-padT-padB;
   const max = Math.max(...data.map(d=>d.value), 0);
   const niceMax = niceCeil(max);
-  drawGridAndYLabels(ctx, padL, padT, chartW, chartH, niceMax, 4);
+  drawGridAndYLabels(ctx, padL, padT, chartW, chartH, niceMax, 4, opts.unit);
   const slot = chartW/data.length;
   const barW = Math.min(40, slot*0.5);
   const bars = [];
@@ -1302,23 +1459,28 @@ function svgRing(pct, label, size, stroke){
   </svg>`;
 }
 
-function svgTimeline(startDate, dueDate, width, height){
-  width = width||100; height = height||8;
+/* Spans the full width of its container: viewBox units are percentages of width,
+   stretched with preserveAspectRatio="none" so the bar tracks the card width. */
+function svgTimeline(startDate, dueDate, status){
+  const height = 8;
   const start = parseDate(startDate), due = parseDate(dueDate);
   const now = new Date();
   let pct = 0, overdue = false;
   if(start && due && due.getTime() > start.getTime()){
     pct = clamp((now-start)/(due-start), 0, 1);
-  } else if(start && !due){
-    pct = 0;
   }
   if(due && now.getTime() > due.getTime()) { overdue = true; pct = 1; }
-  const fill = overdue ? 'var(--red)' : 'var(--accent)';
-  const tickX = clamp(pct*width, 1, width-1);
-  return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="timeline-bar">
-    <rect x="0" y="${height/2-2}" width="${width}" height="4" rx="2" fill="var(--border)"/>
-    <rect x="0" y="${height/2-2}" width="${(pct*width).toFixed(1)}" height="4" rx="2" fill="${fill}"/>
-    <circle cx="${tickX.toFixed(1)}" cy="${height/2}" r="3.5" fill="${fill}"/>
+  const done = status === 'Complete' || status === 'Archived';
+  const fill = done ? 'var(--green)' : overdue ? 'var(--red)' : 'var(--accent)';
+  const tickX = clamp(pct*100, 0.6, 99.4);
+  const label = (start||due)
+    ? `${start?'Started '+fmtDateShort(startDate):'No start date'} · ${due?'due '+fmtDateShort(dueDate):'no due date'}`
+    : 'No dates set';
+  return `<svg width="100%" height="${height}" viewBox="0 0 100 ${height}" preserveAspectRatio="none" class="timeline-bar" role="img" aria-label="${escapeHtml(label)}">
+    <title>${escapeHtml(label)}</title>
+    <rect x="0" y="${height/2-2}" width="100" height="4" fill="var(--border)"/>
+    <rect x="0" y="${height/2-2}" width="${(pct*100).toFixed(2)}" height="4" fill="${fill}"/>
+    <rect x="${(tickX-0.6).toFixed(2)}" y="0" width="1.2" height="${height}" fill="${fill}"/>
   </svg>`;
 }
 
@@ -1365,7 +1527,7 @@ function openModal(html, opts){
   opts = opts || {};
   const root = document.getElementById('modal-root');
   root.innerHTML = `<div class="overlay">
-    <div class="modal ${opts.wide?'wide':''}" data-modal-panel>${html}</div>
+    <div class="modal ${opts.wide?'wide':''}" data-modal-panel role="dialog" aria-modal="true">${html}</div>
   </div>`;
   // Close only when the backdrop itself is clicked (not when a click inside the
   // modal bubbles up to it) — avoids relying on stopPropagation, which would
@@ -1379,7 +1541,7 @@ function closeModal(){ document.getElementById('modal-root').innerHTML = ''; }
 
 function openDrawer(html){
   const root = document.getElementById('drawer-root');
-  root.innerHTML = `<div class="drawer-overlay" data-action="close-drawer"></div><div class="drawer" data-drawer-panel>${html}</div>`;
+  root.innerHTML = `<div class="drawer-overlay" data-action="close-drawer"></div><div class="drawer" data-drawer-panel role="dialog" aria-modal="true">${html}</div>`;
   requestAnimationFrame(()=>{ root.querySelector('.drawer').classList.add('open'); });
 }
 function closeDrawer(){
@@ -1526,6 +1688,7 @@ function renderDashboard(){
               <div class="wk-sub">${escapeHtml(x.project?x.project.name:'—')}${x.project&&getClient(x.project.clientId)?' · '+escapeHtml(getClient(x.project.clientId).name):''}</div>
             </div>
             <span class="dim mono" style="font-size:11px;">${fmtDateShort(x.task.dueDate)}</span>
+            ${x.task.done ? '' : `<button class="task-focus-btn" data-action="focus-start-task" data-id="${x.task.id}" aria-label="Start a focus session on ${escapeHtml(x.task.title)}" title="Body double this task">▶</button>`}
           </div>`).join('')}
       </div>
     </div>
@@ -1579,9 +1742,20 @@ function miniProjectCard(p){
     ${projectStatusPill(p.status)}
     <div class="mc-bottom">
       ${svgRing(prog.pct, `${prog.done}/${prog.total}`, 40, 4.5)}
-      <span class="mc-due ${overdue?'overdue':''}">${p.dueDate ? (overdue?'Overdue · ':'Due ')+fmtDateShort(p.dueDate) : 'No due date'}</span>
+      <span class="mc-due ${overdue?'overdue':''}" title="${p.dueDate?'Due '+fmtDate(p.dueDate):'No due date'}">${daysUntilDueLabel(p.dueDate)}</span>
     </div>
   </div>`;
+}
+
+/* "days until due" phrasing used on dashboard project cards */
+function daysUntilDueLabel(dueDate){
+  if(!dueDate) return 'No due date';
+  const days = daysBetween(parseDate(todayISO()), parseDate(dueDate));
+  if(days === 0) return 'Due today';
+  if(days === 1) return '1 day left';
+  if(days > 1) return days + ' days left';
+  if(days === -1) return 'Overdue by 1 day';
+  return 'Overdue by ' + Math.abs(days) + ' days';
 }
 
 /* ==========================================================================
@@ -1648,10 +1822,13 @@ function kanbanCard(p){
     </div>
     <div class="pc-name">${escapeHtml(p.name)}</div>
     <div class="pc-mid">
-      <span class="pc-value mono">${fmtMoney(p.value, p.currency)}</span>
+      <div>
+        ${projectStatusPill(p.status)}
+        <div class="pc-value mono">${fmtMoney(p.value, p.currency)}</div>
+      </div>
       ${svgRing(prog.pct, `${prog.done}/${prog.total}`, 34, 4)}
     </div>
-    <div class="pc-timeline">${svgTimeline(p.startDate, p.dueDate, 200, 8)}</div>
+    <div class="pc-timeline">${svgTimeline(p.startDate, p.dueDate, p.status)}</div>
     <div class="pc-due ${overdue?'overdue':''}">${p.dueDate ? 'Due '+fmtDateShort(p.dueDate) : 'No due date'}</div>
   </div>`;
 }
@@ -1706,7 +1883,7 @@ function renderProjectsList(){
           <td class="mono ${overdue?'':''}" style="${overdue?'color:var(--red);font-weight:700;':''}">${fmtDateShort(p.dueDate)}</td>
           <td class="mono">${fmtMoney(p.value, p.currency)}</td>
           <td style="min-width:110px;"><div class="task-bar-track"><div class="task-bar-fill" style="width:${(prog.pct*100).toFixed(0)}%"></div></div></td>
-          <td class="actions-cell" onclick="event.stopPropagation()">
+          <td class="actions-cell">
             <button class="btn xs ghost" data-action="open-project" data-id="${p.id}">Open</button>
             <button class="btn xs ghost" data-action="toggle-archive-project" data-id="${p.id}">${p.status==='Archived'?'Unarchive':'Archive'}</button>
           </td>
@@ -1726,7 +1903,7 @@ function projectDetailHTML(id){
   return `
   <div class="drawer-head">
     <h3>${escapeHtml(p.name)}</h3>
-    <button class="close-x" data-action="close-drawer">✕</button>
+    <button class="close-x" data-action="close-drawer" aria-label="Close panel" title="Close">✕</button>
   </div>
   <div class="drawer-body">
     <form data-form="edit-project" data-id="${p.id}">
@@ -1746,7 +1923,7 @@ function projectDetailHTML(id){
       <div class="field-row">
         <div class="field"><label>Value</label><input type="number" step="0.01" name="value" value="${p.value||0}" /></div>
         <div class="field"><label>Currency</label>
-          <select name="currency">${activeCurrencies().map(c=>`<option value="${c}" ${c===p.currency?'selected':''}>${c}</option>`).join('')}</select>
+          <select name="currency">${currencyOptions(p.currency)}</select>
         </div>
       </div>
       <div class="field"><label>Description</label><textarea name="description">${escapeHtml(p.description||'')}</textarea></div>
@@ -1792,11 +1969,22 @@ function taskRowHTML(t){
     <span class="tr-title">${escapeHtml(t.title)}</span>
     <span class="pill ${t.priority==='high'?'red':t.priority==='medium'?'amber':'dim'}">${priorityLabel(t.priority)}</span>
     <span class="tr-due">${t.dueDate?fmtDateShort(t.dueDate):''}</span>
-    <span class="tr-actions"><button class="btn xs ghost" data-action="delete-task" data-id="${t.id}">✕</button></span>
+    <span class="tr-actions" style="display:flex; gap:6px;">
+      ${t.done ? '' : `<button class="task-focus-btn" data-action="focus-start-task" data-id="${t.id}" aria-label="Start a focus session on ${escapeHtml(t.title)}" title="Body double this task">▶</button>`}
+      <button class="btn xs ghost" data-action="delete-task" data-id="${t.id}" aria-label="Delete task ${escapeHtml(t.title)}" title="Delete task">✕</button>
+    </span>
   </div>`;
 }
 
 function activeCurrencies(){ return CURRENCIES.filter(c=> state.settings.activeCurrencies.includes(c)); }
+
+/* Currency options for a record, always including whatever that record already
+   uses — otherwise deactivating a currency would silently rewrite old records. */
+function currencyOptions(selected){
+  const list = activeCurrencies().slice();
+  if(selected && !list.includes(selected)) list.push(selected);
+  return list.map(c=>`<option value="${c}" ${c===selected?'selected':''}>${c}${state.settings.activeCurrencies.includes(c)?'':' (inactive)'}</option>`).join('');
+}
 
 function openProjectDrawer(id){
   openDrawer(projectDetailHTML(id));
@@ -1967,7 +2155,7 @@ function renderInvoices(){
             <td class="actions-cell">
               ${eff!=='Paid' ? `<button class="btn xs primary" data-action="mark-invoice-paid" data-id="${inv.id}">Mark as Paid</button>` : ''}
               <button class="btn xs ghost" data-action="open-edit-invoice" data-id="${inv.id}">Edit</button>
-              <button class="btn xs ghost" data-action="delete-invoice" data-id="${inv.id}">✕</button>
+              <button class="btn xs ghost" data-action="delete-invoice" data-id="${inv.id}" aria-label="Delete invoice ${escapeHtml(inv.invoiceNumber)}" title="Delete invoice">✕</button>
             </td>
           </tr>`;
         }).join('')}
@@ -2015,7 +2203,7 @@ function renderSettings(){
           <div class="field"><label>Business name</label><input type="text" name="businessName" value="${escapeHtml(s.businessName)}" /></div>
           <div class="field-row">
             <div class="field"><label>Default currency</label>
-              <select name="defaultCurrency">${activeCurrencies().map(c=>`<option value="${c}" ${c===s.defaultCurrency?'selected':''}>${c}</option>`).join('')}</select>
+              <select name="defaultCurrency">${currencyOptions(s.defaultCurrency)}</select>
             </div>
             <div class="field"><label>Financial year starts</label>
               <select name="financialYearStart">${MONTH_ABBR.map((m,i)=>`<option value="${i+1}" ${ (i+1)===Number(s.financialYearStart)?'selected':''}>${m}</option>`).join('')}</select>
@@ -2048,6 +2236,25 @@ function renderSettings(){
       </div>
 
       <div class="panel">
+        <div class="panel-title">Focus Room</div>
+        <form data-form="settings-focus">
+          <div class="field-row">
+            <div class="field"><label>Partner name</label><input type="text" name="partnerName" value="${escapeHtml(s.focus.partnerName)}" maxlength="24" /></div>
+            <div class="field"><label>Break length (min)</label><input type="number" name="breakMin" min="1" max="60" value="${s.focus.breakMin}" /></div>
+          </div>
+          <div class="field">
+            <label>Default session length (min)</label>
+            <input type="number" name="duration" min="5" max="180" value="${s.focus.duration}" />
+          </div>
+          <div class="currency-toggle-row" style="margin-bottom:12px;">
+            <span>Chime at start, break &amp; finish</span>
+            <label class="switch"><input type="checkbox" name="chimes" ${s.focus.chimes?'checked':''} /><span class="slider"></span></label>
+          </div>
+          <button type="submit" class="btn primary sm">Save</button>
+        </form>
+      </div>
+
+      <div class="panel">
         <div class="panel-title" style="color:var(--red);">Danger zone</div>
         <p class="dim" style="font-size:12.5px; margin:0 0 12px;">Permanently erase every client, project, task and invoice from this device. This cannot be undone.</p>
         <button class="btn danger sm" data-action="open-clear-data">Clear all data</button>
@@ -2064,7 +2271,7 @@ function clientModalHTML(client){
   const isEdit = !!client;
   const c = client || { name:'', company:'', email:'', phone:'', currency: state.settings.defaultCurrency, colourTag: CLIENT_COLORS[0], notes:'' };
   return `
-  <div class="modal-head"><h3>${isEdit?'Edit client':'New client'}</h3><button class="close-x" data-action="close-modal">✕</button></div>
+  <div class="modal-head"><h3>${isEdit?'Edit client':'New client'}</h3><button class="close-x" data-action="close-modal" aria-label="Close dialog" title="Close">✕</button></div>
   <form data-form="save-client" data-id="${isEdit?c.id:''}">
     <div class="modal-body">
       <div class="field-row">
@@ -2076,10 +2283,10 @@ function clientModalHTML(client){
         <div class="field"><label>Phone</label><input type="text" name="phone" value="${escapeHtml(c.phone||'')}" /></div>
       </div>
       <div class="field"><label>Default currency</label>
-        <select name="currency">${activeCurrencies().map(cur=>`<option value="${cur}" ${cur===c.currency?'selected':''}>${cur}</option>`).join('')}</select>
+        <select name="currency">${currencyOptions(c.currency)}</select>
       </div>
       <div class="field"><label>Colour tag</label>
-        <div class="color-swatches">${CLIENT_COLORS.map(col=>`<span class="swatch ${col===c.colourTag?'selected':''}" style="background:${col}" data-swatch="${col}" onclick="this.parentElement.querySelectorAll('.swatch').forEach(s=>s.classList.remove('selected'));this.classList.add('selected');this.closest('form').querySelector('input[name=colourTag]').value='${col}'"></span>`).join('')}</div>
+        <div class="color-swatches">${CLIENT_COLORS.map(col=>`<button type="button" class="swatch ${col===c.colourTag?'selected':''}" style="background:${col}" data-action="pick-swatch" data-swatch="${col}" aria-label="Colour tag ${col}"></button>`).join('')}</div>
         <input type="hidden" name="colourTag" value="${c.colourTag}" />
       </div>
       <div class="field"><label>Notes</label><textarea name="notes">${escapeHtml(c.notes||'')}</textarea></div>
@@ -2097,7 +2304,7 @@ function projectModalHTML(project, presetClientId){
   const isEdit = !!project;
   const p = project || { clientId: presetClientId||'', name:'', status:'Prospect', startDate: todayISO(), dueDate:'', value:0, currency: state.settings.defaultCurrency, description:'' };
   return `
-  <div class="modal-head"><h3>${isEdit?'Edit project':'New project'}</h3><button class="close-x" data-action="close-modal">✕</button></div>
+  <div class="modal-head"><h3>${isEdit?'Edit project':'New project'}</h3><button class="close-x" data-action="close-modal" aria-label="Close dialog" title="Close">✕</button></div>
   <form data-form="save-project" data-id="${isEdit?p.id:''}">
     <div class="modal-body">
       <div class="field-row">
@@ -2119,7 +2326,7 @@ function projectModalHTML(project, presetClientId){
       <div class="field-row">
         <div class="field"><label>Value</label><input type="number" step="0.01" name="value" value="${p.value||0}" /></div>
         <div class="field"><label>Currency</label>
-          <select name="currency">${activeCurrencies().map(c=>`<option value="${c}" ${c===p.currency?'selected':''}>${c}</option>`).join('')}</select>
+          <select name="currency">${currencyOptions(p.currency)}</select>
         </div>
       </div>
       <div class="field"><label>Description</label><textarea name="description">${escapeHtml(p.description||'')}</textarea></div>
@@ -2141,7 +2348,7 @@ function invoiceModalHTML(invoice, presetProjectId, presetClientId){
   const inv = invoice || { clientId: presetClientId||(presetProjectId?(getProject(presetProjectId)||{}).clientId:'')||'', projectId: presetProjectId||'', invoiceNumber: nextInvoiceNumber(), amount:0, currency: state.settings.defaultCurrency, issueDate: todayISO(), dueDate:'', status:'Draft' };
   const projectsForSelectedClient = state.projects.filter(p=> !inv.clientId || p.clientId===inv.clientId);
   return `
-  <div class="modal-head"><h3>${isEdit?'Edit invoice':'New invoice'}</h3><button class="close-x" data-action="close-modal">✕</button></div>
+  <div class="modal-head"><h3>${isEdit?'Edit invoice':'New invoice'}</h3><button class="close-x" data-action="close-modal" aria-label="Close dialog" title="Close">✕</button></div>
   <form data-form="save-invoice" data-id="${isEdit?inv.id:''}">
     <div class="modal-body">
       <div class="field-row">
@@ -2167,7 +2374,7 @@ function invoiceModalHTML(invoice, presetProjectId, presetClientId){
       <div class="field-row">
         <div class="field"><label>Amount</label><input type="number" step="0.01" name="amount" value="${inv.amount||0}" /></div>
         <div class="field"><label>Currency</label>
-          <select name="currency">${activeCurrencies().map(c=>`<option value="${c}" ${c===inv.currency?'selected':''}>${c}</option>`).join('')}</select>
+          <select name="currency">${currencyOptions(inv.currency)}</select>
         </div>
       </div>
       <div class="field-row">
@@ -2203,7 +2410,7 @@ function wireInvoiceModalClientChange(){
 
 function clearDataModalHTML(){
   return `
-  <div class="modal-head"><h3 style="color:var(--red);">Clear all data</h3><button class="close-x" data-action="close-modal">✕</button></div>
+  <div class="modal-head"><h3 style="color:var(--red);">Clear all data</h3><button class="close-x" data-action="close-modal" aria-label="Close dialog" title="Close">✕</button></div>
   <div class="modal-body">
     <p>This will permanently delete every client, project, task and invoice stored by Clientflow on this device. Linked files on disk are not deleted automatically, but this app will overwrite them on next save.</p>
     <p>Type <strong class="mono">DELETE</strong> to confirm.</p>
@@ -2222,12 +2429,1174 @@ function openClearDataModal(){
 }
 
 /* ==========================================================================
+   FOCUS ROOM — body doubling
+   Every sound is synthesised with the Web Audio API and every visual is drawn
+   with Canvas, so the feature adds no files and works with no connection.
+   ========================================================================== */
+const AMBIENCES = [
+  { id:'rain',   name:'Rain on glass', sub:'Soft, steady, masks noise' },
+  { id:'cafe',   name:'Café corner',   sub:'Warm murmur + clinks' },
+  { id:'brown',  name:'Brown noise',   sub:'Deep, even, no texture' },
+  { id:'hum',    name:'Studio hum',    sub:'Low drone, very plain' },
+  { id:'none',   name:'Silence',       sub:'Visuals only' }
+];
+const SCENES = [
+  { id:'breathe', name:'Breathe',  sub:'Paced orb, calms starting' },
+  { id:'drift',   name:'Drift',    sub:'Slow particle field' },
+  { id:'pulse',   name:'Pulse',    sub:'Reacts to the sound' },
+  { id:'minimal', name:'Minimal',  sub:'Almost still' }
+];
+const CHECKIN_LINES = [
+  'Still here. Working away.',
+  'Nice steady pace. Keep going.',
+  'Halfway feeling? Just the next small bit.',
+  'I got distracted for a second too. Back to it.',
+  'Good stretch of work, this.',
+  'If you are stuck, write the ugly version first.',
+  'Still typing over here. You are not doing this alone.'
+];
+
+const FocusAudio = {
+  ctx: null, master: null, analyser: null, bed: [], typingOn: false, typingTimer: null,
+  activeAmbience: 'none', muted: false, typingBurstEnergy: 0,
+
+  ensureCtx(){
+    if(!this.ctx){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return null;
+      this.ctx = new AC();
+      this.master = this.ctx.createGain();
+      this.master.gain.value = 0;
+      this.analyser = this.ctx.createAnalyser();
+      this.analyser.fftSize = 256;
+      this.master.connect(this.analyser);
+      this.analyser.connect(this.ctx.destination);
+    }
+    if(this.ctx.state === 'suspended') this.ctx.resume().catch(()=>{});
+    return this.ctx;
+  },
+
+  noiseBuffer(kind){
+    const ctx = this.ctx;
+    const len = ctx.sampleRate * 3;
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    if(kind === 'brown'){
+      let last = 0;
+      for(let i=0;i<len;i++){
+        const white = Math.random()*2-1;
+        last = (last + 0.02*white) / 1.02;
+        d[i] = last * 3.2;
+      }
+    } else {
+      for(let i=0;i<len;i++) d[i] = Math.random()*2-1;
+    }
+    return buf;
+  },
+
+  loopNoise(kind, gainVal){
+    const src = this.ctx.createBufferSource();
+    src.buffer = this.noiseBuffer(kind);
+    src.loop = true;
+    const g = this.ctx.createGain();
+    g.gain.value = gainVal;
+    src.connect(g);
+    src.start();
+    this.bed.push(src, g);
+    return { src, g };
+  },
+
+  /* Slow random gain drift, so beds never sound like a static loop. */
+  addDrift(gainNode, base, depth, rateSec){
+    const lfo = this.ctx.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.value = 1 / rateSec;
+    const lfoGain = this.ctx.createGain();
+    lfoGain.gain.value = depth;
+    lfo.connect(lfoGain);
+    lfoGain.connect(gainNode.gain);
+    gainNode.gain.value = base;
+    lfo.start();
+    this.bed.push(lfo, lfoGain);
+  },
+
+  buildAmbience(kind){
+    const ctx = this.ctx;
+    if(kind === 'rain'){
+      const { g } = this.loopNoise('white', 0.5);
+      const hp = ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=420;
+      const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=2600;
+      g.connect(hp); hp.connect(lp); lp.connect(this.master);
+      this.addDrift(g, 0.5, 0.12, 9);
+      this.bed.push(hp, lp);
+    } else if(kind === 'cafe'){
+      const { g } = this.loopNoise('brown', 0.75);
+      const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=780;
+      g.connect(lp); lp.connect(this.master);
+      const murmur = this.loopNoise('white', 0.22);
+      const bp = ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=520; bp.Q.value=1.1;
+      murmur.g.connect(bp); bp.connect(this.master);
+      this.addDrift(murmur.g, 0.2, 0.1, 6.5);
+      this.bed.push(lp, bp);
+      this.scheduleClinks();
+    } else if(kind === 'brown'){
+      const { g } = this.loopNoise('brown', 0.85);
+      const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1500;
+      g.connect(lp); lp.connect(this.master);
+      this.bed.push(lp);
+    } else if(kind === 'hum'){
+      [58, 87, 116].forEach((f, i)=>{
+        const osc = ctx.createOscillator();
+        osc.type = i === 0 ? 'sine' : 'triangle';
+        osc.frequency.value = f + (Math.random()*0.6-0.3);
+        const g = ctx.createGain();
+        g.gain.value = i === 0 ? 0.16 : 0.05;
+        osc.connect(g); g.connect(this.master);
+        osc.start();
+        this.bed.push(osc, g);
+      });
+      const { g } = this.loopNoise('brown', 0.12);
+      const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=400;
+      g.connect(lp); lp.connect(this.master);
+      this.bed.push(lp);
+    }
+  },
+
+  scheduleClinks(){
+    const tick = ()=>{
+      if(this.activeAmbience !== 'cafe' || !this.ctx) return;
+      this.ping(1400 + Math.random()*900, 0.035, 0.32);
+      this.clinkTimer = setTimeout(tick, 7000 + Math.random()*16000);
+    };
+    this.clinkTimer = setTimeout(tick, 5000 + Math.random()*8000);
+  },
+
+  ping(freq, gainVal, decay){
+    if(!this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    const t = this.ctx.currentTime;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(gainVal, t + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + decay);
+    osc.connect(g); g.connect(this.master);
+    osc.start(t); osc.stop(t + decay + 0.05);
+  },
+
+  /* One keystroke: a very short filtered noise burst plus a quiet key thud. */
+  keystroke(strength){
+    if(!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const dur = 0.02 + Math.random()*0.02;
+    const src = this.ctx.createBufferSource();
+    const buf = this.ctx.createBuffer(1, Math.ceil(this.ctx.sampleRate*dur), this.ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i] = (Math.random()*2-1) * (1 - i/d.length);
+    src.buffer = buf;
+    const bp = this.ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 1500 + Math.random()*2200;
+    bp.Q.value = 0.9;
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(0.09 * strength, t + 0.003);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.03);
+    src.connect(bp); bp.connect(g); g.connect(this.master);
+    src.start(t);
+    const thud = this.ctx.createOscillator();
+    const tg = this.ctx.createGain();
+    thud.type = 'triangle';
+    thud.frequency.value = 110 + Math.random()*50;
+    tg.gain.setValueAtTime(0.0001, t);
+    tg.gain.linearRampToValueAtTime(0.022 * strength, t + 0.004);
+    tg.gain.exponentialRampToValueAtTime(0.0001, t + 0.055);
+    thud.connect(tg); tg.connect(this.master);
+    thud.start(t); thud.stop(t + 0.09);
+    this.typingBurstEnergy = Math.min(1, this.typingBurstEnergy + 0.35);
+  },
+
+  /* Human typing rhythm: bursts of keys, then thinking pauses. */
+  startTyping(){
+    this.typingOn = true;
+    let keysLeft = 0;
+    const step = ()=>{
+      if(!this.typingOn || !this.ctx) return;
+      let gap;
+      if(keysLeft > 0){
+        this.keystroke(0.55 + Math.random()*0.45);
+        keysLeft--;
+        gap = 70 + Math.random()*110;
+        if(Math.random() < 0.08){ gap += 400 + Math.random()*900; }
+      } else {
+        keysLeft = 3 + Math.floor(Math.random()*11);
+        gap = 500 + Math.random()*2600;
+        if(Math.random() < 0.16) gap += 2000 + Math.random()*4500; // longer think
+      }
+      this.typingTimer = setTimeout(step, gap);
+    };
+    this.typingTimer = setTimeout(step, 700 + Math.random()*1200);
+  },
+  stopTyping(){
+    this.typingOn = false;
+    clearTimeout(this.typingTimer);
+  },
+
+  chime(kind){
+    if(!this.ctx || !state.settings.focus.chimes) return;
+    const notes = kind === 'break' ? [523.25, 659.25, 783.99] : [783.99, 659.25, 523.25];
+    notes.forEach((f,i)=> setTimeout(()=> this.ping(f, 0.13, 1.5), i*170));
+  },
+
+  start(ambience, companion){
+    if(!this.ensureCtx()) return false;
+    this.stopBed();
+    this.activeAmbience = ambience;
+    if(ambience !== 'none') this.buildAmbience(ambience);
+    if(companion) this.startTyping(); else this.stopTyping();
+    this.applyVolume();
+    return true;
+  },
+
+  applyVolume(fast){
+    if(!this.master || !this.ctx) return;
+    const target = this.muted ? 0 : clamp(Number(state.settings.focus.volume)||0, 0, 1) * 0.85;
+    // Muting should feel instant; volume changes should glide.
+    const tau = fast ? 0.02 : 0.25;
+    this.master.gain.cancelScheduledValues(this.ctx.currentTime);
+    this.master.gain.setTargetAtTime(target, this.ctx.currentTime, tau);
+  },
+
+  setMuted(m){ this.muted = m; this.applyVolume(true); },
+
+  stopBed(){
+    clearTimeout(this.clinkTimer);
+    this.bed.forEach(n=>{ try{ if(n.stop) n.stop(); n.disconnect(); }catch(e){} });
+    this.bed = [];
+  },
+
+  stopAll(){
+    this.stopTyping();
+    this.stopBed();
+    if(this.master && this.ctx){
+      this.master.gain.cancelScheduledValues(this.ctx.currentTime);
+      this.master.gain.setTargetAtTime(0, this.ctx.currentTime, 0.1);
+    }
+    this.activeAmbience = 'none';
+  },
+
+  level(){
+    if(!this.analyser) return 0;
+    const arr = new Uint8Array(this.analyser.frequencyBinCount);
+    this.analyser.getByteFrequencyData(arr);
+    let sum = 0;
+    for(let i=0;i<arr.length;i++) sum += arr[i];
+    return (sum/arr.length)/255;
+  }
+};
+
+const FocusVisuals = {
+  canvas: null, ctx: null, raf: null, t0: 0, particles: [], dpr: 1, w: 0, h: 0,
+  reduced: false, breathPhase: '',
+
+  prefersReduced(){
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  },
+
+  attach(canvas){
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.reduced = this.prefersReduced();
+    this.t0 = performance.now();
+    this.resize();
+    this.seedParticles();
+    this._onResize = ()=> { this.resize(); this.seedParticles(); };
+    window.addEventListener('resize', this._onResize);
+    this.loop();
+  },
+
+  detach(){
+    cancelAnimationFrame(this.raf);
+    this.raf = null;
+    if(this._onResize) window.removeEventListener('resize', this._onResize);
+    this.canvas = null; this.ctx = null;
+  },
+
+  resize(){
+    if(!this.canvas) return;
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const r = this.canvas.getBoundingClientRect();
+    this.w = Math.max(r.width, 320); this.h = Math.max(r.height, 320);
+    this.canvas.width = Math.round(this.w * this.dpr);
+    this.canvas.height = Math.round(this.h * this.dpr);
+    this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
+  },
+
+  seedParticles(){
+    const count = this.reduced ? 22 : Math.min(90, Math.round(this.w*this.h/16000));
+    this.particles = Array.from({length: count}, ()=>({
+      x: Math.random()*this.w, y: Math.random()*this.h,
+      r: 0.6 + Math.random()*2.2,
+      vx: (Math.random()-0.5)*0.13, vy: -0.05 - Math.random()*0.22,
+      a: 0.12 + Math.random()*0.4,
+      hue: Math.random() < 0.72 ? 'accent' : 'signal'
+    }));
+  },
+
+  loop(){
+    if(!this.ctx) return;
+    const now = performance.now();
+    const t = (now - this.t0)/1000;
+    const scene = state.settings.focus.scene;
+    const ctx = this.ctx;
+    ctx.clearRect(0,0,this.w,this.h);
+
+    // shared dark base wash
+    const base = ctx.createLinearGradient(0,0,this.w,this.h);
+    base.addColorStop(0, '#0A0E1A');
+    base.addColorStop(0.55, '#0C1220');
+    base.addColorStop(1, '#0A0E1A');
+    ctx.fillStyle = base;
+    ctx.fillRect(0,0,this.w,this.h);
+
+    if(scene === 'breathe') this.drawBreathe(ctx, t);
+    else if(scene === 'drift') this.drawDrift(ctx, t);
+    else if(scene === 'pulse') this.drawPulse(ctx, t);
+    else this.drawMinimal(ctx, t);
+
+    this.drawCompanion(ctx, t);
+
+    this.raf = requestAnimationFrame(()=> this.loop());
+  },
+
+  /* 4s in · 2s hold · 6s out — a standard calming cadence. */
+  breathValue(t){
+    const cycle = 12, x = t % cycle;
+    if(x < 4){ this.breathPhase = 'Breathe in'; return this.ease(x/4); }
+    if(x < 6){ this.breathPhase = 'Hold'; return 1; }
+    this.breathPhase = 'Breathe out';
+    return 1 - this.ease((x-6)/6);
+  },
+  ease(p){ return p<0.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2; },
+
+  /* Scenes centre on the timer ring, not the raw canvas, so the orb and the
+     countdown read as one object. */
+  focusCentre(){
+    if(this._centreCache && performance.now() - this._centreAt < 400) return this._centreCache;
+    const el = document.querySelector('.timer-wrap');
+    let c = { x: this.w/2, y: this.h/2 };
+    if(el){
+      const r = el.getBoundingClientRect();
+      if(r.width > 0) c = { x: r.left + r.width/2, y: r.top + r.height/2 };
+    }
+    this._centreCache = c; this._centreAt = performance.now();
+    return c;
+  },
+
+  drawBreathe(ctx, t){
+    const c = this.focusCentre();
+    const cx = c.x, cy = c.y;
+    const v = this.reduced ? 0.55 : this.breathValue(t);
+    const rBase = Math.min(this.w, this.h) * 0.16;
+    const r = rBase * (0.72 + v*0.55);
+    const glow = ctx.createRadialGradient(cx, cy, r*0.15, cx, cy, r*2.6);
+    glow.addColorStop(0, 'rgba(240,24,122,' + (0.30 + v*0.16).toFixed(3) + ')');
+    glow.addColorStop(0.45, 'rgba(240,24,122,0.07)');
+    glow.addColorStop(1, 'rgba(240,24,122,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.arc(cx, cy, r*2.6, 0, Math.PI*2); ctx.fill();
+    for(let i=0;i<3;i++){
+      const rr = r * (1 + i*0.42) + (this.reduced?0:Math.sin(t*0.7 + i)*4);
+      ctx.beginPath();
+      ctx.arc(cx, cy, rr, 0, Math.PI*2);
+      ctx.strokeStyle = 'rgba(248,250,252,' + (0.07 - i*0.02).toFixed(3) + ')';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI*2);
+    const core = ctx.createRadialGradient(cx, cy-r*0.3, r*0.1, cx, cy, r);
+    core.addColorStop(0, 'rgba(255,120,180,0.30)');
+    core.addColorStop(1, 'rgba(240,24,122,0.05)');
+    ctx.fillStyle = core;
+    ctx.fill();
+    if(!this.reduced) this.drawParticles(ctx, 0.35);
+  },
+
+  drawDrift(ctx, t){
+    const g = ctx.createRadialGradient(this.w*0.7, this.h*0.25, 40, this.w*0.7, this.h*0.25, this.w*0.6);
+    g.addColorStop(0, 'rgba(240,24,122,0.10)');
+    g.addColorStop(1, 'rgba(240,24,122,0)');
+    ctx.fillStyle = g; ctx.fillRect(0,0,this.w,this.h);
+    const g2 = ctx.createRadialGradient(this.w*0.2, this.h*0.8, 40, this.w*0.2, this.h*0.8, this.w*0.5);
+    g2.addColorStop(0, 'rgba(163,230,53,0.07)');
+    g2.addColorStop(1, 'rgba(163,230,53,0)');
+    ctx.fillStyle = g2; ctx.fillRect(0,0,this.w,this.h);
+    this.drawParticles(ctx, 1);
+    if(!this.reduced){
+      ctx.strokeStyle = 'rgba(248,250,252,0.04)';
+      ctx.lineWidth = 1;
+      for(let i=0;i<4;i++){
+        ctx.beginPath();
+        const yOff = this.h*(0.25 + i*0.17);
+        for(let x=0;x<=this.w;x+=18){
+          const y = yOff + Math.sin((x/220) + t*0.14 + i)*16;
+          x === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+        }
+        ctx.stroke();
+      }
+    }
+  },
+
+  drawPulse(ctx, t){
+    const c = this.focusCentre();
+    const cx = c.x, cy = c.y;
+    const lvl = this.reduced ? 0.3 : (0.18 + FocusAudio.level()*1.5);
+    const rBase = Math.min(this.w,this.h)*0.13;
+    for(let ring=0; ring<5; ring++){
+      const rr = rBase*(1+ring*0.34) * (1 + lvl*0.22);
+      ctx.beginPath();
+      for(let a=0;a<=Math.PI*2+0.01;a+=Math.PI/60){
+        const wob = Math.sin(a*5 + t*1.6 + ring)*rBase*0.06*lvl*4;
+        const x = cx + Math.cos(a)*(rr+wob);
+        const y = cy + Math.sin(a)*(rr+wob);
+        a === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = ring % 2 === 0
+        ? 'rgba(240,24,122,' + (0.34 - ring*0.05).toFixed(3) + ')'
+        : 'rgba(163,230,53,' + (0.22 - ring*0.035).toFixed(3) + ')';
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+    }
+    const glow = ctx.createRadialGradient(cx,cy,10,cx,cy,rBase*2.6);
+    glow.addColorStop(0, 'rgba(240,24,122,' + (0.16+lvl*0.2).toFixed(3) + ')');
+    glow.addColorStop(1, 'rgba(240,24,122,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.arc(cx,cy,rBase*2.6,0,Math.PI*2); ctx.fill();
+  },
+
+  drawMinimal(ctx, t){
+    const shift = this.reduced ? 0.5 : (Math.sin(t*0.06)*0.5+0.5);
+    const g = ctx.createLinearGradient(0, this.h, this.w, 0);
+    g.addColorStop(0, 'rgba(240,24,122,0.055)');
+    g.addColorStop(clamp(0.3+shift*0.35, 0, 1), 'rgba(163,230,53,0.03)');
+    g.addColorStop(1, 'rgba(10,14,26,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,this.w,this.h);
+  },
+
+  drawParticles(ctx, opacity){
+    this.particles.forEach(p=>{
+      if(!this.reduced){
+        p.x += p.vx; p.y += p.vy;
+        if(p.y < -10) { p.y = this.h + 8; p.x = Math.random()*this.w; }
+        if(p.x < -10) p.x = this.w + 8;
+        if(p.x > this.w + 10) p.x = -8;
+      }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = (p.hue === 'accent' ? 'rgba(240,24,122,' : 'rgba(163,230,53,') + (p.a*opacity).toFixed(3) + ')';
+      ctx.fill();
+    });
+  },
+
+  /* The body double: a desk silhouette that breathes, types in sync with the
+     audio, and occasionally reaches for a drink. Deliberately abstract. */
+  drawCompanion(ctx, t){
+    if(!state.settings.focus.companion) return;
+    // Too tight to draw a desk on narrow screens — the presence chip's typing
+    // dots carry the partner's presence there instead.
+    if(this.w < 900) return;
+    const scale = Math.min(1.25, Math.max(0.72, this.w/1400));
+    // Stand the desk on top of the bottom-left panel so nothing is hidden.
+    let floor = this.h - 30;
+    const panel = document.querySelector('.room-panel');
+    if(panel){
+      const r = panel.getBoundingClientRect();
+      if(r.height > 0) floor = Math.max(this.h*0.52, r.top - 14);
+    }
+    const baseX = Math.max(96, this.w*0.13), baseY = floor;
+    const breathe = this.reduced ? 0 : Math.sin(t*0.9)*1.6;
+    const energy = FocusAudio.typingBurstEnergy;
+    FocusAudio.typingBurstEnergy = Math.max(0, energy - 0.045);
+    const sipCycle = (t % 47) / 47;
+    const sipping = !this.reduced && sipCycle > 0.93;
+
+    ctx.save();
+    ctx.translate(baseX, baseY);
+    ctx.scale(scale, scale);
+
+    // soft presence glow so the figure sits in the scene rather than on it
+    const halo = ctx.createRadialGradient(18, -58, 8, 18, -58, 118);
+    halo.addColorStop(0, 'rgba(240,24,122,0.13)');
+    halo.addColorStop(1, 'rgba(240,24,122,0)');
+    ctx.fillStyle = halo;
+    ctx.fillRect(-100, -170, 230, 190);
+
+    // desk
+    ctx.fillStyle = 'rgba(248,250,252,0.07)';
+    ctx.fillRect(-58, -6, 168, 5);
+    ctx.fillStyle = 'rgba(248,250,252,0.03)';
+    ctx.fillRect(-46, -1, 4, 30);
+    ctx.fillRect(96, -1, 4, 30);
+
+    // chair back
+    ctx.fillStyle = 'rgba(248,250,252,0.045)';
+    ctx.beginPath();
+    if(ctx.roundRect) ctx.roundRect(-16, -100 + breathe, 48, 74, 18); else ctx.rect(-16, -100 + breathe, 48, 74);
+    ctx.fill();
+
+    // torso + shoulders
+    const grad = ctx.createLinearGradient(0, -96, 0, -20);
+    grad.addColorStop(0, 'rgba(240,24,122,0.55)');
+    grad.addColorStop(1, 'rgba(200,16,106,0.18)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(-8, -14);
+    ctx.quadraticCurveTo(-13, -66 + breathe, 8, -74 + breathe);
+    ctx.quadraticCurveTo(29, -66 + breathe, 28, -14);
+    ctx.closePath();
+    ctx.fill();
+
+    // neck + head
+    ctx.fillStyle = 'rgba(255,140,190,0.42)';
+    ctx.fillRect(4, -82 + breathe, 10, 10);
+    ctx.beginPath();
+    ctx.arc(9, -88 + breathe, 12, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(255,145,192,0.58)';
+    ctx.fill();
+
+    // laptop, drawn before the arms so the hands land on the keys
+    ctx.fillStyle = 'rgba(248,250,252,0.12)';
+    ctx.beginPath();
+    ctx.moveTo(44, -18); ctx.lineTo(86, -18); ctx.lineTo(90, -8); ctx.lineTo(40, -8);
+    ctx.closePath(); ctx.fill();
+    const screen = ctx.createLinearGradient(54, -50, 84, -20);
+    const glow = 0.16 + energy*0.34;
+    screen.addColorStop(0, 'rgba(163,230,53,' + glow.toFixed(3) + ')');
+    screen.addColorStop(1, 'rgba(163,230,53,' + (glow*0.45).toFixed(3) + ')');
+    ctx.fillStyle = screen;
+    ctx.beginPath();
+    ctx.moveTo(50, -20); ctx.lineTo(84, -20); ctx.lineTo(80, -50); ctx.lineTo(54, -50);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(163,230,53,' + (0.10 + energy*0.2).toFixed(3) + ')';
+    ctx.lineWidth = 1; ctx.stroke();
+
+    // arms: forearms twitch with each keystroke burst
+    const jitter = energy * (Math.random()*2.6 - 1.3);
+    ctx.strokeStyle = 'rgba(255,150,195,0.46)';
+    ctx.lineWidth = 4.5; ctx.lineCap = 'round';
+    const hand = (x,y)=>{ ctx.beginPath(); ctx.arc(x, y, 3.4, 0, Math.PI*2); ctx.fillStyle='rgba(255,165,200,0.55)'; ctx.fill(); };
+
+    if(sipping){
+      // left arm stays on the keys, right hand brings the mug up to the face
+      ctx.beginPath();
+      ctx.moveTo(2, -54 + breathe);
+      ctx.quadraticCurveTo(26, -40, 52, -21);
+      ctx.stroke();
+      hand(52, -21);
+      ctx.beginPath();
+      ctx.moveTo(22, -56 + breathe);
+      ctx.quadraticCurveTo(32, -76, 20, -84 + breathe);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(248,250,252,0.16)';
+      ctx.fillRect(15, -92 + breathe, 11, 12);
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(2, -54 + breathe);
+      ctx.quadraticCurveTo(26, -40 + jitter, 54, -20 + jitter*0.5);
+      ctx.stroke();
+      hand(54, -20 + jitter*0.5);
+      ctx.beginPath();
+      ctx.moveTo(22, -56 + breathe);
+      ctx.quadraticCurveTo(44, -38 - jitter, 68, -20 - jitter*0.5);
+      ctx.stroke();
+      hand(68, -20 - jitter*0.5);
+      // mug on the desk
+      ctx.fillStyle = 'rgba(248,250,252,0.15)';
+      ctx.fillRect(-38, -20, 11, 13);
+      ctx.beginPath();
+      ctx.arc(-25, -14, 4, -Math.PI/2, Math.PI/2);
+      ctx.strokeStyle = 'rgba(248,250,252,0.15)';
+      ctx.lineWidth = 1.6; ctx.stroke();
+      if(!this.reduced){
+        ctx.strokeStyle = 'rgba(248,250,252,0.09)';
+        ctx.lineWidth = 1.4;
+        for(let i=0;i<2;i++){
+          const rise = (t*6 + i*9) % 18;
+          ctx.beginPath();
+          ctx.moveTo(-34 + i*5, -22 - rise);
+          ctx.quadraticCurveTo(-31 + i*5 + Math.sin(t*2+i)*2.5, -28 - rise, -34 + i*5, -33 - rise);
+          ctx.stroke();
+        }
+      }
+    }
+    ctx.restore();
+  }
+};
+
+/* ==========================================================================
+   Focus session controller
+   ========================================================================== */
+const FocusSession = {
+  tickTimer: null, checkinTimer: null, minimised: false,
+
+  active(){ return !!state.activeFocus; },
+
+  start(opts){
+    const f = state.settings.focus;
+    const plannedMin = opts.plannedMin || f.duration;
+    state.activeFocus = {
+      id: uid('fs'),
+      startedAt: new Date().toISOString(),
+      phase: 'focus',
+      plannedMin,
+      breakMin: f.breakMin,
+      phaseEndsAt: Date.now() + plannedMin*60000,
+      pausedAt: null,
+      accumulatedSec: 0,
+      round: 1,
+      taskId: opts.taskId || '',
+      projectId: opts.projectId || '',
+      intent: opts.intent || '',
+      lastBeat: Date.now()
+    };
+    markDirty();
+    FocusAudio.start(f.ambience, f.companion);
+    this.openRoom();
+    this.startTimers();
+    FocusAudio.chime('focus');
+  },
+
+  resumeExisting(){
+    const a = state.activeFocus;
+    if(!a) return;
+    if(a.pausedAt){ a.pausedAt = Date.now(); }
+    FocusAudio.start(state.settings.focus.ambience, state.settings.focus.companion);
+    this.openRoom();
+    this.startTimers();
+  },
+
+  startTimers(){
+    clearInterval(this.tickTimer);
+    this.tickTimer = setInterval(()=> this.tick(), 500);
+    this.scheduleCheckin();
+  },
+
+  scheduleCheckin(){
+    clearTimeout(this.checkinTimer);
+    const delay = 150000 + Math.random()*180000; // every 2.5–5.5 min
+    this.checkinTimer = setTimeout(()=>{
+      if(this.active() && !state.activeFocus.pausedAt && state.activeFocus.phase === 'focus'){
+        this.showCheckin(CHECKIN_LINES[Math.floor(Math.random()*CHECKIN_LINES.length)]);
+      }
+      this.scheduleCheckin();
+    }, delay);
+  },
+
+  showCheckin(text){
+    const el = document.getElementById('companion-note');
+    if(!el) return;
+    el.innerHTML = `<span class="cn-who">${escapeHtml(state.settings.focus.partnerName)}</span> · ${escapeHtml(text)}`;
+    el.classList.add('show');
+    clearTimeout(this._noteTimer);
+    this._noteTimer = setTimeout(()=> el.classList.remove('show'), 7000);
+  },
+
+  remainingSec(){
+    const a = state.activeFocus;
+    if(!a) return 0;
+    if(a.pausedAt) return Math.max(0, Math.round((a.phaseEndsAt - a.pausedAt)/1000));
+    return Math.max(0, Math.round((a.phaseEndsAt - Date.now())/1000));
+  },
+
+  tick(){
+    const a = state.activeFocus;
+    if(!a) return;
+    if(!a.pausedAt && a.phase === 'focus'){
+      const now = Date.now();
+      a.accumulatedSec += (now - a.lastBeat)/1000;
+      a.lastBeat = now;
+      if(Math.floor(a.accumulatedSec) % 15 === 0) scheduleSave();
+    } else {
+      a.lastBeat = Date.now();
+    }
+    this.paint();
+    if(this.remainingSec() <= 0) this.phaseComplete();
+  },
+
+  phaseComplete(){
+    const a = state.activeFocus;
+    if(!a) return;
+    if(a.phase === 'focus'){
+      this.logSession(true);
+      FocusAudio.chime('break');
+      a.phase = 'break';
+      a.phaseEndsAt = Date.now() + (a.breakMin||5)*60000;
+      a.lastBeat = Date.now();
+      FocusAudio.stopTyping();
+      this.showCheckin('That is a round done. Stretch, water, look out of a window — back in ' + (a.breakMin||5) + '.');
+      markDirty();
+      this.paint();
+    } else {
+      FocusAudio.chime('focus');
+      a.phase = 'focus';
+      a.round += 1;
+      a.plannedMin = state.settings.focus.duration;
+      a.phaseEndsAt = Date.now() + a.plannedMin*60000;
+      a.accumulatedSec = 0;
+      a.lastBeat = Date.now();
+      if(state.settings.focus.companion) FocusAudio.startTyping();
+      this.showCheckin('Round ' + a.round + '. I am back at my desk — starting now.');
+      markDirty();
+      this.paint();
+    }
+  },
+
+  togglePause(){
+    const a = state.activeFocus;
+    if(!a) return;
+    if(a.pausedAt){
+      const pausedFor = Date.now() - a.pausedAt;
+      a.phaseEndsAt += pausedFor;
+      a.pausedAt = null;
+      a.lastBeat = Date.now();
+      FocusAudio.start(state.settings.focus.ambience, state.settings.focus.companion);
+    } else {
+      a.pausedAt = Date.now();
+      FocusAudio.stopAll();
+    }
+    markDirty();
+    this.paint();
+  },
+
+  extend(min){
+    const a = state.activeFocus;
+    if(!a) return;
+    a.phaseEndsAt += min*60000;
+    if(a.phase === 'focus') a.plannedMin += min;
+    markDirty();
+    this.paint();
+  },
+
+  logSession(completed){
+    const a = state.activeFocus;
+    if(!a) return;
+    const focusedSec = Math.round(a.accumulatedSec);
+    if(focusedSec < 30) return; // ignore accidental starts
+    state.focusSessions.push({
+      id: a.id + '-r' + a.round,
+      startedAt: a.startedAt,
+      endedAt: new Date().toISOString(),
+      plannedMin: a.plannedMin,
+      focusedSec,
+      taskId: a.taskId,
+      projectId: a.projectId,
+      intent: a.intent,
+      completed: !!completed,
+      ambience: state.settings.focus.ambience,
+      scene: state.settings.focus.scene
+    });
+    if(a.projectId) touchProject(a.projectId);
+  },
+
+  end(){
+    if(!this.active()) return;
+    if(state.activeFocus.phase === 'focus') this.logSession(false);
+    const summary = { focusedSec: Math.round(state.activeFocus.accumulatedSec), rounds: state.activeFocus.round, intent: state.activeFocus.intent };
+    state.activeFocus = null;
+    clearInterval(this.tickTimer);
+    clearTimeout(this.checkinTimer);
+    FocusAudio.stopAll();
+    this.closeRoom();
+    markDirty();
+    if(summary.focusedSec >= 30){
+      toast('Focus logged: ' + Math.round(summary.focusedSec/60) + ' min across ' + summary.rounds + ' round' + (summary.rounds===1?'':'s') + '.');
+    }
+  },
+
+  /* --- room / pill plumbing --- */
+  openRoom(){
+    this.minimised = false;
+    const root = document.getElementById('focus-room-root');
+    root.innerHTML = focusRoomHTML();
+    document.body.style.overflow = 'hidden';
+    document.body.classList.add('room-open');
+    FocusVisuals.attach(document.getElementById('focus-canvas'));
+    this.renderPill();
+    this.paint();
+  },
+
+  closeRoom(){
+    const root = document.getElementById('focus-room-root');
+    root.innerHTML = '';
+    document.body.style.overflow = '';
+    document.body.classList.remove('room-open');
+    FocusVisuals.detach();
+    this.renderPill();
+  },
+
+  minimise(){
+    this.minimised = true;
+    const root = document.getElementById('focus-room-root');
+    root.innerHTML = '';
+    document.body.style.overflow = '';
+    document.body.classList.remove('room-open');
+    FocusVisuals.detach();
+    this.renderPill();
+    render();
+  },
+
+  renderPill(){
+    const root = document.getElementById('focus-pill-root');
+    if(!root) return;
+    const a = state.activeFocus;
+    const showPill = a && this.minimised;
+    if(!showPill){ root.innerHTML = ''; return; }
+    root.innerHTML = `<div class="focus-pill ${a.pausedAt?'paused':''}" data-action="focus-reopen" role="button" tabindex="0"
+        title="Return to the Focus Room">
+      <span class="presence-dot"></span>
+      <span>
+        <span class="fp-time">${fmtClock(this.remainingSec())}</span>
+        <span class="fp-label">${a.pausedAt ? 'paused' : (a.phase==='break'?'break':'focus')}</span>
+      </span>
+      <button class="btn xs ghost" data-action="focus-toggle-pause" aria-label="${a.pausedAt?'Resume':'Pause'} session">${a.pausedAt?'▶':'❙❙'}</button>
+      <button class="btn xs ghost" data-action="focus-end" aria-label="End session">Stop</button>
+    </div>`;
+  },
+
+  /* Only repaint the numbers/ring — cheap enough to run twice a second. */
+  paint(){
+    const a = state.activeFocus;
+    if(!a) return;
+    if(this.minimised){ this.renderPill(); return; }
+    const timeEl = document.getElementById('focus-time');
+    if(!timeEl) return;
+    const remaining = this.remainingSec();
+    timeEl.textContent = fmtClock(remaining);
+    const totalSec = (a.phase === 'focus' ? a.plannedMin : (a.breakMin||5)) * 60;
+    const pct = totalSec > 0 ? clamp(1 - remaining/totalSec, 0, 1) : 0;
+    const ring = document.getElementById('focus-ring-progress');
+    if(ring){
+      const c = 2*Math.PI*138;
+      ring.setAttribute('stroke-dasharray', c.toFixed(1));
+      ring.setAttribute('stroke-dashoffset', (c*(1-pct)).toFixed(1));
+      ring.setAttribute('stroke', a.phase === 'break' ? 'var(--signal)' : 'var(--accent)');
+    }
+    const phaseEl = document.getElementById('focus-phase');
+    if(phaseEl){
+      phaseEl.textContent = a.pausedAt ? 'Paused' : (a.phase === 'break' ? 'Break · round ' + a.round : 'Focus · round ' + a.round);
+      phaseEl.classList.toggle('break', a.phase === 'break');
+    }
+    const breathEl = document.getElementById('focus-breath');
+    if(breathEl){
+      breathEl.textContent = (state.settings.focus.scene === 'breathe' && !a.pausedAt) ? FocusVisuals.breathPhase : '';
+    }
+    const stateEl = document.getElementById('partner-state');
+    if(stateEl){
+      stateEl.textContent = a.pausedAt ? 'waiting for you' : (a.phase === 'break' ? 'on a break too' : 'heads down, working');
+    }
+    const dots = document.getElementById('partner-typing');
+    if(dots) dots.classList.toggle('idle', !!a.pausedAt || a.phase === 'break' || !state.settings.focus.companion);
+    const pauseBtn = document.getElementById('focus-pause-btn');
+    if(pauseBtn) pauseBtn.textContent = a.pausedAt ? '▶ Resume' : '❙❙ Pause';
+  }
+};
+
+function fmtClock(sec){
+  const m = Math.floor(sec/60), s = sec % 60;
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+/* Sound/scene chips live in two places (tab + room). Sync them in place rather
+   than re-rendering, so a running session's canvas and audio are untouched. */
+function refreshFocusChips(){
+  const f = state.settings.focus;
+  const sync = (sel, isOn)=> document.querySelectorAll(sel).forEach(b=>{
+    const on = isOn(b);
+    b.classList.toggle('active', on);
+    if(b.hasAttribute('aria-pressed')) b.setAttribute('aria-pressed', String(on));
+  });
+  sync('[data-action="focus-set-ambience"]', b=> b.dataset.id === f.ambience);
+  sync('[data-action="focus-set-scene"]', b=> b.dataset.id === f.scene);
+  sync('[data-action="focus-set-duration"]', b=> Number(b.dataset.min) === f.duration);
+  sync('[data-action="focus-toggle-companion"]', ()=> !!f.companion);
+  sync('[data-action="focus-toggle-mute"]', ()=> FocusAudio.muted);
+  document.querySelectorAll('.room-chip-row [data-action="focus-toggle-mute"]').forEach(b=>{
+    b.textContent = FocusAudio.muted ? '🔇 Muted' : '🔊 Sound on';
+    b.setAttribute('aria-label', FocusAudio.muted ? 'Unmute sound' : 'Mute sound');
+  });
+  if(currentTab === 'focus' && !FocusSession.active()) renderFocus();
+}
+
+function showResumeBanner(){
+  const a = state.activeFocus;
+  if(!a) return;
+  const remaining = Math.max(0, Math.round((a.phaseEndsAt - Date.now())/1000));
+  const done = Math.round((a.accumulatedSec||0)/60);
+  document.getElementById('reconnect-banner-slot').insertAdjacentHTML('beforeend', `
+    <div class="resume-banner" id="resume-banner">
+      <span>🎧 You left a focus session running — ${done} min logged${remaining>0?', '+fmtClock(remaining)+' left':''}.</span>
+      <button class="btn xs primary" data-action="focus-resume-session">Resume session</button>
+      <button class="btn xs ghost" data-action="focus-discard-session">Log it and finish</button>
+    </div>`);
+}
+function clearResumeBanner(){
+  const el = document.getElementById('resume-banner');
+  if(el) el.remove();
+}
+
+function focusRoomHTML(){
+  const a = state.activeFocus || {};
+  const f = state.settings.focus;
+  const project = a.projectId ? getProject(a.projectId) : null;
+  const client = project ? getClient(project.clientId) : null;
+  const tasks = project ? tasksForProject(project.id).slice(0, 8) : [];
+  const intent = a.intent || (a.taskId ? (state.tasks.find(t=>t.id===a.taskId)||{}).title : '') || 'Focus session';
+  return `
+  <div class="focus-room" role="dialog" aria-modal="true" aria-label="Focus Room">
+    <canvas id="focus-canvas" aria-hidden="true"></canvas>
+    <div class="room-shell">
+      <div class="room-top">
+        <div class="room-presence">
+          <span class="presence-dot"></span>
+          <span>
+            <span class="rp-name">${escapeHtml(f.partnerName)} is here with you</span><br/>
+            <span class="rp-state" id="partner-state">heads down, working</span><span class="typing-dots" id="partner-typing" aria-hidden="true"><i></i><i></i><i></i></span>
+          </span>
+        </div>
+        <div class="room-actions">
+          <button class="btn sm ghost" data-action="focus-minimise" title="Keep the session running and go back to your work"
+            aria-label="Minimise the room and keep the session running">↙ Minimise</button>
+          <button class="btn sm ghost" data-action="focus-end" aria-label="End the focus session and log it">End session</button>
+        </div>
+      </div>
+
+      <div class="room-center">
+        <div class="timer-wrap">
+          <svg viewBox="0 0 300 300" aria-hidden="true">
+            <circle cx="150" cy="150" r="138" fill="none" stroke="rgba(255,255,255,0.11)" stroke-width="10"/>
+            <circle id="focus-ring-progress" cx="150" cy="150" r="138" fill="none" stroke="var(--accent)" stroke-width="10"
+              stroke-linecap="round" stroke-dasharray="867" stroke-dashoffset="867"/>
+          </svg>
+          <div class="timer-inner">
+            <div class="timer-time" id="focus-time" role="timer" aria-live="off" aria-label="Time remaining in this round">00:00</div>
+            <div class="timer-phase" id="focus-phase" aria-live="polite">Focus</div>
+          </div>
+        </div>
+        <div>
+          <div class="room-intent">${escapeHtml(intent)}</div>
+          <div class="room-intent-sub">${project ? escapeHtml(project.name) + (client ? ' · ' + escapeHtml(client.name) : '') : 'No project linked'}</div>
+        </div>
+        <div class="room-breath" id="focus-breath"></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
+          <button class="btn primary" id="focus-pause-btn" data-action="focus-toggle-pause" aria-label="Pause or resume the session (or press space)">❙❙ Pause</button>
+          <button class="btn ghost" data-action="focus-extend" data-min="5" aria-label="Add five minutes to this round">+5 min</button>
+        </div>
+      </div>
+
+      <div class="room-bottom">
+        <div class="room-panel">
+          <h4>${tasks.length ? 'Tasks on this project' : 'This session'}</h4>
+          ${tasks.length ? tasks.map(t=>`
+            <label class="room-task ${t.done?'done':''}">
+              <input type="checkbox" ${t.done?'checked':''} data-action="toggle-task" data-id="${t.id}" />
+              <span>${escapeHtml(t.title)}</span>
+            </label>`).join('')
+          : `<p class="dim" style="font-size:12.5px;margin:0;">No linked tasks. Working on: <strong style="color:var(--text)">${escapeHtml(intent)}</strong></p>`}
+        </div>
+        <div class="room-panel room-sound">
+          <h4>Sound &amp; scene</h4>
+          <div class="room-chip-row" role="group" aria-label="Ambient sound">
+            ${AMBIENCES.map(am=>`<button data-action="focus-set-ambience" data-id="${am.id}" class="${f.ambience===am.id?'active':''}" aria-pressed="${f.ambience===am.id}" aria-label="Ambience: ${escapeHtml(am.name)}">${am.name}</button>`).join('')}
+          </div>
+          <div class="room-chip-row" role="group" aria-label="Moving visual">
+            ${SCENES.map(sc=>`<button data-action="focus-set-scene" data-id="${sc.id}" class="${f.scene===sc.id?'active':''}" aria-pressed="${f.scene===sc.id}" aria-label="Visual: ${escapeHtml(sc.name)}">${sc.name}</button>`).join('')}
+          </div>
+          <div class="room-chip-row" role="group" aria-label="Partner and sound toggles">
+            <button data-action="focus-toggle-companion" class="${f.companion?'active':''}" aria-pressed="${!!f.companion}" aria-label="Typing partner sounds">⌨ Typing partner</button>
+            <button data-action="focus-toggle-mute" class="${FocusAudio.muted?'active':''}" aria-pressed="${FocusAudio.muted}" aria-label="${FocusAudio.muted?'Unmute sound':'Mute sound'}">${FocusAudio.muted?'🔇 Muted':'🔊 Sound on'}</button>
+          </div>
+          <div class="volume-row">
+            <span class="dim" style="font-size:11px;">VOL</span>
+            <input type="range" min="0" max="1" step="0.05" value="${f.volume}" data-action="focus-volume" aria-label="Ambience volume" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="companion-note" id="companion-note" aria-live="polite"></div>
+  </div>`;
+}
+
+/* ==========================================================================
+   Focus stats
+   ========================================================================== */
+function focusSecondsOn(dateISO){
+  return state.focusSessions
+    .filter(s=> (s.endedAt||s.startedAt||'').slice(0,10) === dateISO)
+    .reduce((sum,s)=> sum + (Number(s.focusedSec)||0), 0);
+}
+function focusMinutesToday(){ return Math.round(focusSecondsOn(todayISO())/60); }
+function focusSessionsToday(){ return state.focusSessions.filter(s=> (s.endedAt||s.startedAt||'').slice(0,10) === todayISO()).length; }
+function focusTotalHours(){ return (state.focusSessions.reduce((s,x)=> s + (Number(x.focusedSec)||0), 0)/3600); }
+function focusStreakDays(){
+  let streak = 0;
+  for(let i=0;i<400;i++){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const iso = d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+    if(focusSecondsOn(iso) > 0) streak++;
+    else if(i > 0) break;               // today not yet counted keeps streak alive
+  }
+  return streak;
+}
+function focusLast14Days(){
+  const out = [];
+  for(let i=13;i>=0;i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const iso = d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+    out.push({ label: String(d.getDate()), value: Math.round(focusSecondsOn(iso)/60), isCurrent: i===0 });
+  }
+  return out;
+}
+
+/* ==========================================================================
+   VIEW: Focus Room (setup + stats)
+   ========================================================================== */
+function renderFocus(){
+  const el = document.getElementById('view-focus');
+  const f = state.settings.focus;
+  const openTasks = state.tasks
+    .filter(t=> !t.done)
+    .map(t=> ({ t, p: getProject(t.projectId) }))
+    .filter(x=> x.p && x.p.status !== 'Archived')
+    .sort((a,b)=> (a.t.dueDate||'9999').localeCompare(b.t.dueDate||'9999'));
+  const recent = state.focusSessions.slice(-6).reverse();
+  const minsToday = focusMinutesToday();
+  const streak = focusStreakDays();
+
+  el.innerHTML = `
+    <div class="view-header">
+      <h2>Focus Room</h2>
+      <div class="actions dim" style="font-size:12px;">Body doubling, built in — no account, no internet, no other humans required</div>
+    </div>
+
+    <div class="focus-setup-grid">
+      <div class="focus-hero">
+        <div class="fh-badge"><span class="presence-dot"></span>Virtual body double</div>
+        <h3>Work alongside someone</h3>
+        <p class="fh-sub">Starting is the hard part. Sit down with a simulated desk partner — you will hear them typing away, see them working, and get the occasional nudge. It is all generated on your device: ambient sound synthesised live, no audio files, no streaming.</p>
+
+        <div class="field">
+          <label>What are we working on?</label>
+          <select id="focus-task-select" data-action="focus-pick-task">
+            ${openTasks.map((x,i)=>{
+              // Default to the most urgent open task: one less decision before starting.
+              const selected = focusSetup.taskId ? focusSetup.taskId === x.t.id : i === 0;
+              return `<option value="${x.t.id}" ${selected?'selected':''}>${escapeHtml(x.t.title)} — ${escapeHtml(x.p.name)}</option>`;
+            }).join('')}
+            <option value="" ${(!openTasks.length || focusSetup.taskId === '__free') ? 'selected' : ''}>Something else (type it below)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Or name your own intention</label>
+          <input type="text" id="focus-intent-input" data-action="focus-type-intent" placeholder="e.g. Draft the Nova proposal" value="${escapeHtml(focusSetup.intent)}" />
+        </div>
+
+        <div class="field">
+          <label>Session length</label>
+          <div class="chip-select" id="focus-duration-chips">
+            ${[15,25,50,90].map(m=>`<button data-action="focus-set-duration" data-min="${m}" class="${f.duration===m?'active':''}">${m} min<span class="chip-sub">${m===25?'classic pomodoro':m===50?'deep work':m===15?'quick win':'long haul'}</span></button>`).join('')}
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Ambience</label>
+            <div class="chip-select">
+              ${AMBIENCES.map(am=>`<button data-action="focus-set-ambience" data-id="${am.id}" class="${f.ambience===am.id?'active':''}">${am.name}<span class="chip-sub">${am.sub}</span></button>`).join('')}
+            </div>
+          </div>
+          <div class="field">
+            <label>Moving visual</label>
+            <div class="chip-select">
+              ${SCENES.map(sc=>`<button data-action="focus-set-scene" data-id="${sc.id}" class="${f.scene===sc.id?'active':''}">${sc.name}<span class="chip-sub">${sc.sub}</span></button>`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Typing partner</label>
+            <div class="chip-select">
+              <button data-action="focus-toggle-companion" class="${f.companion?'active':''}">${f.companion?'⌨ On':'⌨ Off'}<span class="chip-sub">Keyboard sounds + visible partner</span></button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Volume</label>
+            <div class="volume-row">
+              <input type="range" min="0" max="1" step="0.05" value="${f.volume}" data-action="focus-volume" aria-label="Ambience volume" />
+              <span class="mono dim" style="font-size:11px;">${Math.round(f.volume*100)}%</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn primary" data-action="focus-start" style="margin-top:6px;">▶ Start focus session</button>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="panel">
+          <div class="panel-title">Your focus</div>
+          <div class="focus-stat-grid">
+            <div class="focus-stat signal"><div class="fs-val">${minsToday}<span style="font-size:13px;"> min</span></div><div class="fs-lbl">Focused today</div></div>
+            <div class="focus-stat"><div class="fs-val">${focusSessionsToday()}</div><div class="fs-lbl">Sessions today</div></div>
+            <div class="focus-stat"><div class="fs-val">${streak}<span style="font-size:13px;"> ${streak===1?'day':'days'}</span></div><div class="fs-lbl">Current streak</div></div>
+            <div class="focus-stat"><div class="fs-val">${focusTotalHours().toFixed(1)}<span style="font-size:13px;"> h</span></div><div class="fs-lbl">All time</div></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>Focus minutes — last 14 days</h3>
+          <div class="chart-wrap" style="height:150px;"><canvas id="chart-focus-bar"></canvas><div class="chart-tooltip" id="tt-focus-bar"></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Recent sessions</div>
+          ${recent.length === 0 ? emptyState('🎧','No sessions yet. Your first one is the hardest.') : recent.map(s=>{
+            const p = s.projectId ? getProject(s.projectId) : null;
+            return `<div class="session-row">
+              <span class="pill ${s.completed?'green':'muted'}">${Math.round((s.focusedSec||0)/60)}m</span>
+              <div class="sr-main">
+                <div class="sr-intent">${escapeHtml(s.intent || (p?p.name:'Focus session'))}</div>
+                <div class="sr-meta">${fmtDateShort((s.endedAt||s.startedAt||'').slice(0,10))} · ${s.completed?'completed':'ended early'}${p?' · '+escapeHtml(p.name):''}</div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  const canvas = document.getElementById('chart-focus-bar');
+  drawBarChart(canvas, focusLast14Days(), { unit: 'min' });
+  wireChartTooltip(canvas, document.getElementById('tt-focus-bar'), c=>c._bars,
+    d=>`<span class="tt-title">Day ${d.label}</span> · <span class="tt-val">${d.value} min</span>`);
+}
+
+/* ==========================================================================
    Render dispatch
    ========================================================================== */
 function render(){
   document.getElementById('business-name-label').textContent = state.settings.businessName || 'Clientflow';
   const modeEl = document.getElementById('storage-mode-label');
   modeEl.textContent = storageMode==='fsa' ? 'Linked File' : storageMode==='idb' ? 'Browser Storage' : 'Clientflow';
+  const saveBtn = document.getElementById('save-file-btn');
+  if(storageMode === 'idb'){
+    saveBtn.textContent = '⬇ Export Backup';
+    saveBtn.title = 'Download a JSON backup of all your data';
+  } else {
+    saveBtn.textContent = 'Save File';
+    saveBtn.title = 'Write to your linked data file now';
+  }
   document.querySelectorAll('nav.tabs button').forEach(b=> b.classList.toggle('active', b.dataset.tab===currentTab));
   document.querySelectorAll('.view').forEach(v=> v.classList.toggle('active', v.dataset.view===currentTab));
   switch(currentTab){
@@ -2235,13 +3604,43 @@ function render(){
     case 'projects': renderProjects(); break;
     case 'clients': renderClients(); break;
     case 'invoices': renderInvoices(); break;
+    case 'focus': renderFocus(); break;
     case 'settings': renderSettings(); break;
   }
 }
 function switchTab(tab){ currentTab = tab; render(); }
 
+/* Canvas charts are drawn at a fixed pixel size, so they must be redrawn when
+   the window (and therefore their CSS size) changes. */
+window.addEventListener('resize', ()=>{
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(()=>{ if(storageMode) render(); }, 150);
+});
+
 function finishInit(){
   render();
+  // A session left running (tab closed, crash, accidental reload) is offered
+  // back rather than silently losing the time already logged.
+  if(state.activeFocus){
+    const a = state.activeFocus;
+    const staleHours = (Date.now() - new Date(a.startedAt).getTime())/3600000;
+    if(staleHours > 12){
+      FocusSession.logSession(false);
+      state.activeFocus = null;
+      scheduleSave();
+    } else {
+      a.lastBeat = Date.now();
+      if(a.phaseEndsAt <= Date.now()){
+        FocusSession.logSession(true);
+        state.activeFocus = null;
+        scheduleSave();
+        toast('Your focus session finished while you were away — it has been logged.');
+      } else {
+        FocusSession.minimised = true;
+        showResumeBanner();
+      }
+    }
+  }
 }
 
 /* ==========================================================================
@@ -2296,6 +3695,14 @@ document.addEventListener('click', (e)=>{
     }
     case 'delete-task': { const pid = getTaskProjectId(id); deleteTask(id); markDirty(); refreshProjectDrawerIfOpen(pid); break; }
 
+    case 'pick-swatch': {
+      const wrap = target.parentElement;
+      wrap.querySelectorAll('.swatch').forEach(s=> s.classList.remove('selected'));
+      target.classList.add('selected');
+      const form = target.closest('form');
+      if(form) form.querySelector('input[name=colourTag]').value = target.dataset.swatch;
+      break;
+    }
     case 'close-modal': closeModal(); break;
     case 'close-drawer': closeDrawer(); break;
 
@@ -2309,6 +3716,76 @@ document.addEventListener('click', (e)=>{
     case 'link-file-open': linkNewFileFromSettings('open'); break;
     case 'export-json': downloadJSON('Clientflow-Data.json', state); toast('Data exported.'); break;
     case 'trigger-import': document.getElementById('import-file-input').click(); break;
+    /* --- Focus Room --- */
+    case 'focus-start': {
+      const sel = document.getElementById('focus-task-select');
+      const intentInput = document.getElementById('focus-intent-input');
+      const taskId = sel ? sel.value : (focusSetup.taskId === '__free' ? '' : focusSetup.taskId);
+      const typed = intentInput ? intentInput.value.trim() : focusSetup.intent;
+      const task = taskId ? state.tasks.find(t=>t.id===taskId) : null;
+      const intent = typed || (task ? task.title : 'Focus session');
+      FocusSession.start({ taskId, projectId: task ? task.projectId : '', intent });
+      focusSetup = { taskId: '', intent: '' };
+      break;
+    }
+    case 'focus-start-task': {
+      const task = state.tasks.find(t=>t.id===id);
+      if(!task) break;
+      FocusSession.start({ taskId: task.id, projectId: task.projectId, intent: task.title });
+      break;
+    }
+    case 'focus-set-duration': {
+      state.settings.focus.duration = parseInt(target.dataset.min,10);
+      scheduleSave();
+      refreshFocusChips();
+      break;
+    }
+    case 'focus-set-ambience': {
+      state.settings.focus.ambience = target.dataset.id;
+      if(FocusSession.active() && !state.activeFocus.pausedAt) FocusAudio.start(target.dataset.id, state.settings.focus.companion);
+      scheduleSave();
+      refreshFocusChips();
+      break;
+    }
+    case 'focus-set-scene': {
+      state.settings.focus.scene = target.dataset.id;
+      scheduleSave();
+      refreshFocusChips();
+      break;
+    }
+    case 'focus-toggle-companion': {
+      const on = !state.settings.focus.companion;
+      state.settings.focus.companion = on;
+      if(FocusSession.active() && !state.activeFocus.pausedAt){
+        if(on) FocusAudio.startTyping(); else FocusAudio.stopTyping();
+      }
+      scheduleSave();
+      refreshFocusChips();
+      break;
+    }
+    case 'focus-toggle-mute': {
+      FocusAudio.setMuted(!FocusAudio.muted);
+      refreshFocusChips();
+      break;
+    }
+    case 'focus-toggle-pause': FocusSession.togglePause(); break;
+    case 'focus-extend': FocusSession.extend(parseInt(target.dataset.min,10) || 5); break;
+    case 'focus-minimise': FocusSession.minimise(); break;
+    case 'focus-reopen': {
+      if(e.target.closest('[data-action="focus-toggle-pause"], [data-action="focus-end"]')) break;
+      FocusSession.openRoom();
+      break;
+    }
+    case 'focus-end': FocusSession.end(); render(); break;
+    case 'focus-resume-session': FocusSession.resumeExisting(); clearResumeBanner(); break;
+    case 'focus-discard-session': {
+      FocusSession.logSession(false);
+      state.activeFocus = null;
+      markDirty();
+      clearResumeBanner();
+      break;
+    }
+
     case 'open-clear-data': openClearDataModal(); break;
     case 'confirm-clear-data': {
       state = defaultState();
@@ -2344,6 +3821,38 @@ document.addEventListener('change', (e)=>{
     }
     markDirty();
   }
+});
+
+document.addEventListener('keydown', (e)=>{
+  if(e.key === ' ' && FocusSession.active() && !FocusSession.minimised && e.target === document.body){
+    e.preventDefault();
+    FocusSession.togglePause();
+    return;
+  }
+  if(e.key !== 'Escape') return;
+  if(document.getElementById('modal-root').firstChild){ closeModal(); return; }
+  if(document.getElementById('drawer-root').firstChild){ closeDrawer(); return; }
+  // Escape leaves the room but keeps the clock running.
+  if(FocusSession.active() && !FocusSession.minimised) FocusSession.minimise();
+});
+
+document.addEventListener('input', (e)=>{
+  const vol = e.target.closest('[data-action="focus-volume"]');
+  if(vol){
+    state.settings.focus.volume = parseFloat(vol.value);
+    FocusAudio.applyVolume();
+    scheduleSave();
+    const pct = vol.parentElement.querySelector('.mono');
+    if(pct) pct.textContent = Math.round(state.settings.focus.volume*100) + '%';
+    return;
+  }
+  const intent = e.target.closest('[data-action="focus-type-intent"]');
+  if(intent) focusSetup.intent = intent.value;
+});
+
+document.addEventListener('change', (e)=>{
+  const sel = e.target.closest('[data-action="focus-pick-task"]');
+  if(sel) focusSetup.taskId = sel.value || '__free';
 });
 
 document.getElementById('import-file-input').addEventListener('change', async (e)=>{
@@ -2402,6 +3911,14 @@ document.addEventListener('submit', (e)=>{
     form.reset();
     markDirty();
     refreshProjectDrawerIfOpen(projectId);
+  } else if(type==='settings-focus'){
+    const f = state.settings.focus;
+    f.partnerName = (val('partnerName')||'').trim() || 'Mo';
+    f.breakMin = clamp(parseInt(val('breakMin'),10)||5, 1, 60);
+    f.duration = clamp(parseInt(val('duration'),10)||25, 5, 180);
+    f.chimes = !!fd.get('chimes');
+    toast('Focus settings saved.');
+    markDirty();
   } else if(type==='settings-business'){
     state.settings.businessName = val('businessName');
     state.settings.defaultCurrency = val('defaultCurrency');
